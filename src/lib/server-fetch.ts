@@ -10,5 +10,6 @@ export async function serverFetch(endpoint: string, options: RequestInit = {}) {
             'Content-Type': 'application/json',
             ...(authHeader && { 'Authorization': authHeader }),
         },
+        credentials: 'include',
     });
 }

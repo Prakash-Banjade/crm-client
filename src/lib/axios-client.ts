@@ -7,13 +7,14 @@ import axios, { AxiosInstance } from "axios";
 import { AuthMessage } from "./constants";
 
 export const useAxios = (): AxiosInstance => {
-    const { access_token, setAuth } = useAuth();
+    const { accessToken, setSession } = useAuth();
+
     const router = useRouter();
 
     const axiosInstance = axios.create({
         baseURL: process.env.NEXT_PUBLIC_API_URL,
         headers: {
-            Authorization: `Bearer ${access_token}`,
+            Authorization: `Bearer ${accessToken}`,
         },
         withCredentials: true,
         timeout: 10000, // Optional: 10 seconds timeout
@@ -65,7 +66,7 @@ export const useAxios = (): AxiosInstance => {
 
                     if (response?.status === 200) {
                         const newAccessToken = response.data.access_token;
-                        setAuth({ accessToken: newAccessToken, user: response.data.user });
+                        setSession({ accessToken: newAccessToken });
 
                         axiosInstance.defaults.headers.Authorization = `Bearer ${newAccessToken}`;
                         originalRequest.headers.Authorization = `Bearer ${newAccessToken}`;
@@ -77,7 +78,7 @@ export const useAxios = (): AxiosInstance => {
                     }
                 } catch (err) {
                     isRefreshing = false;
-                    setAuth(null); // Clear auth state if refresh fails
+                    setSession(null); // Clear auth state if refresh fails
                     router.push('/');
                     return Promise.reject(err);
                 }

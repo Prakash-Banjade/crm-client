@@ -29,6 +29,7 @@ export async function proxy(request: NextRequest) {
                 headers: {
                     'Cookie': `${CookieKey.REFRESH_TOKEN}=${refreshToken}`,
                 },
+                credentials: 'include',
             });
 
             if (res.ok) {
@@ -69,5 +70,10 @@ export async function proxy(request: NextRequest) {
 
 // Ensure this runs for API calls and Page renders
 export const config = {
-    matcher: ['/((?!_next/static|_next/image|favicon.ico).*)'],
+    matcher: [
+        '/((?!_next/static|_next/image|favicon.ico).*)',
+        '/admin/:path*',
+        '/super-admin/:path*',
+        '/counselor/:path*',
+    ],
 };

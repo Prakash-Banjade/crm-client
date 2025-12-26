@@ -4,7 +4,7 @@ import { cache } from 'react';
 import { TCurrentUser } from '@/context/auth-provider';
 import { CookieKey } from './constants';
 
-export const getSession = cache(async (): Promise<TCurrentUser | null> => {
+export const getSession = cache(async (): Promise<TCurrentUser> => {
     const token = (await headers()).get('Authorization')?.split(' ')[1]
         || (await cookies()).get(CookieKey.ACCESS_TOKEN)?.value;
 
@@ -13,7 +13,7 @@ export const getSession = cache(async (): Promise<TCurrentUser | null> => {
     }
 
     try {
-        const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/users/me`, {
+        const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/auth/me`, {
             method: 'GET',
             headers: {
                 'Authorization': `Bearer ${token}`,
@@ -21,13 +21,14 @@ export const getSession = cache(async (): Promise<TCurrentUser | null> => {
             },
             // Cache settings: strictly ensure we don't cache stale user data
             cache: 'no-store',
+            credentials: 'include',
         });
 
         if (!res.ok) {
             return null;
         }
 
-        const user = await res.json();
+        const user: TCurrentUser = await res.json();
         return user;
     } catch (error) {
         console.error("Auth fetch failed", error);

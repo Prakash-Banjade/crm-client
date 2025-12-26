@@ -7,7 +7,5 @@ type Props = {
 export default async function SignInLayout({ children }: Props) {
     const user = await getSession();
 
-    console.log(user)
-
     return children;
 }

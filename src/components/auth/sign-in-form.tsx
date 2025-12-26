@@ -8,6 +8,10 @@ import { Input } from "@/components/ui/input"
 import { Field, FieldError, FieldGroup, FieldLabel } from "@/components/ui/field"
 import { useTransition } from "react"
 import { toast } from "sonner"
+import { signIn } from "@/lib/actions/auth/signin.action"
+import { CookieKey } from "@/lib/constants"
+import { useAuth } from "@/context/auth-provider"
+import { useRouter, useSearchParams } from "next/navigation"
 
 const signInSchema = z.object({
     email: z.string().email("Please enter a valid email address"),
@@ -21,16 +25,29 @@ export type SignInFormData = z.infer<typeof signInSchema>
 
 export function SignInForm() {
     const [isPending, startTransition] = useTransition();
+    const { setSession } = useAuth();
+    const router = useRouter();
+    const searchParams = useSearchParams();
 
     const form = useForm<SignInFormData>({
         resolver: zodResolver(signInSchema),
+        defaultValues: {
+            email: "prakash@gmail.com",
+            password: "Prakash@221",
+        },
     })
 
     const onSubmit = (data: SignInFormData) => {
         startTransition(async () => {
             try {
-                // const { data: res, error } = await authClient.signIn.email(data);
-                // if (error) throw error;
+                const res: { [CookieKey.ACCESS_TOKEN]: string } = await signIn(data);
+
+                const user = setSession({ accessToken: res[CookieKey.ACCESS_TOKEN] });
+
+                const redirectUrl = searchParams.get("redirect");
+                if (redirectUrl) return router.push(redirectUrl);
+
+                router.push(`/${user.role}`);
 
             } catch (e) {
                 if (e instanceof Object && "message" in e) {

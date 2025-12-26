@@ -6,6 +6,9 @@ import { Toaster } from "@/components/ui/sonner";
 import { redirect } from "next/navigation";
 import { AuthProvider } from "@/context/auth-provider";
 import { getSession } from "@/lib/get-session";
+import ReactQueryClientProvider from "@/lib/react-query/queryClientProvider";
+import { cookies } from "next/headers";
+import { CookieKey } from "@/lib/constants";
 
 const publicSans = Public_Sans({ subsets: ['latin'], variable: '--font-sans' });
 
@@ -33,22 +36,27 @@ export default async function ProtectedRootLayout({
 
     if (!user) redirect('/auth/sign-in');
 
+    const cookieStore = await cookies();
+    const token = cookieStore.get(CookieKey.ACCESS_TOKEN)?.value || "";
+
     return (
         <html lang="en" className={publicSans.variable}>
             <body
                 className={`${geistSans.variable} ${geistMono.variable} antialiased`}
             >
-                <AuthProvider>
-                    <ThemeProvider
-                        attribute="class"
-                        defaultTheme="dark"
-                        enableSystem
-                        disableTransitionOnChange
-                    >
-                        {children}
-                        <Toaster richColors />
-                    </ThemeProvider>
-                </AuthProvider>
+                <ReactQueryClientProvider>
+                    <AuthProvider initialUser={user} initialAccessToken={token}>
+                        <ThemeProvider
+                            attribute="class"
+                            defaultTheme="dark"
+                            enableSystem
+                            disableTransitionOnChange
+                        >
+                            {children}
+                            <Toaster richColors />
+                        </ThemeProvider>
+                    </AuthProvider>
+                </ReactQueryClientProvider>
             </body>
         </html>
     );
