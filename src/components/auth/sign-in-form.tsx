@@ -7,6 +7,7 @@ import { LoadingButton } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Field, FieldError, FieldGroup, FieldLabel } from "@/components/ui/field"
 import { useTransition } from "react"
+import { toast } from "sonner"
 
 const signInSchema = z.object({
     email: z.string().email("Please enter a valid email address"),
@@ -16,7 +17,7 @@ const signInSchema = z.object({
         .max(100, "Password must be less than 100 characters"),
 })
 
-type SignInFormData = z.infer<typeof signInSchema>
+export type SignInFormData = z.infer<typeof signInSchema>
 
 export function SignInForm() {
     const [isPending, startTransition] = useTransition();
@@ -25,11 +26,18 @@ export function SignInForm() {
         resolver: zodResolver(signInSchema),
     })
 
-    const onSubmit = async (data: SignInFormData) => {
-        // Simulate API call
-        await new Promise((resolve) => setTimeout(resolve, 1000))
-        console.log("[v0] Form submitted:", data)
-        // Add your authentication logic here
+    const onSubmit = (data: SignInFormData) => {
+        startTransition(async () => {
+            try {
+                // const { data: res, error } = await authClient.signIn.email(data);
+                // if (error) throw error;
+
+            } catch (e) {
+                if (e instanceof Object && "message" in e) {
+                    toast.error(e.message as string);
+                }
+            }
+        })
     }
 
     return (

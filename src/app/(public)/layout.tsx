@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { Geist, Geist_Mono, Public_Sans } from "next/font/google";
 import "../globals.css";
 import { ThemeProvider } from "@/context/theme-provider";
+import { Toaster } from "@/components/ui/sonner";
 
 const publicSans = Public_Sans({ subsets: ['latin'], variable: '--font-sans' });
 
@@ -26,7 +27,7 @@ export default function PublicRootLayout({
     children: React.ReactNode;
 }>) {
     return (
-        <html lang="en" className={publicSans.variable}>
+        <html lang="en" className={publicSans.variable} suppressHydrationWarning>
             <body
                 className={`${geistSans.variable} ${geistMono.variable} antialiased`}
             >
@@ -37,6 +38,7 @@ export default function PublicRootLayout({
                     disableTransitionOnChange
                 >
                     {children}
+                    <Toaster richColors />
                 </ThemeProvider>
             </body>
         </html>
