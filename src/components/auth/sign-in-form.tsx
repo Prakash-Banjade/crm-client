@@ -50,9 +50,11 @@ export function SignInForm() {
                 router.push(`/${user.role}/dashboard`);
 
             } catch (e) {
-                if (e instanceof Object && "message" in e) {
-                    toast.error(e.message as string);
+                if (e instanceof Error) {
+                    toast.error(e.message);
+                    return;
                 }
+                toast.error("Something went wrong");
             }
         })
     }

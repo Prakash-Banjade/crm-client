@@ -18,10 +18,10 @@ export async function signIn(formData: SignInFormData) {
 
     if (!res.ok) {
         const message = extractErrorMessage(data);
-        throw new Error(message);
+        throw new Error(message.message);
     }
 
-    // --- FIX: MANUALLY SET COOKIES IN BROWSER ---
+    // --- MANUALLY SET COOKIES IN BROWSER ---
     const setCookieHeader = res.headers.get('set-cookie');
 
     if (setCookieHeader) {

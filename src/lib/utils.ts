@@ -5,19 +5,19 @@ export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs))
 }
 
-export function extractErrorMessage(error: any): string {
+export function extractErrorMessage(error: any): { error: string, message: string } {
   if (!error || typeof error !== 'object') {
-    return 'Something went wrong';
+    return { error: 'Error', message: 'Something went wrong' };
   }
 
   const messageContainer = error?.message;
 
   if (typeof messageContainer === 'string') {
-    return messageContainer;
+    return { error: error.error || 'Error', message: messageContainer };
   }
 
   if (typeof messageContainer?.message === 'string') {
-    return messageContainer.message;
+    return { error: messageContainer?.error || 'Error', message: messageContainer.message };
   }
 
   if (
@@ -25,8 +25,8 @@ export function extractErrorMessage(error: any): string {
     messageContainer.message.length > 0 &&
     typeof messageContainer.message[0] === 'string'
   ) {
-    return messageContainer.message[0];
+    return { error: messageContainer?.error || 'Error', message: messageContainer.message[0] };
   }
 
-  return 'Something went wrong';
+  return { error: 'Error', message: 'Something went wrong' };
 }

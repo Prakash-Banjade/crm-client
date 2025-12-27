@@ -9,14 +9,17 @@ import { useTheme } from 'next-themes'
 export default function Hero() {
     const { theme } = useTheme();
 
+    console.log(theme)
+
     return (
         <section className="relative min-h-screen overflow-hidden pt-20 pb-24 sm:pt-48 sm:pb-32 -mt-16">
             <div
                 className="absolute inset-0 z-0"
                 style={{
-                    background: theme === "dark"
-                        ? "radial-gradient(125% 125% at 50% 100%, #000000 40%, #010133 100%)"
-                        : "radial-gradient(125% 125% at 50% 100%, #FFFFFF 40%, #C2C2DD 100%)",
+                    // background: theme === "dark"
+                    //     ? "radial-gradient(125% 125% at 50% 100%, #000000 40%, #010133 100%)"
+                    //     : "radial-gradient(125% 125% at 50% 100%, #FFFFFF 40%, #C2C2DD 100%)",
+                    background: "radial-gradient(125% 125% at 50% 100%, #000000 40%, #010133 100%)"
                 }}
             />
 

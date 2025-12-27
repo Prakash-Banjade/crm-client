@@ -6,6 +6,7 @@ import { TGroupMenuItem } from "@/components/sidebar-layout/sidebar";
 import { useSidebar } from "../ui/sidebar";
 import { TCurrentUser } from "@/context/auth-provider";
 import Link from "next/link";
+import { usePathname } from "next/navigation";
 
 export default function AppBreadCrumb({
     menuItems,
@@ -15,33 +16,34 @@ export default function AppBreadCrumb({
     user: NonNullable<TCurrentUser>
 }) {
     const { dynamicBreadcrumb, setDynamicBreadcrumb } = useSidebar();
+    const pathname = usePathname();
 
     const active = useMemo(() => {
         const menuItem = menuItems.find(group => group.menuItems
-            .some(item => location.pathname.includes(`/${user.role}/${item.url}`)))
-            ?.menuItems?.find(item => location.pathname.includes(`/${user.role}/${item.url}`))
+            .some(item => pathname.includes(`/${user.role}/${item.url}`)))
+            ?.menuItems?.find(item => pathname.includes(`/${user.role}/${item.url}`))
 
         const item = menuItem?.items?.length
             ? (
                 menuItem.items.find(item => {
-                    return location.pathname === (`/${user.role}/${menuItem.url}${!!item.url ? `/${item.url}` : ''}`)
+                    return pathname === (`/${user.role}/${menuItem.url}${!!item.url ? `/${item.url}` : ''}`)
                 })
                 || menuItem.items.find(item => {
-                    return location.pathname.includes(`/${user.role}/${menuItem.url}${!!item.url ? `/${item.url}` : ''}`)
+                    return pathname.includes(`/${user.role}/${menuItem.url}${!!item.url ? `/${item.url}` : ''}`)
                 })
             )
             : undefined;
 
         return { menuItem, item };
-    }, [location, menuItems]);
+    }, [pathname, menuItems]);
 
     useEffect(() => {
         setDynamicBreadcrumb(prev => [
             ...prev.filter(breadcrumb => {
-                return breadcrumb.url && location.pathname.includes(breadcrumb.url);
+                return breadcrumb.url && pathname.includes(breadcrumb.url);
             })
         ])
-    }, [location]);
+    }, [pathname]);
 
     return (
         <Breadcrumb>

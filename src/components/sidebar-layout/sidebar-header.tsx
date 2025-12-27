@@ -6,7 +6,7 @@ import { SidebarSearchForm } from "./sidebar-search-form";
 import { TCurrentUser } from "@/context/auth-provider";
 import { useRouter } from "next/navigation";
 import { Role } from "@/lib/types";
-import { useGetOrganizationOptions } from "@/lib/data-access/organizations.data";
+import { useGetOrganizationOptions } from "@/lib/data-access/org-data-hooks";
 import { deleteCookie, getCookie, setCookie } from "@/lib/cookie";
 import { CookieKey } from "@/lib/constants";
 import { useQueryClient } from "@tanstack/react-query";

@@ -42,7 +42,7 @@ export default function SidebarLayout({
                         <Bell className="size-5" />
                     </Button>
                 </header>
-                <main className="p-6 h-full">
+                <main className="h-full">
                     {children}
                 </main>
             </SidebarInset>

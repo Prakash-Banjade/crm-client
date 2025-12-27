@@ -16,10 +16,7 @@ export type TMeta = {
 };
 
 export interface PaginatedResponse<T> {
-    data: T & {
-        id: string,
-        [key: string]: any
-    }[];
+    data: T[];
     meta: TMeta;
 }
 
@@ -27,3 +24,16 @@ export type SelectOption = {
     label: string,
     value: string,
 }
+
+export type ActionResponse<T extends { message?: string } = { message?: string }> = {
+    success: true;
+    data: T;
+    error?: null
+} | {
+    success: false;
+    error: {
+        message: string;
+        error?: string;
+    };
+    data?: null
+};

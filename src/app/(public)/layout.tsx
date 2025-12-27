@@ -1,8 +1,8 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono, Public_Sans } from "next/font/google";
-import "../globals.css";
 import { ThemeProvider } from "@/context/theme-provider";
 import { Toaster } from "@/components/ui/sonner";
+import "../globals.css";
 
 const publicSans = Public_Sans({ subsets: ['latin'], variable: '--font-sans' });
 

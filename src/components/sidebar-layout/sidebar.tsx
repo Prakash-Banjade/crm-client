@@ -57,7 +57,8 @@ export function AppSidebar({
     return (
         <Sidebar
             variant="floating"
-        // collapsible="icon"
+            // collapsible="icon"
+            className="pr-0"
         >
             <AppSidebarHeader user={user} />
             <SidebarContent className="overflow-hidden">
