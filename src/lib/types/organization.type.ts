@@ -1,4 +1,5 @@
 import { PaginatedResponse } from "."
+import { TOrganizationSchema } from "../schema/organization.schema"
 
 export type TOrganization = {
     id: string,
@@ -12,3 +13,5 @@ export type TOrganization = {
 }
 
 export type TOrganizationsResponse = PaginatedResponse<TOrganization>
+
+export type TSingleOrganization = TOrganizationSchema & TOrganization;

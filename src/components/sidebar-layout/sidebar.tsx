@@ -69,8 +69,8 @@ export function AppSidebar({
                                 <SidebarGroupLabel>{item.groupLabel}</SidebarGroupLabel>
                                 <SidebarMenu>
                                     {item.menuItems.map((item) => item.items?.length
-                                        ? <CollapsibleMenuItem key={item.title} item={item} user={user} />
-                                        : <NonCollapsibleMenuItem key={item.title} item={item} user={user} />
+                                        ? <CollapsibleMenuItem key={item.title} item={item} />
+                                        : <NonCollapsibleMenuItem key={item.title} item={item} />
                                     )}
                                 </SidebarMenu>
                             </SidebarGroup>
@@ -91,10 +91,10 @@ export function AppSidebar({
     )
 }
 
-export function NonCollapsibleMenuItem({ item, user }: { item: TSidebarMenuItem, user: NonNullable<TCurrentUser> }) {
+export function NonCollapsibleMenuItem({ item }: { item: TSidebarMenuItem }) {
     const pathname = usePathname();
 
-    const isActive = `/${user.role}/${item.url}` === pathname;
+    const isActive = item.url === pathname;
 
     return (
         <SidebarMenuItem key={item.title}>
@@ -108,13 +108,13 @@ export function NonCollapsibleMenuItem({ item, user }: { item: TSidebarMenuItem,
     )
 }
 
-export function CollapsibleMenuItem({ item, user }: { item: TSidebarMenuItem, user: NonNullable<TCurrentUser> }) {
+export function CollapsibleMenuItem({ item }: { item: TSidebarMenuItem }) {
     const { search } = useSidebar();
     const pathname = usePathname();
 
     const defaultOpen = useMemo<boolean>(() => {
         if (search.length > 0) return true;
-        return !!item.items?.some((subItem) => `/${user.role}/${item.url}${!!subItem.url ? `/${subItem.url}` : ''}` === pathname)
+        return !!item.items?.some((subItem) => `${item.url}${!!subItem.url ? `/${subItem.url}` : ''}` === pathname)
     }, [location, search])
 
     return (
@@ -135,7 +135,7 @@ export function CollapsibleMenuItem({ item, user }: { item: TSidebarMenuItem, us
                 <CollapsibleContent>
                     <SidebarMenuSub>
                         {item.items?.map((subItem) => {
-                            const url = `/${user.role}/${item.url}${!!subItem.url ? `/${subItem.url}` : ''}`;
+                            const url = `${item.url}${!!subItem.url ? `/${subItem.url}` : ''}`;
                             const isActive = url === pathname
 
                             return (

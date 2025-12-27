@@ -20,16 +20,16 @@ export default function AppBreadCrumb({
 
     const active = useMemo(() => {
         const menuItem = menuItems.find(group => group.menuItems
-            .some(item => pathname.includes(`/${user.role}/${item.url}`)))
-            ?.menuItems?.find(item => pathname.includes(`/${user.role}/${item.url}`))
+            .some(item => pathname.includes(item.url)))
+            ?.menuItems?.find(item => pathname.includes(item.url))
 
         const item = menuItem?.items?.length
             ? (
                 menuItem.items.find(item => {
-                    return pathname === (`/${user.role}/${menuItem.url}${!!item.url ? `/${item.url}` : ''}`)
+                    return pathname === (menuItem.url + (!!item.url ? `/${item.url}` : ''))
                 })
                 || menuItem.items.find(item => {
-                    return pathname.includes(`/${user.role}/${menuItem.url}${!!item.url ? `/${item.url}` : ''}`)
+                    return pathname.includes(menuItem.url + (!!item.url ? `/${item.url}` : ''))
                 })
             )
             : undefined;

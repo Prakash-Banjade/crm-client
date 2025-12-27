@@ -5,6 +5,7 @@ import { Toaster } from "@/components/ui/sonner";
 import ReactQueryClientProvider from "@/lib/react-query/queryClientProvider";
 import NextTopLoader from 'nextjs-toploader';
 import "../globals.css";
+import { ConfirmExitAlertProvider } from "@/context/confirm-exit-provider";
 
 const publicSans = Public_Sans({ subsets: ['latin'], variable: '--font-sans' });
 
@@ -41,9 +42,11 @@ export default function ProtectedRootLayout({
                         enableSystem
                         disableTransitionOnChange
                     >
-                        <NextTopLoader />
-                        {children}
-                        <Toaster richColors />
+                        <ConfirmExitAlertProvider>
+                            <NextTopLoader />
+                            {children}
+                            <Toaster richColors />
+                        </ConfirmExitAlertProvider>
                     </ThemeProvider>
                 </ReactQueryClientProvider>
             </body>

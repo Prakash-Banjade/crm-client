@@ -1,4 +1,9 @@
-import { getOrganizationById } from '@/lib/data-access/org-data-access';
+"use client";
+
+import OrganizationForm from '@/components/organization/organization-form';
+import { useGetOrganizationById } from '@/lib/data-access/org-data-hooks';
+import { notFound } from 'next/navigation';
+import { use } from 'react';
 
 type Props = {
     params: Promise<{
@@ -6,14 +11,16 @@ type Props = {
     }>
 }
 
-export default async function SingleOrganizationPage({ params }: Props) {
-    const { id } = await params;
+export default function SingleOrganizationPage({ params }: Props) {
+    const { id } = use(params);
 
-    const organization = await getOrganizationById(id);
+    const { data: organization, isLoading } = useGetOrganizationById({ id })
 
-    console.log(organization);
+    if (isLoading) return <div>Loading...</div>
+
+    if (!organization) notFound();
 
     return (
-        <div>SingleOrganizationPage</div>
+        <OrganizationForm defaultValues={organization} />
     )
 }

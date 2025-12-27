@@ -16,28 +16,35 @@ import { useRouter } from "next/navigation";
 import { Role } from "@/lib/types";
 import { Input } from "../ui/input";
 import { ColorPicker } from "../ui/color-picker";
-import { createOrganization } from "@/lib/actions/organization.action";
+import { createOrganization, updateOrganization } from "@/lib/actions/organization.action";
 import { QueryKey } from "@/lib/react-query/queryKeys";
 import { useServerAction } from "@/hooks/use-server-action";
+import { TSingleOrganization } from "@/lib/types/organization.type";
+import { useConfirmExit } from "@/hooks/use-confirm-exit";
+import { useConfirmExitAlert } from "@/context/confirm-exit-provider";
 
 type Props = {
-    defaultValues?: TOrganizationSchema
+    defaultValues?: TSingleOrganization
 }
 
 export default function OrganizationForm({ defaultValues }: Props) {
     const isEditing = !!defaultValues;
 
     const router = useRouter();
+    const { setExitLocation, setIsOpen } = useConfirmExitAlert();
 
-    const { isPending, mutate } = useServerAction({
+    const { isPending: isCreating, mutate: create } = useServerAction({
         action: createOrganization,
         invalidateTags: [QueryKey.ORGANIZATIONS],
-        toastOnSuccess: true,
-        toastOnError: true,
         onSuccess: () => {
             router.push(`/${Role.SUPER_ADMIN}/organizations`);
         },
-    })
+    });
+
+    const { isPending: isUpdating, mutate: update } = useServerAction({
+        action: updateOrganization,
+        invalidateTags: [QueryKey.ORGANIZATIONS],
+    });
 
     const form = useForm<TOrganizationSchema>({
         resolver: zodResolver(organizationSchema),
@@ -45,8 +52,14 @@ export default function OrganizationForm({ defaultValues }: Props) {
     });
 
     function onSubmit(data: TOrganizationSchema) {
-        mutate(data);
+        if (isEditing) {
+            update({ formData: data, id: defaultValues?.id! });
+        } else {
+            create(data);
+        }
     }
+
+    useConfirmExit(form.formState.isDirty);
 
     const name = useWatch({
         control: form.control,
@@ -67,12 +80,19 @@ export default function OrganizationForm({ defaultValues }: Props) {
                             <p className="text-sm text-muted-foreground">
                                 {isEditing ? "Updating an organization" : "Creating new organization"}
                             </p>
-                            <section className="space-x-3">
+                            <section className="grid grid-cols-2 gap-3">
                                 <Button
                                     type="button"
                                     variant={'outline'}
                                     size={'lg'}
-                                    onClick={() => router.push(`/${Role.SUPER_ADMIN}/organizations`)}
+                                    onClick={() => {
+                                        if (form.formState.isDirty) {
+                                            setExitLocation(`/${Role.SUPER_ADMIN}/organizations`);
+                                            setIsOpen(true);
+                                        } else {
+                                            router.push(`/${Role.SUPER_ADMIN}/organizations`);
+                                        }
+                                    }}
                                 >
                                     Cancel
                                 </Button>
@@ -80,7 +100,7 @@ export default function OrganizationForm({ defaultValues }: Props) {
                                 <LoadingButton
                                     type="submit"
                                     size={"lg"}
-                                    isLoading={isPending}
+                                    isLoading={isCreating || isUpdating}
                                     loadingText="Saving..."
                                 >
                                     Save

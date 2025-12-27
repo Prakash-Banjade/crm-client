@@ -45,9 +45,9 @@ export function DataTable<TData, TValue>({
             </DataTableToolbar>
             <div className="rounded-md border overflow-hidden">
                 <Table>
-                    <TableHeader className="bg-accent">
+                    <TableHeader className="bg-accent/20">
                         {table.getHeaderGroups().map((headerGroup) => (
-                            <TableRow key={headerGroup.id} className="bg-accent">
+                            <TableRow key={headerGroup.id} className="bg-accent/20">
                                 {headerGroup.headers.map((header) => {
                                     return (
                                         <TableHead key={header.id} className="font-bold">

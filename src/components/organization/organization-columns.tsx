@@ -4,15 +4,16 @@ import { ColumnDef } from "@tanstack/react-table"
 import { Button } from "@/components/ui/button"
 import { MoreHorizontal, Pencil, Trash } from "lucide-react"
 import { DataTableColumnHeader } from "@/components/data-table/data-table-column-header"
-import { ProfileAvatar } from "@/components/ui/avatar"
 import { TOrganization } from "@/lib/types/organization.type"
 import Link from "next/link"
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuTrigger } from "../ui/dropdown-menu"
 import { useRouter } from "next/navigation"
-import { useState, useTransition } from "react"
+import { useState } from "react"
 import { formatDate } from "date-fns";
 import { ResponsiveAlertDialog } from "../ui/responsive-alert-dialog";
-import { useQueryClient } from "@tanstack/react-query";
+import { useServerAction } from "@/hooks/use-server-action";
+import { deleteOrganization } from "@/lib/actions/organization.action";
+import { QueryKey } from "@/lib/react-query/queryKeys";
 
 export const organizationsColumns: ColumnDef<TOrganization>[] = [
     {
@@ -25,7 +26,7 @@ export const organizationsColumns: ColumnDef<TOrganization>[] = [
             return <DataTableColumnHeader column={column} title="Name" />
         },
         cell: ({ row }) => {
-            return <Link href={`/organizations/${row.original.id}`} className="hover:text-blue-500 hover:underline flex gap-4 items-center w-fit">
+            return <Link href={`organizations/${row.original.id}`} className="hover:text-blue-500 hover:underline flex gap-4 items-center w-fit">
                 {/* <ProfileAvatar
                     name={row.original.name}
                     src={getImageUrl(row.original.profileImageUrl, "w=40")}
@@ -97,12 +98,14 @@ export const organizationsColumns: ColumnDef<TOrganization>[] = [
         id: "actions",
         enableHiding: false,
         cell: ({ row }) => {
-            const [isPending, startTransition] = useTransition();
             const [isDeleteOpen, setIsDeleteOpen] = useState(false);
-
-            const handleDelete = () => {
-
-            }
+            const { isPending, mutate } = useServerAction({
+                action: deleteOrganization,
+                invalidateTags: [QueryKey.ORGANIZATIONS],
+                onSuccess: () => {
+                    setIsDeleteOpen(false);
+                }
+            });
 
             const router = useRouter();
 
@@ -115,7 +118,7 @@ export const organizationsColumns: ColumnDef<TOrganization>[] = [
                         setIsOpen={setIsDeleteOpen}
                         title="Remove Organization"
                         description={`Are you sure you want to remove ${row.original.name}? This action cannot be undone. This will also remove all the data related to this organization.`}
-                        action={handleDelete}
+                        action={() => mutate(row.original.id)}
                         actionLabel="Yes, remove"
                         isLoading={isPending}
                         loadingText="Removing..."
@@ -130,7 +133,7 @@ export const organizationsColumns: ColumnDef<TOrganization>[] = [
                         </DropdownMenuTrigger>
                         <DropdownMenuContent align="end">
                             <DropdownMenuLabel>Actions</DropdownMenuLabel>
-                            <DropdownMenuItem onClick={() => router.push(`/organizations/${row.original.id}`)}>
+                            <DropdownMenuItem onClick={() => router.push(`organizations/${row.original.id}`)}>
                                 <Pencil />
                                 Edit
                             </DropdownMenuItem>
