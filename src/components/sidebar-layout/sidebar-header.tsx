@@ -1,6 +1,6 @@
 import { SidebarHeader, SidebarMenu, SidebarMenuButton, SidebarMenuItem, useSidebar } from "@/components/ui/sidebar";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger } from "../ui/dropdown-menu";
-import { ChevronsUpDown, Plus, School } from "lucide-react";
+import { Building2, ChevronsUpDown, Plus, School } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { SidebarSearchForm } from "./sidebar-search-form";
 import { TCurrentUser } from "@/context/auth-provider";
@@ -11,7 +11,6 @@ import { deleteCookie, getCookie, setCookie } from "@/lib/cookie";
 import { CookieKey } from "@/lib/constants";
 import { useQueryClient } from "@tanstack/react-query";
 import { useState } from "react";
-import Image from "next/image";
 
 export function AppSidebarHeader({
     user
@@ -40,16 +39,9 @@ export function AppSidebarHeader({
                                 size="lg"
                                 className={cn(user.role === Role.SUPER_ADMIN ? "data-[state=open]:bg-accent data-[state=open]:text-accent-foreground" : "pointer-events-none")}
                             >
-                                <Image
-                                    src="/logo.png"
-                                    alt="logo"
-                                    height={50}
-                                    width={50}
-                                    className="w-auto h-auto"
-                                />
-                                {/* <div className="flex aspect-square size-8 items-center justify-center rounded-lg bg-primary text-primary-foreground">
-                                    <School className="size-5" />
-                                </div> */}
+                                <div className="flex aspect-square size-8 items-center justify-center rounded-lg bg-primary text-primary-foreground">
+                                    <Building2 className="size-5" />
+                                </div>
                                 <div className="flex flex-col leading-none">
                                     <span className="truncate font-semibold">Abhyam CRM</span>
                                     <span className="text-xs mt-1">

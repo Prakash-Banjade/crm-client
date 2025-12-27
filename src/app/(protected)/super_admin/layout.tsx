@@ -1,8 +1,10 @@
 import SidebarLayout from "@/components/sidebar-layout/sidebar-layout";
-import { superAdminSidebarMenuItems } from "@/lib/config/super-admin-menu-items";
+import { AuthProvider } from "@/context/auth-provider";
+import { CookieKey } from "@/lib/constants";
 import { requireAuth } from "@/lib/require-auth";
 import { Role } from "@/lib/types";
 import type { Metadata } from "next";
+import { cookies } from "next/headers";
 
 export const metadata: Metadata = {
     title: "Create Next App",
@@ -16,9 +18,14 @@ export default async function SuperAdminRootLayout({
 }>) {
     const user = await requireAuth({ role: Role.SUPER_ADMIN });
 
+    const cookieStore = await cookies();
+    const token = cookieStore.get(CookieKey.ACCESS_TOKEN)?.value || "";
+
     return (
-        <SidebarLayout user={user}>
-            {children}
-        </SidebarLayout>
+        <AuthProvider initialUser={user} initialAccessToken={token}>
+            <SidebarLayout user={user}>
+                {children}
+            </SidebarLayout>
+        </AuthProvider>
     );
 }

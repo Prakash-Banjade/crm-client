@@ -33,7 +33,7 @@ export default function PublicRootLayout({
             >
                 <ThemeProvider
                     attribute="class"
-                    defaultTheme="light"
+                    defaultTheme="system"
                     enableSystem
                     disableTransitionOnChange
                 >

@@ -47,7 +47,7 @@ export function SignInForm() {
                 const redirectUrl = searchParams.get("redirect");
                 if (redirectUrl) return router.push(redirectUrl);
 
-                router.push(`/${user.role}`);
+                router.push(`/${user.role}/dashboard`);
 
             } catch (e) {
                 if (e instanceof Object && "message" in e) {

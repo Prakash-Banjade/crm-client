@@ -16,14 +16,14 @@ export async function requireAuth({
 }): Promise<NonNullable<TCurrentUser>> {
     const user = await getSession();
 
-    if (!user) redirect("auth/sign-in?callbackUrl=" + callbackUrl);
+    if (!user) redirect("/auth/sign-in?callbackUrl=" + callbackUrl);
 
     if (user.role !== role) {
         if (onForbiddenResource) {
             onForbiddenResource()
         }
 
-        redirect("/" + user.role);
+        redirect("/" + user.role + "/dashboard");
     }
 
     return user;
