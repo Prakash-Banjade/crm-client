@@ -1,9 +1,5 @@
-"use client";
-
-import OrganizationForm from '@/components/organization/organization-form';
-import { useGetOrganizationById } from '@/lib/data-access/org-data-hooks';
-import { notFound } from 'next/navigation';
-import { use } from 'react';
+import { serverFetch } from "@/lib/server-fetch";
+import { notFound } from "next/navigation";
 
 type Props = {
     params: Promise<{
@@ -11,16 +7,20 @@ type Props = {
     }>
 }
 
-export default function SingleOrganizationPage({ params }: Props) {
-    const { id } = use(params);
+export default async function SingleOrganizationPage({ params }: Props) {
+    const { id } = await params;
 
-    const { data: organization, isLoading } = useGetOrganizationById({ id })
+    const res = await serverFetch(`/organizations/${id}`, {
+        next: { revalidate: 60 }
+    });
 
-    if (isLoading) return <div>Loading...</div>
+    if (!res.ok) return notFound();
 
-    if (!organization) notFound();
+    const organization = await res.json();
+
+    console.log(organization);
 
     return (
-        <OrganizationForm defaultValues={organization} />
+        <div>SingleOrganizationPage</div>
     )
 }

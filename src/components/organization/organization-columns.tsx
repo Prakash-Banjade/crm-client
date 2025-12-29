@@ -2,7 +2,7 @@
 
 import { ColumnDef } from "@tanstack/react-table"
 import { Button } from "@/components/ui/button"
-import { MoreHorizontal, Pencil, Trash } from "lucide-react"
+import { Lock, MoreHorizontal, Pencil, Trash, Unlock } from "lucide-react"
 import { DataTableColumnHeader } from "@/components/data-table/data-table-column-header"
 import { TOrganization } from "@/lib/types/organization.type"
 import Link from "next/link"
@@ -12,8 +12,10 @@ import { useState } from "react"
 import { formatDate } from "date-fns";
 import { ResponsiveAlertDialog } from "../ui/responsive-alert-dialog";
 import { useServerAction } from "@/hooks/use-server-action";
-import { deleteOrganization } from "@/lib/actions/organization.action";
+import { blockOrganization } from "@/lib/actions/organization.action";
 import { QueryKey } from "@/lib/react-query/queryKeys";
+import { ResponsiveDialog } from "../ui/responsive-dialog";
+import OrganizationDeleteForm from "./organization-delete-form";
 
 export const organizationsColumns: ColumnDef<TOrganization>[] = [
     {
@@ -84,13 +86,13 @@ export const organizationsColumns: ColumnDef<TOrganization>[] = [
         },
     },
     {
-        accessorKey: "blackListedAt",
+        accessorKey: "blacklistedAt",
         header: "Blacklisted At",
         cell: ({ row }) => {
-            const blackListedAt = row.original.blackListedAt;
+            const blacklistedAt = row.original.blacklistedAt;
 
-            return blackListedAt ? (
-                <span>{formatDate(blackListedAt, "dd/MM/yyyy")}</span>
+            return blacklistedAt ? (
+                <span>{formatDate(blacklistedAt, "dd/MM/yyyy")}</span>
             ) : "-"
         },
     },
@@ -98,12 +100,16 @@ export const organizationsColumns: ColumnDef<TOrganization>[] = [
         id: "actions",
         enableHiding: false,
         cell: ({ row }) => {
-            const [isDeleteOpen, setIsDeleteOpen] = useState(false);
-            const { isPending, mutate } = useServerAction({
-                action: deleteOrganization,
+            const isBlacklisted = row.original.blacklistedAt !== null;
+
+            const [isDeleteConfirmDialogOpen, setIsDeleteConfirmDialogOpen] = useState(false);
+            const [isBlockOpen, setIsBlockOpen] = useState(false);
+
+            const { isPending: blockPending, mutate: blockMutate } = useServerAction({
+                action: blockOrganization,
                 invalidateTags: [QueryKey.ORGANIZATIONS],
                 onSuccess: () => {
-                    setIsDeleteOpen(false);
+                    setIsBlockOpen(false);
                 }
             });
 
@@ -114,15 +120,28 @@ export const organizationsColumns: ColumnDef<TOrganization>[] = [
             return (
                 <>
                     <ResponsiveAlertDialog
-                        isOpen={isDeleteOpen}
-                        setIsOpen={setIsDeleteOpen}
-                        title="Remove Organization"
-                        description={`Are you sure you want to remove ${row.original.name}? This action cannot be undone. This will also remove all the data related to this organization.`}
-                        action={() => mutate(row.original.id)}
-                        actionLabel="Yes, remove"
-                        isLoading={isPending}
-                        loadingText="Removing..."
+                        isOpen={isBlockOpen}
+                        setIsOpen={setIsBlockOpen}
+                        title={isBlacklisted ? "Unblock Organization" : "Block Organization"}
+                        description={`Are you sure you want to ${isBlacklisted ? "unblock" : "block"} ${row.original.name}?` + (isBlacklisted ? " Unblocking will allow the users of this organization to access the platform." : " Blocking will prevent the users of this organization from accessing the platform.")}
+                        action={() => blockMutate(row.original.id)}
+                        actionLabel={isBlacklisted ? "Yes, unblock" : "Yes, block"}
+                        isLoading={blockPending}
+                        loadingText={isBlacklisted ? "Unblocking..." : "Blocking..."}
                     />
+
+                    <ResponsiveDialog
+                        isOpen={isDeleteConfirmDialogOpen}
+                        setIsOpen={setIsDeleteConfirmDialogOpen}
+                        title="Remove Organization"
+                        description={`Are you sure you want to remove ${row.original.name}? This action cannot be undone. This will permanently remove all the data related to this organization.`}
+                    >
+                        <OrganizationDeleteForm
+                            setIsOpen={setIsDeleteConfirmDialogOpen}
+                            organizationId={row.original.id}
+                            organizationName={row.original.name}
+                        />
+                    </ResponsiveDialog>
 
                     <DropdownMenu>
                         <DropdownMenuTrigger asChild>
@@ -133,11 +152,15 @@ export const organizationsColumns: ColumnDef<TOrganization>[] = [
                         </DropdownMenuTrigger>
                         <DropdownMenuContent align="end">
                             <DropdownMenuLabel>Actions</DropdownMenuLabel>
-                            <DropdownMenuItem onClick={() => router.push(`organizations/${row.original.id}`)}>
+                            <DropdownMenuItem onClick={() => router.push(`organizations/${row.original.id}/edit`)}>
                                 <Pencil />
                                 Edit
                             </DropdownMenuItem>
-                            <DropdownMenuItem variant="destructive" onClick={() => setIsDeleteOpen(true)}>
+                            <DropdownMenuItem className="whitespace-nowrap" onClick={() => setIsBlockOpen(true)}>
+                                {isBlacklisted ? <Unlock /> : <Lock />}
+                                {isBlacklisted ? "Unblock" : "Block"}
+                            </DropdownMenuItem>
+                            <DropdownMenuItem variant="destructive" onClick={() => setIsDeleteConfirmDialogOpen(true)}>
                                 <Trash />
                                 Remove
                             </DropdownMenuItem>

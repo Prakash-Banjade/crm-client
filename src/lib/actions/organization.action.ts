@@ -82,3 +82,29 @@ export async function deleteOrganization(id: string): Promise<ActionResponse> {
         data,
     };
 }
+
+export async function blockOrganization(id: string): Promise<ActionResponse> {
+    const res = await serverFetch(`/organizations/${id}/toggle-block`, {
+        method: "PATCH",
+        cache: 'no-store',
+        body: JSON.stringify({}),
+    });
+
+    const data = await res.json();
+
+    if (!res.ok) {
+        const message = extractErrorMessage(data);
+        return {
+            success: false,
+            error: {
+                message: message.message,
+                error: message.error
+            }
+        }
+    }
+
+    return {
+        success: true,
+        data,
+    };
+}

@@ -39,7 +39,7 @@ export function ResponsiveDialog({
                 {/* TODO: FIX THIS OVERFLOW STYLE USING SCROLLAREA */}
                 <DialogContent className={cn('max-h-[97vh] overflow-y-auto', className)}>
                     <DialogHeader>
-                        <DialogTitle>{title}</DialogTitle>
+                        <DialogTitle className='text-lg'>{title}</DialogTitle>
                         {description && (
                             <DialogDescription>{description}</DialogDescription>
                         )}

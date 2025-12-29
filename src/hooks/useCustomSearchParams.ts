@@ -9,27 +9,39 @@ export function useCustomSearchParams() {
     const searchParams = useSearchParams()
 
     // Get a new searchParams string by merging the current
-    // searchParams with a provided key/value pair
+    // searchParams with a provided key/value pair or object
     const createQueryString = useCallback(
-        (name: string, value: string | undefined | null) => {
+        (paramsObj: Record<string, string | number | null | undefined>) => {
             const params = new URLSearchParams(searchParams.toString())
 
-            if (!!value) {
-                params.set(name, value)
-            } else {
-                params.delete(name)
-            }
+            Object.entries(paramsObj).forEach(([name, value]) => {
+                if (value === null || value === undefined || value === "") {
+                    params.delete(name)
+                } else {
+                    params.set(name, String(value))
+                }
+            })
 
             return params.toString()
         },
         [searchParams]
     )
 
-    function setSearchParams(name: string, value: string | undefined | null) {
-        const params = createQueryString(name, value)
+    function setSearchParams(
+        nameOrParams: string | Record<string, string | number | null | undefined>,
+        value?: string | number | null
+    ) {
+        let queryString: string;
+
+        if (typeof nameOrParams === 'string') {
+            queryString = createQueryString({ [nameOrParams]: value });
+        } else {
+            queryString = createQueryString(nameOrParams);
+        }
+
         router.push(
-            params.length > 0
-                ? `${pathname}?${params}`
+            queryString.length > 0
+                ? `${pathname}?${queryString}`
                 : pathname
         );
     }

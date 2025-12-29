@@ -8,7 +8,7 @@ export type TOrganization = {
     email: string,
     concerningPersonName: string,
     createdBy: string | null,
-    blackListedAt: string | null
+    blacklistedAt: string | null
     createdAt: string
 }
 
