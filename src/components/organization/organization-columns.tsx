@@ -7,15 +7,10 @@ import { DataTableColumnHeader } from "@/components/data-table/data-table-column
 import { TOrganization } from "@/lib/types/organization.type"
 import Link from "next/link"
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuTrigger } from "../ui/dropdown-menu"
-import { useRouter } from "next/navigation"
 import { useState } from "react"
 import { formatDate } from "date-fns";
-import { ResponsiveAlertDialog } from "../ui/responsive-alert-dialog";
-import { useServerAction } from "@/hooks/use-server-action";
-import { blockOrganization } from "@/lib/actions/organization.action";
-import { QueryKey } from "@/lib/react-query/queryKeys";
-import { ResponsiveDialog } from "../ui/responsive-dialog";
-import OrganizationDeleteForm from "./organization-delete-form";
+import OrganizationDeleteDialog from "./organization-delete-dialog";
+import OrganizationBlockAlertDialog from "./organization-block-alert-dialog";
 
 export const organizationsColumns: ColumnDef<TOrganization>[] = [
     {
@@ -105,43 +100,24 @@ export const organizationsColumns: ColumnDef<TOrganization>[] = [
             const [isDeleteConfirmDialogOpen, setIsDeleteConfirmDialogOpen] = useState(false);
             const [isBlockOpen, setIsBlockOpen] = useState(false);
 
-            const { isPending: blockPending, mutate: blockMutate } = useServerAction({
-                action: blockOrganization,
-                invalidateTags: [QueryKey.ORGANIZATIONS],
-                onSuccess: () => {
-                    setIsBlockOpen(false);
-                }
-            });
-
-            const router = useRouter();
-
             if (row.original.name === "Default") return <div className="h-8" />;
 
             return (
                 <>
-                    <ResponsiveAlertDialog
+                    <OrganizationBlockAlertDialog
                         isOpen={isBlockOpen}
                         setIsOpen={setIsBlockOpen}
-                        title={isBlacklisted ? "Unblock Organization" : "Block Organization"}
-                        description={`Are you sure you want to ${isBlacklisted ? "unblock" : "block"} ${row.original.name}?` + (isBlacklisted ? " Unblocking will allow the users of this organization to access the platform." : " Blocking will prevent the users of this organization from accessing the platform.")}
-                        action={() => blockMutate(row.original.id)}
-                        actionLabel={isBlacklisted ? "Yes, unblock" : "Yes, block"}
-                        isLoading={blockPending}
-                        loadingText={isBlacklisted ? "Unblocking..." : "Blocking..."}
+                        organizationId={row.original.id}
+                        organizationName={row.original.name}
+                        isBlacklisted={isBlacklisted}
                     />
 
-                    <ResponsiveDialog
+                    <OrganizationDeleteDialog
                         isOpen={isDeleteConfirmDialogOpen}
                         setIsOpen={setIsDeleteConfirmDialogOpen}
-                        title="Remove Organization"
-                        description={`Are you sure you want to remove ${row.original.name}? This action cannot be undone. This will permanently remove all the data related to this organization.`}
-                    >
-                        <OrganizationDeleteForm
-                            setIsOpen={setIsDeleteConfirmDialogOpen}
-                            organizationId={row.original.id}
-                            organizationName={row.original.name}
-                        />
-                    </ResponsiveDialog>
+                        organizationId={row.original.id}
+                        organizationName={row.original.name}
+                    />
 
                     <DropdownMenu>
                         <DropdownMenuTrigger asChild>
@@ -152,9 +128,11 @@ export const organizationsColumns: ColumnDef<TOrganization>[] = [
                         </DropdownMenuTrigger>
                         <DropdownMenuContent align="end">
                             <DropdownMenuLabel>Actions</DropdownMenuLabel>
-                            <DropdownMenuItem onClick={() => router.push(`organizations/${row.original.id}/edit`)}>
-                                <Pencil />
-                                Edit
+                            <DropdownMenuItem asChild>
+                                <Link href={`organizations/${row.original.id}/edit`}>
+                                    <Pencil />
+                                    Edit
+                                </Link>
                             </DropdownMenuItem>
                             <DropdownMenuItem className="whitespace-nowrap" onClick={() => setIsBlockOpen(true)}>
                                 {isBlacklisted ? <Unlock /> : <Lock />}

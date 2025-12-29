@@ -16,7 +16,9 @@ type Props = {
     searchKey?: string;
 }
 
-export default function SearchInput({ label, placeholder, searchKey = "q" }: Props) {
+export const SEARCH_KEY = "q" as const;
+
+export default function SearchInput({ label, placeholder, searchKey = SEARCH_KEY }: Props) {
     const { searchParams, setSearchParams } = useCustomSearchParams();
     const [searchTerm, setSearchTerm] = useState<string>(searchParams.get(searchKey) || '');
 

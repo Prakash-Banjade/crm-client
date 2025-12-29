@@ -12,7 +12,7 @@ export async function createAdminUser(formData: TAdminUserFormSchema): Promise<A
     })
 }
 
-export async function updateAdminUser({ userId, formData }: { userId: string, formData: TAdminUserFormSchema }): Promise<ActionResponse> {
+export async function updateUser({ userId, formData }: { userId: string, formData: TAdminUserFormSchema }): Promise<ActionResponse> {
     return await serverMutate({
         body: formData,
         endpoint: `/users/${userId}`,
@@ -20,7 +20,7 @@ export async function updateAdminUser({ userId, formData }: { userId: string, fo
     })
 }
 
-export async function deleteAdminUser(userId: string): Promise<ActionResponse> {
+export async function deleteUser(userId: string): Promise<ActionResponse> {
     return await serverMutate({
         body: {},
         endpoint: `/users/${userId}`,

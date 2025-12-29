@@ -10,7 +10,7 @@ interface UseServerActionOptions<TInput> {
     action: ServerAction<TInput>;
 
     // Optional: Query keys to invalidate on success
-    invalidateTags?: string[];
+    invalidateTags?: string[] | string[][];
 
     // Optional: Toggle toasts
     toastOnSuccess?: boolean;
@@ -44,9 +44,11 @@ export function useServerAction<TInput>({
                     }
 
                     if (invalidateTags?.length) {
-                        await queryClient.invalidateQueries({
-                            queryKey: invalidateTags,
-                        });
+                        if (Array.isArray(invalidateTags[0])) {
+                            await Promise.all(invalidateTags.map(tag => queryClient.invalidateQueries({ queryKey: typeof tag === "string" ? [tag] : tag })));
+                        } else {
+                            await queryClient.invalidateQueries({ queryKey: invalidateTags });
+                        }
                     }
 
                     onSuccess?.(result);

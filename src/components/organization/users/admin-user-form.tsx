@@ -2,7 +2,7 @@ import { Button, LoadingButton } from "@/components/ui/button";
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { useServerAction } from "@/hooks/use-server-action";
-import { createAdminUser, updateAdminUser } from "@/lib/actions/user.action";
+import { createAdminUser, updateUser } from "@/lib/actions/user.action";
 import { QueryKey } from "@/lib/react-query/queryKeys";
 import { adminUserFormDefaultValues, adminUserFormSchema, TAdminUserFormSchema } from "@/lib/schema/users.schema";
 import { TUser } from "@/lib/types/user.type";
@@ -27,7 +27,7 @@ export default function AdminUserForm({ setIsOpen, organizationId, defaultValues
     });
 
     const { isPending: isUpdating, mutate: update } = useServerAction({
-        action: updateAdminUser,
+        action: updateUser,
         invalidateTags: [QueryKey.USERS],
         onSuccess: () => {
             setIsOpen(false);

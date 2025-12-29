@@ -1,4 +1,4 @@
-export enum QueryKey {
+export const enum QueryKey {
     AUTH_LOGIN = "auth/login",
     AUTH_REFRESH = "auth/refresh",
     AUTH_LOGOUT = "auth/logout",

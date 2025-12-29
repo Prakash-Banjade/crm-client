@@ -1,12 +1,10 @@
 import { zodResolver } from '@hookform/resolvers/zod';
-import React from 'react'
 import { useForm } from 'react-hook-form';
 import z from 'zod';
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '../ui/form';
 import { Input } from '../ui/input';
 import {
     Alert,
-    AlertDescription,
     AlertTitle,
 } from "@/components/ui/alert"
 import { AlertCircleIcon } from 'lucide-react';
@@ -14,6 +12,7 @@ import { useServerAction } from '@/hooks/use-server-action';
 import { deleteOrganization } from '@/lib/actions/organization.action';
 import { QueryKey } from '@/lib/react-query/queryKeys';
 import { Button, LoadingButton } from '../ui/button';
+import { useRouter } from 'next/navigation';
 
 type Props = {
     setIsOpen: (value: boolean) => void;
@@ -28,6 +27,8 @@ const schema = z.object({
 })
 
 export default function OrganizationDeleteForm({ setIsOpen, organizationId, organizationName }: Props) {
+    const router = useRouter();
+
     const form = useForm<z.infer<typeof schema>>({
         resolver: zodResolver(schema),
         defaultValues: {
@@ -42,6 +43,7 @@ export default function OrganizationDeleteForm({ setIsOpen, organizationId, orga
         invalidateTags: [QueryKey.ORGANIZATIONS],
         onSuccess: () => {
             setIsOpen(false);
+            router.replace("/super_admin/organizations");
         }
     });
 

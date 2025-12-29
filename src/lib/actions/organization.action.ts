@@ -1,5 +1,6 @@
 "use server";
 
+import { revalidatePath } from "next/cache";
 import { TOrganizationSchema } from "../schema/organization.schema";
 import { serverFetch } from "../server-fetch";
 import { ActionResponse } from "../types";
@@ -102,6 +103,8 @@ export async function blockOrganization(id: string): Promise<ActionResponse> {
             }
         }
     }
+
+    revalidatePath(`/super_admin/organizations/${id}`);
 
     return {
         success: true,

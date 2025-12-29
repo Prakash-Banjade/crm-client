@@ -1,10 +1,14 @@
+import SingleOrganizationActionBtns from "@/components/organization/single-organization-action-btns";
 import OrganizationUsersDataTable from "@/components/organization/users/organization-users-data-table";
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
 import { serverFetch } from "@/lib/server-fetch";
 import { TSingleOrganization } from "@/lib/types/organization.type";
 import { formatDate } from "date-fns";
-import { AlertCircle, Building2, Calendar, CreditCard, Globe, Landmark, Mail, MapPin, Palette, Phone, User } from "lucide-react";
+import { AlertCircle, Building2, Calendar, CreditCard, Globe, Landmark, Mail, MapPin, Palette, Pencil, Phone, User } from "lucide-react";
+import Link from "next/link";
 import { notFound } from "next/navigation";
 
 type Props = {
@@ -26,29 +30,29 @@ export default async function SingleOrganizationPage({ params }: Props) {
 
     return (
         <div className="@container container space-y-6 py-4">
-            <div className="flex items-start justify-be tween">
-                <div>
-                    <Building2 className="w-12 h-12" />
-                    <h1 className="text-3xl font-bold mt-2">{organization.name}</h1>
-                    <p className="text-muted-foreground mt-1 flex items-center gap-2">
-                        <MapPin className="w-4 h-4" />
-                        {organization.address}
-                    </p>
-                </div>
-                {organization.blacklistedAt && (
-                    <div className="flex items-center gap-2 px-4 py-2 bg-red-50 border border-red-200 rounded-lg">
-                        <AlertCircle className="w-5 h-5 text-red-600" />
-                        <span className="text-sm font-medium text-red-900">Blacklisted</span>
+            <div className="space-y-2">
+                <Building2 className="w-12 h-12" />
+                <section className="flex items-center gap-2 justify-between">
+                    <div>
+                        <div className="flex items-center gap-2">
+                            <h1 className="text-3xl font-bold">{organization.name}</h1>
+                            {organization.blacklistedAt && (
+                                <Badge variant="destructive" className="bg-destructive/5!">
+                                    <AlertCircle />
+                                    Blacklisted
+                                </Badge>
+                            )}
+                        </div>
+                        <p className="text-muted-foreground mt-1 flex items-center gap-2">
+                            <MapPin className="w-4 h-4" />
+                            {organization.address}
+                        </p>
                     </div>
-                )}
+                    <SingleOrganizationActionBtns organization={organization} />
+                </section>
             </div>
 
             <Card>
-                <CardHeader>
-                    <CardTitle className="flex items-center gap-2">
-                        Contact Information
-                    </CardTitle>
-                </CardHeader>
                 <CardContent className="grid @5xl:grid-cols-4 @xl:grid-cols-2 gap-6">
                     <div className="space-y-4">
                         <InfoItem
@@ -129,11 +133,6 @@ export default async function SingleOrganizationPage({ params }: Props) {
 
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
                 <Card>
-                    <CardHeader>
-                        <CardTitle className="flex items-center gap-2">
-                            Brand Colors
-                        </CardTitle>
-                    </CardHeader>
                     <CardContent>
                         <div className="grid grid-cols-2 gap-3">
                             <div className="flex items-center gap-3">
@@ -160,11 +159,6 @@ export default async function SingleOrganizationPage({ params }: Props) {
                     </CardContent>
                 </Card>
                 <Card>
-                    <CardHeader>
-                        <CardTitle className="flex items-center gap-2">
-                            Timeline
-                        </CardTitle>
-                    </CardHeader>
                     <CardContent className="grid grid-cols-2 gap-3">
                         <InfoItem
                             icon={<Calendar className="w-5 h-5" />}
