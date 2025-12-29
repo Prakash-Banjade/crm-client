@@ -1,6 +1,6 @@
 "use client";
 
-import { useGetOrganizations } from '@/lib/data-access/org-data-hooks'
+import { useGetOrganizations } from '@/lib/data-access/organization-data-hooks'
 import { DataTable } from '../data-table/data-table';
 import { organizationsColumns } from './organization-columns';
 import SearchInput from '../search-components/search-input';

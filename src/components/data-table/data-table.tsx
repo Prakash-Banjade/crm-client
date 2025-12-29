@@ -23,6 +23,10 @@ interface DataTableProps<TData, TValue> {
     meta?: TMeta;
     filters?: React.ReactNode,
     reset?: boolean
+    show?: {
+        viewColumn?: boolean;
+        resetButton?: boolean;
+    }
 }
 
 export function DataTable<TData, TValue>({
@@ -30,7 +34,11 @@ export function DataTable<TData, TValue>({
     data,
     meta,
     filters,
-    reset = true
+    reset = true,
+    show = {
+        viewColumn: true,
+        resetButton: true,
+    }
 }: DataTableProps<TData, TValue>) {
     const table = useReactTable({
         data,
@@ -40,7 +48,7 @@ export function DataTable<TData, TValue>({
 
     return (
         <div>
-            <DataTableToolbar table={table} reset={reset}>
+            <DataTableToolbar table={table} reset={reset} show={show}>
                 {filters}
             </DataTableToolbar>
             <div className="rounded-md border overflow-hidden">

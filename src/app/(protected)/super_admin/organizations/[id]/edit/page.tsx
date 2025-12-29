@@ -1,7 +1,7 @@
 "use client";
 
 import OrganizationForm from '@/components/organization/organization-form';
-import { useGetOrganizationById } from '@/lib/data-access/org-data-hooks';
+import { useGetOrganizationById } from '@/lib/data-access/organization-data-hooks';
 import { notFound } from 'next/navigation';
 import { use } from 'react';
 

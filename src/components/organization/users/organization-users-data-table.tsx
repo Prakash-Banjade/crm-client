@@ -1,0 +1,58 @@
+"use client";
+
+import { DataTable } from "@/components/data-table/data-table";
+import { useGetUsers } from "@/lib/data-access/users-data-hooks";
+import { organizationUsersColumns } from "./organization-usres-columns";
+import SearchInput from "@/components/search-components/search-input";
+import { Button } from "@/components/ui/button";
+import { Plus } from "lucide-react";
+import { ResponsiveDialog } from "@/components/ui/responsive-dialog";
+import AdminUserForm from "./admin-user-form";
+import { useState } from "react";
+
+type Props = {
+    organizationId: string;
+}
+
+export default function OrganizationUsersDataTable({ organizationId }: Props) {
+    const [isOpen, setIsOpen] = useState(false);
+    const { data } = useGetUsers({
+        queryString: `organizationId=${organizationId}`,
+    });
+
+    console.log(data)
+
+    return (
+        <>
+            <ResponsiveDialog
+                isOpen={isOpen}
+                setIsOpen={setIsOpen}
+                title="Add Admin"
+            >
+                <AdminUserForm setIsOpen={setIsOpen} organizationId={organizationId} />
+            </ResponsiveDialog>
+
+            <div className="space-y-4">
+                <header className="flex justify-between">
+                    <h3 className="text-xl font-medium">
+                        Users
+                    </h3>
+                    <Button variant={"outline"} onClick={() => setIsOpen(true)}>
+                        <Plus /> Add Admin
+                    </Button>
+                </header>
+                <DataTable
+                    data={data?.data || []}
+                    columns={organizationUsersColumns}
+                    meta={data?.meta}
+                    filters={
+                        <div>
+                            <SearchInput />
+                        </div>
+                    }
+                    show={{ viewColumn: false }}
+                />
+            </div>
+        </>
+    )
+}

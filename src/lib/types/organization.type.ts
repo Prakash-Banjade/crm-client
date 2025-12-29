@@ -10,6 +10,7 @@ export type TOrganization = {
     createdBy: string | null,
     blacklistedAt: string | null
     createdAt: string
+    updatedAt: string
 }
 
 export type TOrganizationsResponse = PaginatedResponse<TOrganization>
