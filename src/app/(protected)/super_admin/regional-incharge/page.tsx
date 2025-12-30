@@ -5,7 +5,6 @@ import RegionalInchargeDataTable from '@/components/regional-incharge/regional-i
 
 const RegionalIncharge = () => {
   return (
-
     <ContainerLayout
       title="Regional Incharge"
       description="Manage regional Incharge"

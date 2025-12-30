@@ -28,7 +28,7 @@ export default function RegionalInchargeForm({ setIsOpen, defaultValues }: Props
 
     const { isPending: isUpdating, mutate: update } = useServerAction({
         action: updateRegionalIncharge,
-        invalidateTags: [QueryKey.USERS],
+        invalidateTags: [QueryKey.REGIONAL_INCHARGES],
         onSuccess: () => {
             setIsOpen(false);
         },
@@ -94,7 +94,7 @@ export default function RegionalInchargeForm({ setIsOpen, defaultValues }: Props
                         </FormItem>
                     )}
                 />
-              
+
                 <FormField
                     control={form.control}
                     name="profileImage"

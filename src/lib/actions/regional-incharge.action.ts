@@ -1,5 +1,6 @@
 "use server";
 
+import { QueryKey } from "../react-query/queryKeys";
 import { TRegionalInchargeSchema } from "../schema/regional-incharge.schema";
 import { serverMutate } from "../server-mutate";
 import { ActionResponse } from "../types";
@@ -7,7 +8,7 @@ import { ActionResponse } from "../types";
 export async function createRegionalIncharge(formData: TRegionalInchargeSchema): Promise<ActionResponse> {
     return await serverMutate({
         body: formData,
-        endpoint: "/regional-incharges",
+        endpoint: `/${QueryKey.REGIONAL_INCHARGES}`,
         method: "POST",
     })
 }
@@ -15,7 +16,7 @@ export async function createRegionalIncharge(formData: TRegionalInchargeSchema):
 export async function updateRegionalIncharge({ id, formData }: { id: string, formData: TRegionalInchargeSchema }): Promise<ActionResponse> {
     return await serverMutate({
         body: formData,
-        endpoint: `/regional-incharges/${id}`,
+        endpoint: `/${QueryKey.REGIONAL_INCHARGES}/${id}`,
         method: "PATCH",
     })
 }
@@ -23,7 +24,7 @@ export async function updateRegionalIncharge({ id, formData }: { id: string, for
 export async function deleteRegionalIncharge(id: string): Promise<ActionResponse> {
     return await serverMutate({
         body: {},
-        endpoint: `/regtional-incharges/${id}`,
+        endpoint: `/${QueryKey.REGIONAL_INCHARGES}/${id}`,
         method: "DELETE",
     })
 }

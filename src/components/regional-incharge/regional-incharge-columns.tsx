@@ -2,13 +2,10 @@
 
 import { ColumnDef } from "@tanstack/react-table"
 import { Button } from "@/components/ui/button"
-import { Lock, MoreHorizontal, Pencil, Trash, Unlock } from "lucide-react"
+import { MoreHorizontal, Pencil, Trash, User } from "lucide-react"
 import { DataTableColumnHeader } from "@/components/data-table/data-table-column-header"
-import { TOrganization } from "@/lib/types/organization.type"
-import Link from "next/link"
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuTrigger } from "../ui/dropdown-menu"
 import { useState } from "react"
-import { formatDate } from "date-fns";
 import { TRegionalIncharge } from "@/lib/types/regional-incharge.types";
 import { ResponsiveDialog } from "../ui/responsive-dialog";
 import RegionalInchargeForm from "./regional-incharge-form";
@@ -16,6 +13,9 @@ import { ResponsiveAlertDialog } from "../ui/responsive-alert-dialog";
 import { useServerAction } from "@/hooks/use-server-action";
 import { deleteUser } from "@/lib/actions/user.action";
 import { QueryKey } from "@/lib/react-query/queryKeys";
+import { ProfileAvatar } from "../ui/avatar";
+import { getObjectUrl } from "@/lib/utils";
+import { deleteRegionalIncharge } from "@/lib/actions/regional-incharge.action";
 
 
 export const regionalInchargeColumns: ColumnDef<TRegionalIncharge>[] = [
@@ -29,14 +29,22 @@ export const regionalInchargeColumns: ColumnDef<TRegionalIncharge>[] = [
             return <DataTableColumnHeader column={column} title="Name" />
         },
         cell: ({ row }) => {
-            return <Link href={`organizations/${row.original.id}`} className="hover:text-blue-500 hover:underline flex gap-4 items-center w-fit">
-                {/* <ProfileAvatar
-                    name={row.original.name}
-                    src={getImageUrl(row.original.profileImageUrl, "w=40")}
-                    className="size-10"
-                /> */}
+            return <div className="hover:text-blue-500 hover:underline flex gap-4 items-center w-fit">
+                {
+                    row.original.profileImage ? (
+                        <ProfileAvatar
+                            name={row.original.name}
+                            src={getObjectUrl(row.original.profileImage)}
+                            className="size-10"
+                        />
+                    ) : (
+                        <div className="size-10 grid place-items-center">
+                            <User className="size-8" />
+                        </div>
+                    )
+                }
                 <span className="font-medium">{row.original.name}</span>
-            </Link>
+            </div>
         }
     },
     {
@@ -70,13 +78,15 @@ export const regionalInchargeColumns: ColumnDef<TRegionalIncharge>[] = [
             const [isDeleteConfirmDialogOpen, setIsDeleteConfirmDialogOpen] = useState(false);
 
             const [isEditing, setIsEditing] = useState(false);
+
             const { isPending: deletePending, mutate: deleteMutate } = useServerAction({
-                action: deleteUser,
+                action: deleteRegionalIncharge,
                 invalidateTags: [QueryKey.REGIONAL_INCHARGES],
                 onSuccess: () => {
                     setIsDeleteConfirmDialogOpen(false);
                 }
             });
+
             return (
                 <>
                     <ResponsiveAlertDialog
