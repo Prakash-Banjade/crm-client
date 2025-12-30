@@ -25,6 +25,8 @@ export type SelectOption = {
     value: string,
 }
 
+export type TPaginatedOptions = PaginatedResponse<SelectOption>;
+
 export type ActionResponse<T extends { message?: string } = { message?: string }> = {
     success: true;
     data: T;

@@ -18,5 +18,7 @@ export const enum QueryKey {
     OPTIONS = "options",
     ORGANIZATIONS = "organizations",
     FILES_UPLOAD = "files/upload",
-    REGIONAL_INCHARGES = "regional-incharges"
+    REGIONAL_INCHARGES = "regional-incharges",
+    UNIVERSITIES = "universities",
+    COUNTRIES = "countries"
 };
