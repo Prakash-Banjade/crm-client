@@ -5,10 +5,8 @@ const nextConfig: NextConfig = {
   reactCompiler: true,
   cacheComponents: true,
   images: {
-    remotePatterns: [
-      new URL('http://127.0.0.1:9000/uploads/**'),
-    ],
-    dangerouslyAllowLocalIP: process.env.NODE_ENV === 'development',
+    remotePatterns: [new URL(`${process.env.NEXT_PUBLIC_FILE_PREFIX}**`)],
+    dangerouslyAllowLocalIP: process.env.NODE_ENV === "development",
   },
 };
 
