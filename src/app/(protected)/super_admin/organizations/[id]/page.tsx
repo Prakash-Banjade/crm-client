@@ -7,7 +7,8 @@ import { Separator } from "@/components/ui/separator";
 import { serverFetch } from "@/lib/server-fetch";
 import { TSingleOrganization } from "@/lib/types/organization.type";
 import { formatDate } from "date-fns";
-import { AlertCircle, Building2, Calendar, CreditCard, Globe, Landmark, Mail, MapPin, Palette, Pencil, Phone, User } from "lucide-react";
+import { AlertCircle, Building2, Calendar, CreditCard, File, Globe, Landmark, Mail, MapPin, Palette, Pencil, Phone, User } from "lucide-react";
+import Image from "next/image";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 
@@ -31,7 +32,19 @@ export default async function SingleOrganizationPage({ params }: Props) {
     return (
         <div className="@container container space-y-6 py-4">
             <div className="space-y-2">
-                <Building2 className="w-12 h-12" />
+                {
+                    organization.logo ? (
+                        <Image
+                            src={organization.logo}
+                            alt={organization.name}
+                            width={100}
+                            height={100}
+                            className="max-w-52 h-auto object-contain"
+                        />
+                    ) : (
+                        <Building2 className="w-12 h-12" />
+                    )
+                }
                 <section className="flex items-center gap-2 justify-between">
                     <div>
                         <div className="flex items-center gap-2">
@@ -56,24 +69,24 @@ export default async function SingleOrganizationPage({ params }: Props) {
                 <CardContent className="grid @5xl:grid-cols-4 @xl:grid-cols-2 gap-6">
                     <div className="space-y-4">
                         <InfoItem
-                            icon={<User className="w-5 h-5" />}
+                            icon={<User className="size-5" />}
                             label="Concerning Person"
                             value={organization.concerningPersonName}
                         />
                         <InfoItem
-                            icon={<Mail className="w-5 h-5" />}
+                            icon={<Mail className="size-5" />}
                             label="Email"
                             value={organization.email}
                             link={`mailto:${organization.email}`}
                         />
                         <InfoItem
-                            icon={<Phone className="w-5 h-5" />}
+                            icon={<Phone className="size-5" />}
                             label="Contact Number"
                             value={organization.contactNumber}
                             link={`tel:${organization.contactNumber}`}
                         />
                         <InfoItem
-                            icon={<Globe className="w-5 h-5" />}
+                            icon={<Globe className="size-5" />}
                             label="Website"
                             value={organization.websiteUrl || "N/A"}
                             link={organization.websiteUrl}
@@ -81,49 +94,49 @@ export default async function SingleOrganizationPage({ params }: Props) {
                     </div>
                     <div className="space-y-4">
                         <InfoItem
-                            icon={<CreditCard className="w-5 h-5" />}
+                            icon={<CreditCard className="size-5" />}
                             label="VAT Number"
                             value={organization.vatNumber}
                         />
                         <InfoItem
-                            icon={<CreditCard className="w-5 h-5" />}
+                            icon={<CreditCard className="size-5" />}
                             label="PAN Number"
                             value={organization.panNumber}
                         />
                     </div>
                     <div className="@2xl:col-span-2 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
                         <InfoItem
-                            icon={<Landmark className="w-5 h-5" />}
+                            icon={<Landmark className="size-5" />}
                             label="Bank Name"
                             value={organization.bankingDetails.bankName}
                         />
                         <InfoItem
-                            icon={<User className="w-5 h-5" />}
+                            icon={<User className="size-5" />}
                             label="Beneficiary Name"
                             value={organization.bankingDetails.benificiaryName}
                         />
                         <InfoItem
-                            icon={<CreditCard className="w-5 h-5" />}
+                            icon={<CreditCard className="size-5" />}
                             label="Account Number"
                             value={organization.bankingDetails.accountNumber}
                         />
                         <InfoItem
-                            icon={<Globe className="w-5 h-5" />}
+                            icon={<Globe className="size-5" />}
                             label="SWIFT Code"
                             value={organization.bankingDetails.swiftCode || "N/A"}
                         />
                         <InfoItem
-                            icon={<MapPin className="w-5 h-5" />}
+                            icon={<MapPin className="size-5" />}
                             label="Bank Location"
                             value={organization.bankingDetails.bankLocation || "N/A"}
                         />
                         <InfoItem
-                            icon={<MapPin className="w-5 h-5" />}
+                            icon={<MapPin className="size-5" />}
                             label="Bank City"
                             value={organization.bankingDetails.bankCity}
                         />
                         <InfoItem
-                            icon={<MapPin className="w-5 h-5" />}
+                            icon={<MapPin className="size-5" />}
                             label="Bank State"
                             value={organization.bankingDetails.bankState}
                         />
@@ -131,7 +144,7 @@ export default async function SingleOrganizationPage({ params }: Props) {
                 </CardContent>
             </Card>
 
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+            <div className="grid grid-cols-1 @3xl:grid-cols-2 @6xl:grid-cols-3 gap-6">
                 <Card>
                     <CardContent>
                         <div className="grid grid-cols-2 gap-3">
@@ -161,12 +174,28 @@ export default async function SingleOrganizationPage({ params }: Props) {
                 <Card>
                     <CardContent className="grid grid-cols-2 gap-3">
                         <InfoItem
-                            icon={<Calendar className="w-5 h-5" />}
+                            icon={<File className="size-5" />}
+                            label="Pan Certificate"
+                            link={organization.panCertificate || undefined}
+                            value="Click to view"
+                        />
+                        <InfoItem
+                            icon={<File className="size-5" />}
+                            label="Registration Document"
+                            link={organization.registrationDocument || undefined}
+                            value="Click to view"
+                        />
+                    </CardContent>
+                </Card>
+                <Card>
+                    <CardContent className="grid grid-cols-2 gap-3">
+                        <InfoItem
+                            icon={<Calendar className="size-5" />}
                             label="Created"
                             value={formatDate(organization.createdAt, 'dd MMM yyyy')}
                         />
                         <InfoItem
-                            icon={<Calendar className="w-5 h-5" />}
+                            icon={<Calendar className="size-5" />}
                             label="Last Updated"
                             value={formatDate(organization.updatedAt, 'dd MMM yyyy')}
                         />
@@ -185,7 +214,7 @@ export default async function SingleOrganizationPage({ params }: Props) {
 interface InfoItemProps {
     icon: React.ReactNode;
     label: string;
-    value: string;
+    value?: string;
     link?: string;
 }
 
@@ -204,7 +233,7 @@ function InfoItem({ icon, label, value, link }: InfoItemProps) {
 
     if (link) {
         return (
-            <a href={link} target="_blank" rel="noopener noreferrer" className="block w-fit">
+            <a href={link} target="_blank" rel="noopener noreferrer" className="block w-fit line-clamp-1 truncate">
                 {content}
             </a>
         );

@@ -17,4 +17,5 @@ export const enum QueryKey {
     USERS = "users",
     OPTIONS = "options",
     ORGANIZATIONS = "organizations",
+    FILES_UPLOAD = "files/upload"
 };

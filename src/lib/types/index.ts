@@ -37,3 +37,9 @@ export type ActionResponse<T extends { message?: string } = { message?: string }
     };
     data?: null
 };
+
+export type TFileUploadResponse = {
+    filename: string;
+    originalName: string;
+    url: string;
+}[]
