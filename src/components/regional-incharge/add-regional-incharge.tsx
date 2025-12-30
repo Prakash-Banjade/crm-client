@@ -1,28 +1,34 @@
 'use client'
-import React from 'react'
+
 import { ResponsiveDialog } from '../ui/responsive-dialog'
 import RegionalInchargeForm from './regional-incharge-form'
 import { Button } from '../ui/button'
 import { Plus } from 'lucide-react'
+import { useState } from 'react'
 
 const AddRegionalInchargeButton = () => {
-    const [isOpen, setIsOpen] = React.useState(false);
+    const [isOpen, setIsOpen] = useState(false);
+    const [isFormDirty, setIsFormDirty] = useState(false);
+
     return (
         <div>
-            <Button
-                onClick={() => setIsOpen(true)}
-                variant="outline"
-            >
-                <Plus />
-                Add Regional Incharge
-            </Button>
             <ResponsiveDialog
                 isOpen={isOpen}
                 setIsOpen={setIsOpen}
                 title="Add Regional Incharge"
+                confirmOnExit={isFormDirty}
             >
-                <RegionalInchargeForm setIsOpen={setIsOpen} />
-            </ResponsiveDialog></div>
+                <RegionalInchargeForm setIsOpen={setIsOpen} setIsFormDirty={setIsFormDirty} />
+            </ResponsiveDialog>
+
+            <Button
+                variant="outline"
+                onClick={() => setIsOpen(true)}
+            >
+                <Plus />
+                Add Regional Incharge
+            </Button>
+        </div>
     )
 }
 

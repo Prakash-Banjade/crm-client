@@ -9,13 +9,16 @@ import { useForm } from "react-hook-form";
 import ImageUpload from "../forms/image-upload";
 import { createRegionalIncharge, updateRegionalIncharge } from "@/lib/actions/regional-incharge.action";
 import { TRegionalIncharge } from "@/lib/types/regional-incharge.types";
+import { useEffect } from "react";
+import { useConfirmExit } from "@/hooks/use-confirm-exit";
 
 type Props = {
     setIsOpen: (value: boolean) => void;
     defaultValues?: TRegionalIncharge
+    setIsFormDirty?: (value: boolean) => void;
 }
 
-export default function RegionalInchargeForm({ setIsOpen, defaultValues }: Props) {
+export default function RegionalInchargeForm({ setIsOpen, defaultValues, setIsFormDirty }: Props) {
     const isEditing = !!defaultValues?.id;
 
     const { isPending: isCreating, mutate: create } = useServerAction({
@@ -50,6 +53,12 @@ export default function RegionalInchargeForm({ setIsOpen, defaultValues }: Props
             create(data);
         }
     }
+
+    useEffect(() => {
+        setIsFormDirty?.(form.formState.isDirty);
+    }, [form.formState.isDirty]);
+
+    useConfirmExit(form.formState.isDirty);
 
     return (
         <Form {...form}>

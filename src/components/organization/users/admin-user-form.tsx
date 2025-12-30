@@ -1,21 +1,24 @@
 import { Button, LoadingButton } from "@/components/ui/button";
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
+import { useConfirmExit } from "@/hooks/use-confirm-exit";
 import { useServerAction } from "@/hooks/use-server-action";
 import { createAdminUser, updateUser } from "@/lib/actions/user.action";
 import { QueryKey } from "@/lib/react-query/queryKeys";
 import { adminUserFormDefaultValues, adminUserFormSchema, TAdminUserFormSchema } from "@/lib/schema/users.schema";
 import { TUser } from "@/lib/types/user.type";
 import { zodResolver } from "@hookform/resolvers/zod";
+import { useEffect } from "react";
 import { useForm } from "react-hook-form";
 
 type Props = {
     setIsOpen: (value: boolean) => void;
+    setIsFormDirty?: (value: boolean) => void;
     organizationId: string;
     defaultValues?: TUser
 }
 
-export default function AdminUserForm({ setIsOpen, organizationId, defaultValues }: Props) {
+export default function AdminUserForm({ setIsOpen, setIsFormDirty, organizationId, defaultValues }: Props) {
     const isEditing = !!defaultValues?.userId;
 
     const { isPending: isCreating, mutate: create } = useServerAction({
@@ -49,6 +52,12 @@ export default function AdminUserForm({ setIsOpen, organizationId, defaultValues
             create(data);
         }
     }
+
+    useEffect(() => {
+        setIsFormDirty?.(form.formState.isDirty);
+    }, [form.formState.isDirty]);
+
+    useConfirmExit(form.formState.isDirty);
 
     return (
         <Form {...form}>

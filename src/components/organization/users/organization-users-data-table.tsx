@@ -19,6 +19,7 @@ type Props = {
 
 export default function OrganizationUsersDataTable({ organizationId }: Props) {
     const [isOpen, setIsOpen] = useState(false);
+    const [isFormDirty, setIsFormDirty] = useState(false);
 
     return (
         <>
@@ -26,8 +27,9 @@ export default function OrganizationUsersDataTable({ organizationId }: Props) {
                 isOpen={isOpen}
                 setIsOpen={setIsOpen}
                 title="Add Admin"
+                confirmOnExit={isFormDirty}
             >
-                <AdminUserForm setIsOpen={setIsOpen} organizationId={organizationId} />
+                <AdminUserForm setIsOpen={setIsOpen} organizationId={organizationId} setIsFormDirty={setIsFormDirty} />
             </ResponsiveDialog>
 
             <div className="space-y-4">

@@ -11,12 +11,10 @@ import { ResponsiveDialog } from "../ui/responsive-dialog";
 import RegionalInchargeForm from "./regional-incharge-form";
 import { ResponsiveAlertDialog } from "../ui/responsive-alert-dialog";
 import { useServerAction } from "@/hooks/use-server-action";
-import { deleteUser } from "@/lib/actions/user.action";
 import { QueryKey } from "@/lib/react-query/queryKeys";
 import { ProfileAvatar } from "../ui/avatar";
 import { getObjectUrl } from "@/lib/utils";
 import { deleteRegionalIncharge } from "@/lib/actions/regional-incharge.action";
-
 
 export const regionalInchargeColumns: ColumnDef<TRegionalIncharge>[] = [
     {
@@ -29,7 +27,7 @@ export const regionalInchargeColumns: ColumnDef<TRegionalIncharge>[] = [
             return <DataTableColumnHeader column={column} title="Name" />
         },
         cell: ({ row }) => {
-            return <div className="hover:text-blue-500 hover:underline flex gap-4 items-center w-fit">
+            return <div className="flex gap-4 items-center w-fit">
                 {
                     row.original.profileImage ? (
                         <ProfileAvatar
@@ -69,15 +67,13 @@ export const regionalInchargeColumns: ColumnDef<TRegionalIncharge>[] = [
             ) : "-"
         }
     },
-
     {
         id: "actions",
         enableHiding: false,
         cell: ({ row }) => {
-
             const [isDeleteConfirmDialogOpen, setIsDeleteConfirmDialogOpen] = useState(false);
-
             const [isEditing, setIsEditing] = useState(false);
+            const [isEditFormDirty, setIsEditFormDirty] = useState(false);
 
             const { isPending: deletePending, mutate: deleteMutate } = useServerAction({
                 action: deleteRegionalIncharge,
@@ -98,12 +94,14 @@ export const regionalInchargeColumns: ColumnDef<TRegionalIncharge>[] = [
                         actionLabel="Yes, Delete"
                         isLoading={deletePending}
                     />
+
                     <ResponsiveDialog
                         isOpen={isEditing}
                         setIsOpen={setIsEditing}
                         title="Edit Regional Incharge"
+                        confirmOnExit={isEditFormDirty}
                     >
-                        <RegionalInchargeForm defaultValues={row.original} setIsOpen={setIsEditing} />
+                        <RegionalInchargeForm defaultValues={row.original} setIsOpen={setIsEditing} setIsFormDirty={setIsEditFormDirty} />
                     </ResponsiveDialog>
 
 
