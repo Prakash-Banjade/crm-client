@@ -56,3 +56,7 @@ export function truncateFilename(filename: string, maxLength: number) {
     ? `${name.slice(0, maxLength - extension.length - 3)}...${extension}`
     : filename;
 }
+
+export function getObjectUrl(filename: string): string {
+  return `${process.env.NEXT_PUBLIC_FILE_PREFIX}${filename}`;
+}

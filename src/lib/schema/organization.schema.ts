@@ -22,9 +22,9 @@ export const organizationSchema = z.object({
     websiteUrl: z.string().url("Website URL must be a valid URL").optional(),
     brandColorPrimary: z.string().optional(),
     brandColorSecondary: z.string().optional(),
-    logo: z.string().url().nullish(),
-    panCertificate: z.string().url().nullish(),
-    registrationDocument: z.string().url().nullish(),
+    logo: z.string().nullish(),
+    panCertificate: z.string().nullish(),
+    registrationDocument: z.string().nullish(),
 });
 
 export type TBankingDetailsSchema = z.infer<typeof bankingDetailsSchema>;

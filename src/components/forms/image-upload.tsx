@@ -2,7 +2,7 @@ import { useState, useCallback } from 'react'
 import { Trash, Upload } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Progress } from '@/components/ui/progress'
-import { cn, extractErrorMessage } from '@/lib/utils'
+import { cn, extractErrorMessage, getObjectUrl } from '@/lib/utils'
 import { useMutation } from '@tanstack/react-query'
 import { useAxios } from '@/lib/axios-client'
 import { TFileUploadResponse } from '@/lib/types'
@@ -28,7 +28,7 @@ export default function ImageUpload({
 
     const [isDragging, setIsDragging] = useState(false)
     const [uploadProgress, setUploadProgress] = useState(0)
-    const [imageUrl, setImageUrl] = useState<string | null>(value)
+    const [imageUrl, setImageUrl] = useState<string | null>(value ? getObjectUrl(value) : null)
     const [error, setError] = useState<string | null>(null)
 
     const { mutateAsync, isPending } = useMutation<TFileUploadResponse, Error, FormData>({
@@ -48,8 +48,8 @@ export default function ImageUpload({
         onSuccess: (data) => {
             if (data && !!data?.length) {
                 const file = data[0];
-                setImageUrl(file.url);
-                onValueChange?.(file.url);
+                setImageUrl(getObjectUrl(file.filename));
+                onValueChange?.(file.filename);
                 setUploadProgress(100);
             } else {
                 setUploadProgress(0);

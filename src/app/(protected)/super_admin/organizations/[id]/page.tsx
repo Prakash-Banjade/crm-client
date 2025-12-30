@@ -6,6 +6,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
 import { serverFetch } from "@/lib/server-fetch";
 import { TSingleOrganization } from "@/lib/types/organization.type";
+import { getObjectUrl } from "@/lib/utils";
 import { formatDate } from "date-fns";
 import { AlertCircle, Building2, Calendar, CreditCard, File, Globe, Landmark, Mail, MapPin, Palette, Pencil, Phone, User } from "lucide-react";
 import Image from "next/image";
@@ -35,7 +36,7 @@ export default async function SingleOrganizationPage({ params }: Props) {
                 {
                     organization.logo ? (
                         <Image
-                            src={organization.logo}
+                            src={getObjectUrl(organization.logo)}
                             alt={organization.name}
                             width={100}
                             height={100}
@@ -58,7 +59,7 @@ export default async function SingleOrganizationPage({ params }: Props) {
                         </div>
                         <p className="text-muted-foreground mt-1 flex items-center gap-2">
                             <MapPin className="w-4 h-4" />
-                            {organization.address}
+                            {organization.address || "N/A"}
                         </p>
                     </div>
                     <SingleOrganizationActionBtns organization={organization} />
@@ -176,13 +177,13 @@ export default async function SingleOrganizationPage({ params }: Props) {
                         <InfoItem
                             icon={<File className="size-5" />}
                             label="Pan Certificate"
-                            link={organization.panCertificate || undefined}
+                            link={organization.panCertificate ? getObjectUrl(organization.panCertificate) : undefined}
                             value="Click to view"
                         />
                         <InfoItem
                             icon={<File className="size-5" />}
                             label="Registration Document"
-                            link={organization.registrationDocument || undefined}
+                            link={organization.registrationDocument ? getObjectUrl(organization.registrationDocument) : undefined}
                             value="Click to view"
                         />
                     </CardContent>
