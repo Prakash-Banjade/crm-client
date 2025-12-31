@@ -1,11 +1,11 @@
 'use client'
 import React from 'react'
-import { ResponsiveDialog } from '../ui/responsive-dialog'
-import RegionalInchargeForm from './regional-incharge-form'
 import { Button } from '../ui/button'
 import { Plus } from 'lucide-react'
+import { ResponsiveDialog } from '../ui/responsive-dialog'
+import CountriesForm from './countries-form'
 
-const AddRegionalInchargeButton = () => {
+const AddCountriesButton = () => {
     const [isOpen, setIsOpen] = React.useState(false);
     return (
         <div>
@@ -14,17 +14,17 @@ const AddRegionalInchargeButton = () => {
                 variant="outline"
             >
                 <Plus />
-                Add Regional Incharge
+                Add Countries
             </Button>
             <ResponsiveDialog
                 isOpen={isOpen}
                 setIsOpen={setIsOpen}
-                title="Add Regional Incharge"
+                title="Add Countries"
             >
-                <RegionalInchargeForm setIsOpen={setIsOpen} />
+                <CountriesForm setIsOpen={setIsOpen} />
             </ResponsiveDialog>
         </div>
     )
 }
 
-export default AddRegionalInchargeButton
+export default AddCountriesButton
