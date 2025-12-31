@@ -38,8 +38,7 @@ interface CountrySelectProps {
 }
 
 type CountryOption = SelectOption & {
-    states: string[]
-    image: string
+    image?: string
 }
 
 export function CountrySelect({
@@ -104,7 +103,7 @@ export function CountrySelect({
                         variant="outline"
                         role="combobox"
                         aria-expanded={open}
-                        className="w-full justify-between min-h-10 h-auto bg-transparent"
+                        className="w-full justify-between bg-transparent"
                     >
                         <div className="flex flex-wrap gap-1 flex-1">
                             {!value || !value.label || !value.value ? (
@@ -155,12 +154,18 @@ export function CountrySelect({
                                                     onSelect={() => handleCountrySelect(option)}
                                                     className="cursor-pointer px-3 flex items-center justify-between"
                                                 >
-                                                    <Image
-                                                        src={getObjectUrl(option.image)}
-                                                        alt={option.label}
-                                                        width={20}
-                                                        height={20}
-                                                    />
+                                                    {
+                                                        option.image ? (
+                                                            <Image
+                                                                src={getObjectUrl(option.image)}
+                                                                alt={option.label}
+                                                                width={20}
+                                                                height={20}
+                                                            />
+                                                        ) : (
+                                                            <div className="w-5 h-5 bg-gray-200 rounded-full" />
+                                                        )
+                                                    }
                                                     <p className="truncate">{option.label}</p>
                                                     <Check
                                                         className={cn(

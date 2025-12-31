@@ -7,7 +7,6 @@ export const universitySchema = z.object({
     id: z.string().uuid("Country is required"),
     name: z.string().min(1, "Country is required"),
     image: z.string().min(1, "Flag is required"),
-    states: z.array(z.string().min(1, "State is required"))
   }),
   state: z.string().min(1, "State is required"),
   commission: z.string().min(1, "Commission is required"),
@@ -22,7 +21,6 @@ export const universityDefaultValues: TUniversitySchema = {
     id: "",
     name: "",
     image: "",
-    states: []
   },
   state: "",
   commission: "",

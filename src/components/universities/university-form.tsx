@@ -12,7 +12,7 @@ import { TUniversity } from "@/lib/types/university.type";
 import { TUniversitySchema, universityDefaultValues, universitySchema } from "@/lib/schema/university.schema";
 import { Editor } from "../editor/blocks/editor-x/editor";
 import { CountrySelect } from "../forms/country-select";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
+import StatesSelect from "../forms/states-select";
 
 type Props = {
     setIsOpen: (value: boolean) => void;
@@ -92,7 +92,6 @@ export default function UniversityForm({ setIsOpen, defaultValues, setIsFormDirt
                                                 id: val.value,
                                                 name: val.label,
                                                 image: val.image,
-                                                states: val.states,
                                             })
                                             form.setValue("state", "");
                                         }}
@@ -100,7 +99,6 @@ export default function UniversityForm({ setIsOpen, defaultValues, setIsFormDirt
                                             label: field.value.name,
                                             value: field.value.id,
                                             image: field.value.image,
-                                            states: field.value.states,
                                         }}
                                     />
                                 </FormControl>
@@ -115,20 +113,11 @@ export default function UniversityForm({ setIsOpen, defaultValues, setIsFormDirt
                         render={({ field }) => (
                             <FormItem>
                                 <FormLabel>State <span className="text-destructive">*</span></FormLabel>
-                                <Select onValueChange={field.onChange} defaultValue={field.value} required>
-                                    <FormControl>
-                                        <SelectTrigger className="w-full">
-                                            <SelectValue placeholder="Select State" />
-                                        </SelectTrigger>
-                                    </FormControl>
-                                    <SelectContent>
-                                        {
-                                            form.watch("country.states").map((state) => (
-                                                <SelectItem key={state} value={state}>{state}</SelectItem>
-                                            ))
-                                        }
-                                    </SelectContent>
-                                </Select>
+                                <StatesSelect
+                                    onValueChange={field.onChange}
+                                    value={field.value}
+                                    countryId={form.watch("country")?.id}
+                                />
                                 <FormMessage />
                             </FormItem>
                         )}
