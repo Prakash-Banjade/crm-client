@@ -15,6 +15,7 @@ export const enum QueryKey {
     DASHBOARD = "dashboard",
     ME = "users/me",
     USERS = "users",
+    BOOKINGS = "bookings",
     OPTIONS = "options",
     ORGANIZATIONS = "organizations",
     FILES_UPLOAD = "files/upload",
