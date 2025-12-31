@@ -18,8 +18,6 @@ export default function EditCoursePage({ params }: Props) {
 
     if (isLoading) return <div>Loading...</div>
 
-    console.log(course)
-
     if (!course) notFound();
 
     return (

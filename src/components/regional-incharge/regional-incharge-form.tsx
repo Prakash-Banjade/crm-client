@@ -48,7 +48,6 @@ export default function RegionalInchargeForm({ setIsOpen, defaultValues, setIsFo
     const onSubmit = (data: TRegionalInchargeSchema) => {
         if (isEditing) {
             update({ id: defaultValues.id, formData: data });
-            console.log(data)
         } else {
             create(data);
         }

@@ -45,7 +45,6 @@ export default function CountriesForm({ setIsOpen, defaultValues }: Props) {
     const onSubmit = (data: TCountriesSchema) => {
         if (isEditing) {
             update({ id: defaultValues.id, formData: data });
-            console.log(data)
         } else {
             create(data);
         }
@@ -76,10 +75,10 @@ export default function CountriesForm({ setIsOpen, defaultValues }: Props) {
                         <FormItem>
                             <FormLabel>States<span className="text-destructive">*</span></FormLabel>
                             <FormControl>
-                                <Input 
-                                    type="text" 
+                                <Input
+                                    type="text"
                                     placeholder="Eg. NYC, California..."
-                                    required 
+                                    required
                                     {...field}
                                     value={Array.isArray(field.value) ? field.value.join(', ') : field.value || ''}
                                     onChange={(e) => field.onChange(e.target.value.split(', ').map(s => s.trim()))}

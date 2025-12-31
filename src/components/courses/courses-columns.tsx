@@ -112,7 +112,6 @@ export const coursesColumns: ColumnDef<TCourse>[] = [
         header: () => (<span className="whitespace-nowrap">Course URL</span>),
         cell: ({ row }) => {
             const url = row.original.courseUrl;
-            console.log(row.original)
 
             return (
                 <a

@@ -3,6 +3,8 @@ import { Geist, Geist_Mono, Public_Sans } from "next/font/google";
 import { ThemeProvider } from "@/context/theme-provider";
 import { Toaster } from "@/components/ui/sonner";
 import "../globals.css";
+import { getSession } from "@/lib/get-session";
+import { redirect } from "next/navigation";
 
 const publicSans = Public_Sans({ subsets: ['latin'], variable: '--font-sans' });
 
@@ -21,11 +23,17 @@ export const metadata: Metadata = {
     description: "Complete 360° CRM Solution for Education Consultancies",
 };
 
-export default function PublicRootLayout({
+export default async function PublicRootLayout({
     children,
 }: Readonly<{
     children: React.ReactNode;
 }>) {
+    const session = await getSession();
+
+    if (session) {
+        return redirect(`/${session.role}/dashboard`);
+    }
+
     return (
         <html lang="en" className={publicSans.variable} suppressHydrationWarning>
             <body
