@@ -1,12 +1,13 @@
 'use client'
-import React from 'react'
+import React, { useState } from 'react'
 import { Button } from '../ui/button'
 import { Plus } from 'lucide-react'
 import { ResponsiveDialog } from '../ui/responsive-dialog'
 import CountriesForm from './countries-form'
 
 const AddCountriesButton = () => {
-    const [isOpen, setIsOpen] = React.useState(false);
+    const [isOpen, setIsOpen] = useState(false);
+    const [isFormDirty, setIsFormDirty] = useState(false);
     return (
         <div>
             <Button
@@ -19,9 +20,11 @@ const AddCountriesButton = () => {
             <ResponsiveDialog
                 isOpen={isOpen}
                 setIsOpen={setIsOpen}
-                title="Add Countries"
+                title="Add Countries" 
+                confirmOnExit={isFormDirty}  
+                
             >
-                <CountriesForm setIsOpen={setIsOpen} />
+                <CountriesForm setIsOpen={setIsOpen}  setIsFormDirty={setIsFormDirty}  />
             </ResponsiveDialog>
         </div>
     )

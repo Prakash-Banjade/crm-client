@@ -9,13 +9,16 @@ import ImageUpload from "../forms/image-upload";
 import { TCountry } from "@/lib/types/countries.types";
 import { countriesDefaultValues, countriesSchema, TCountriesSchema } from "@/lib/schema/countries.schema";
 import { createCountry, updateCountry } from "@/lib/actions/countries.action";
+import { useEffect } from "react";
+import { useConfirmExit } from "@/hooks/use-confirm-exit";
 
 type Props = {
     setIsOpen: (value: boolean) => void;
-    defaultValues?: TCountry
+    defaultValues?: TCountry,
+    setIsFormDirty?: (value: boolean) => void;
 }
 
-export default function CountriesForm({ setIsOpen, defaultValues }: Props) {
+export default function CountriesForm({ setIsOpen, defaultValues, setIsFormDirty }: Props) {
     const isEditing = !!defaultValues?.id;
 
     const { isPending: isCreating, mutate: create } = useServerAction({
@@ -38,7 +41,6 @@ export default function CountriesForm({ setIsOpen, defaultValues }: Props) {
         resolver: zodResolver(countriesSchema),
         defaultValues: {
             ...(defaultValues || countriesDefaultValues),
-
         },
     });
 
@@ -50,6 +52,11 @@ export default function CountriesForm({ setIsOpen, defaultValues }: Props) {
             create(data);
         }
     }
+    useEffect(() => {
+        setIsFormDirty?.(form.formState.isDirty);
+    }, [form.formState.isDirty]);
+
+    useConfirmExit(form.formState.isDirty);
 
     return (
         <Form {...form}>
@@ -76,10 +83,10 @@ export default function CountriesForm({ setIsOpen, defaultValues }: Props) {
                         <FormItem>
                             <FormLabel>States<span className="text-destructive">*</span></FormLabel>
                             <FormControl>
-                                <Input 
-                                    type="text" 
+                                <Input
+                                    type="text"
                                     placeholder="Eg. NYC, California..."
-                                    required 
+                                    required
                                     {...field}
                                     value={Array.isArray(field.value) ? field.value.join(', ') : field.value || ''}
                                     onChange={(e) => field.onChange(e.target.value.split(', ').map(s => s.trim()))}

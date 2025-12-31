@@ -79,6 +79,7 @@ export const countriesColumns: ColumnDef<TCountry>[] = [
                 useState(false);
 
             const [isEditing, setIsEditing] = useState(false);
+            const [isEditFormDirty, setIsEditFormDirty] = useState(false);
 
             const { isPending: deletePending, mutate: deleteMutate } =
                 useServerAction({
@@ -104,10 +105,12 @@ export const countriesColumns: ColumnDef<TCountry>[] = [
                         isOpen={isEditing}
                         setIsOpen={setIsEditing}
                         title="Edit Country"
+                        confirmOnExit={isEditFormDirty}
                     >
                         <CountriesForm
                             defaultValues={row.original}
                             setIsOpen={setIsEditing}
+                            setIsFormDirty={setIsEditFormDirty}
                         />
                     </ResponsiveDialog>
 
