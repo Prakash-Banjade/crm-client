@@ -16,11 +16,11 @@ import { ResponsiveDialog } from "../ui/responsive-dialog";
 import { ResponsiveAlertDialog } from "../ui/responsive-alert-dialog";
 import { useServerAction } from "@/hooks/use-server-action";
 import { QueryKey } from "@/lib/react-query/queryKeys";
-import { ProfileAvatar } from "../ui/avatar";
 import { getObjectUrl } from "@/lib/utils";
 import { TCountry } from "@/lib/types/countries.types";
 import CountriesForm from "./countries-form";
 import { deleteCountry } from "@/lib/actions/countries.action";
+import Image from "next/image";
 
 export const countriesColumns: ColumnDef<TCountry>[] = [
     {
@@ -36,10 +36,11 @@ export const countriesColumns: ColumnDef<TCountry>[] = [
             return (
                 <div className="hover:text-blue-500 hover:underline flex gap-4 items-center w-fit">
                     {row.original.flag ? (
-                        <ProfileAvatar
-                            name={row.original.name}
+                        <Image
                             src={getObjectUrl(row.original.flag)}
-                            className="size-10"
+                            alt={row.original.name}
+                            width={40}
+                            height={40}
                         />
                     ) : (
                         <div className="size-10 grid place-items-center">

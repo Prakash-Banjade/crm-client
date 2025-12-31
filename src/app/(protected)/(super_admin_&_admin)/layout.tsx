@@ -11,12 +11,12 @@ export const metadata: Metadata = {
     description: "Complete 360° CRM Solution for Education Consultancies",
 };
 
-export default async function SuperAdminRootLayout({
+export default async function Layout({
     children,
 }: Readonly<{
     children: React.ReactNode;
 }>) {
-    const user = await requireAuth({ roles: [Role.SUPER_ADMIN] });
+    const user = await requireAuth({ roles: [Role.SUPER_ADMIN, Role.ADMIN] });
 
     const cookieStore = await cookies();
     const token = cookieStore.get(CookieKey.ACCESS_TOKEN)?.value || "";

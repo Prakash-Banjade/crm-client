@@ -6,11 +6,11 @@ import { Role } from "./types";
 import { redirect } from "next/navigation";
 
 export async function requireAuth({
-    role,
+    roles,
     onForbiddenResource,
     callbackUrl = "/"
 }: {
-    role: Role
+    roles: Role[]
     onForbiddenResource?: () => never
     callbackUrl?: string
 }): Promise<NonNullable<TCurrentUser>> {
@@ -18,7 +18,7 @@ export async function requireAuth({
 
     if (!user) redirect("/auth/sign-in?callbackUrl=" + callbackUrl);
 
-    if (user.role !== role) {
+    if (!roles.includes(user.role)) {
         if (onForbiddenResource) {
             onForbiddenResource()
         }

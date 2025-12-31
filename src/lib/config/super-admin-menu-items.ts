@@ -24,7 +24,7 @@ export const superAdminSidebarMenuItems: TGroupMenuItem[] = [
     {
         groupLabel: "Partners & Team",
         menuItems: [
-            { title: "Counselors", url: `/${Role.SUPER_ADMIN}/counselors`, icon: UserCheck },
+            { title: "Counselors", url: `/counselors`, icon: UserCheck },
             { title: "BDE", url: `/${Role.SUPER_ADMIN}/bde`, icon: TrendingUp },
             { title: "Regional Incharge", url: `/${Role.SUPER_ADMIN}/regional-incharge`, icon: MapPin },
             { title: "Organizations", url: `/${Role.SUPER_ADMIN}/organizations`, icon: Building2 }, // Partner agencies/B2B

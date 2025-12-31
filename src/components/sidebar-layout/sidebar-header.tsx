@@ -11,6 +11,7 @@ import { deleteCookie, getCookie, setCookie } from "@/lib/cookie";
 import { CookieKey } from "@/lib/constants";
 import { useQueryClient } from "@tanstack/react-query";
 import { useState } from "react";
+import { Skeleton } from "../ui/skeleton";
 
 export function AppSidebarHeader({
     user
@@ -21,7 +22,7 @@ export function AppSidebarHeader({
     const router = useRouter();
     const [organization, setOrganization] = useState<string | null>(user.organizationId ?? getCookie(CookieKey.ORGANIZATION_ID));
 
-    const { data: organizations } = useGetOrganizationOptions({
+    const { data: organizations, isLoading } = useGetOrganizationOptions({
         options: {
             enabled: user.role === Role.SUPER_ADMIN
         }
@@ -44,13 +45,15 @@ export function AppSidebarHeader({
                                 </div>
                                 <div className="flex flex-col leading-none">
                                     <span className="truncate font-semibold">Abhyam CRM</span>
-                                    <span className="text-xs mt-1">
+                                    <span className="text-xs mt-1 w-[150px] truncate">
                                         {
-                                            user.organizationName
-                                                ? user.organizationName
-                                                : organizations?.find(b => b.value === organization)?.label
+                                            isLoading
+                                                ? <Skeleton className="h-2 mt-2 w-20" />
+                                                : user.role === Role.SUPER_ADMIN
                                                     ? organizations?.find(b => b.value === organization)?.label
-                                                    : "All Organizations"
+                                                        ? organizations?.find(b => b.value === organization)?.label
+                                                        : "All Organizations"
+                                                    : user.organizationName
                                         }
                                     </span>
                                 </div>
