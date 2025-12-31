@@ -128,7 +128,7 @@ export function InfiniteMultiSelect({
                         <ChevronsUpDown className="h-4 w-4 shrink-0 opacity-50" />
                     </Button>
                 </PopoverTrigger>
-                <PopoverContent className="w-full p-0" align="start">
+                <PopoverContent className="min-w-(--radix-popover-trigger-width) p-0" align="start">
                     <Command shouldFilter={false}>
                         <CommandInput placeholder="Search options..." value={search} onValueChange={setSearch} />
                         <CommandList ref={listRef} onScroll={handleScroll} className="max-h-64 overflow-auto">

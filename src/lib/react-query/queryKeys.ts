@@ -21,5 +21,7 @@ export const enum QueryKey {
     FILES_UPLOAD = "files/upload",
     REGIONAL_INCHARGES = "regional-incharges",
     UNIVERSITIES = "universities",
-    COUNTRIES = "countries"
+    COUNTRIES = "countries",
+    COURSES = "courses",
+    CATEGORIES = "categories"
 };

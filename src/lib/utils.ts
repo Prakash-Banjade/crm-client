@@ -60,3 +60,7 @@ export function truncateFilename(filename: string, maxLength: number) {
 export function getObjectUrl(filename: string): string {
   return `${process.env.NEXT_PUBLIC_FILE_PREFIX}${filename}`;
 }
+
+export function getKeyByValue(obj: { [key: string]: any }, value: any) {
+  return Object.keys(obj).find(key => obj[key] === value);
+}

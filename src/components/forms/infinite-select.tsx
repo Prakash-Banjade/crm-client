@@ -101,10 +101,10 @@ export function InfiniteSelect({
             variant="outline"
             role="combobox"
             aria-expanded={open}
-            className="w-full justify-between min-h-10 h-auto bg-transparent"
+            className="w-full justify-between bg-transparent"
           >
             <div className="flex flex-wrap gap-1 flex-1">
-              {!selected || !selected.label || !selected.value ? (
+              {(!selected || !selected.label || !selected.value) ? (
                 <span className="text-muted-foreground">{placeholder}</span>
               ) : (
                 <span>{selected.label}</span>
@@ -113,7 +113,7 @@ export function InfiniteSelect({
             <ChevronsUpDown className="h-4 w-4 shrink-0 opacity-50" />
           </Button>
         </PopoverTrigger>
-        <PopoverContent className="w-full p-0" align="start">
+        <PopoverContent className="min-w-(--radix-popover-trigger-width) p-0" align="start">
           <Command shouldFilter={false}>
             <CommandInput
               placeholder="Search options..."

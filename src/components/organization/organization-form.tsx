@@ -34,6 +34,11 @@ export default function OrganizationForm({ defaultValues }: Props) {
     const router = useRouter();
     const { setExitLocation, setIsOpen } = useConfirmExitAlert();
 
+    const form = useForm<TOrganizationSchema>({
+        resolver: zodResolver(organizationSchema),
+        defaultValues: defaultValues || organizationDefaultValues
+    });
+
     const { isPending: isCreating, mutate: create } = useServerAction({
         action: createOrganization,
         invalidateTags: [QueryKey.ORGANIZATIONS],
@@ -47,10 +52,6 @@ export default function OrganizationForm({ defaultValues }: Props) {
         invalidateTags: [QueryKey.ORGANIZATIONS],
     });
 
-    const form = useForm<TOrganizationSchema>({
-        resolver: zodResolver(organizationSchema),
-        defaultValues: defaultValues || organizationDefaultValues
-    });
 
     function onSubmit(data: TOrganizationSchema) {
         if (isEditing) {
