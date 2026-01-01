@@ -26,5 +26,6 @@ export const enum QueryKey {
     CATEGORIES = "categories",
     COUNSELORS = "counselors",
     BDES = "bdes",
-    LEARNING_RESOURCES = "learning-resources"
+    LEARNING_RESOURCES = "learning-resources",
+    STUDENTS = "students"
 };

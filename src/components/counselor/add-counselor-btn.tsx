@@ -23,7 +23,6 @@ export default function AddCounselorButton() {
             </ResponsiveDialog>
 
             <Button
-                variant="outline"
                 onClick={() => setIsOpen(true)}
             >
                 <Plus />

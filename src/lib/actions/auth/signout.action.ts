@@ -9,6 +9,7 @@ export async function signOut() {
     try {
         await serverFetch("/auth/logout", {
             method: "POST",
+            body: JSON.stringify({}), // empty body
         });
     } catch (error) {
         console.error("Backend logout failed", error);
@@ -20,7 +21,4 @@ export async function signOut() {
     // Use .delete() which effectively sets the cookie to expire immediately
     cookieStore.delete(CookieKey.ACCESS_TOKEN);
     cookieStore.delete(CookieKey.REFRESH_TOKEN);
-
-    // Note: `redirect` throws an error internally in Next.js, so it must be outside try/catch
-    redirect("/auth/sign-in");
 }

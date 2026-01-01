@@ -6,6 +6,7 @@ import "../globals.css";
 import { getSession } from "@/lib/get-session";
 import { redirect } from "next/navigation";
 import { Suspense } from "react";
+import { AuthProvider } from "@/context/auth-provider";
 
 const publicSans = Public_Sans({ subsets: ['latin'], variable: '--font-sans' });
 
@@ -52,7 +53,9 @@ export default function PublicRootLayout({
                 >
                     <Suspense fallback={null}>
                         <AuthenticatedRedirect>
-                            {children}
+                            <AuthProvider>
+                                {children}
+                            </AuthProvider>
                         </AuthenticatedRedirect>
                     </Suspense>
                     <Toaster richColors />

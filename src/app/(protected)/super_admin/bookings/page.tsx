@@ -10,10 +10,7 @@ const Bookings = () => {
             title="IELTS/PTE Bookings"
             description="Manage bookings"
             action={
-                <Button
-                    variant="outline"
-                    asChild
-                >
+                <Button asChild>
                     <Link href="bookings/new">
                         <Plus />
                         Add Booking

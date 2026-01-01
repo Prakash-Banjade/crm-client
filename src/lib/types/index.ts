@@ -60,3 +60,18 @@ export enum EMonth {
     November = 'november',
     December = 'december',
 }
+
+export enum EGender {
+    Male = 'male',
+    Female = 'female',
+    Other = 'other',
+}
+
+export enum EMaritalStatus {
+    Married = 'married',
+    Unmarried = 'unmarried',
+    Divorced = 'divorced',
+    Widowed = 'widowed',
+    Separated = 'separated',
+    Other = 'other',
+}

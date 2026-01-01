@@ -22,7 +22,6 @@ const AddRegionalInchargeButton = () => {
             </ResponsiveDialog>
 
             <Button
-                variant="outline"
                 onClick={() => setIsOpen(true)}
             >
                 <Plus />

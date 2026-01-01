@@ -44,10 +44,10 @@ export function SignInForm() {
 
                 const user = setSession({ accessToken: res[CookieKey.ACCESS_TOKEN] });
 
-                const redirectUrl = searchParams.get("redirect");
-                if (redirectUrl) return router.push(redirectUrl);
+                const callbackUrl = searchParams.get("callbackUrl");
+                if (callbackUrl) return router.push(callbackUrl);
 
-                router.push(`/${user.role}/dashboard`);
+                router.push(`/${user?.role}/dashboard`);
 
             } catch (e) {
                 if (e instanceof Error) {

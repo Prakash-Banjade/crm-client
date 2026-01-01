@@ -7,7 +7,7 @@ export const superAdminSidebarMenuItems: TGroupMenuItem[] = [
         groupLabel: "Operations",
         menuItems: [
             { title: "Dashboard", url: `/${Role.SUPER_ADMIN}/dashboard`, icon: LayoutDashboard },
-            { title: "Students", url: `/${Role.SUPER_ADMIN}/students`, icon: Users },
+            { title: "Students", url: `/students`, icon: Users },
             { title: "Applications", url: `/${Role.SUPER_ADMIN}/applications`, icon: FileText },
             { title: "IELTS/PTE Bookings", url: `/${Role.SUPER_ADMIN}/bookings`, icon: CalendarCheck },
         ]

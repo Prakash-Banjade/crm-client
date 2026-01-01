@@ -2,7 +2,6 @@ import ContainerLayout from '@/components/container-layout'
 import AddRegionalInchargeButton from '@/components/regional-incharge/add-regional-incharge'
 import RegionalInchargeDataTable from '@/components/regional-incharge/regional-incharge-data-table'
 
-
 const RegionalIncharge = () => {
   return (
     <ContainerLayout
@@ -16,8 +15,5 @@ const RegionalIncharge = () => {
     </ContainerLayout>
   )
 }
-
-
-
 
 export default RegionalIncharge

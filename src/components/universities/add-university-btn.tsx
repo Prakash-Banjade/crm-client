@@ -23,7 +23,6 @@ export default function AddUniversityButton() {
             </ResponsiveDialog>
 
             <Button
-                variant="outline"
                 onClick={() => setIsOpen(true)}
             >
                 <Plus />

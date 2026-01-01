@@ -23,7 +23,6 @@ export default function AddBdeButton() {
             </ResponsiveDialog>
 
             <Button
-                variant="outline"
                 onClick={() => setIsOpen(true)}
             >
                 <Plus />

@@ -10,7 +10,7 @@ export default function Page() {
             title="Courses"
             description="Manage courses"
             action={
-                <Button variant={'outline'} asChild>
+                <Button asChild>
                     <Link href={"courses/new"}>
                         <Plus />
                         Add Course

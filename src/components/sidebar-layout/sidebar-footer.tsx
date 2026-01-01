@@ -4,31 +4,19 @@ import { ChevronUp, LoaderCircle, LogOut, Monitor, Moon, Settings, Sun, SunMoon 
 import { ProfileAvatar } from "../ui/avatar"
 import { cn } from "@/lib/utils"
 import { TCurrentUser } from "@/context/auth-provider"
-import { useTransition } from "react"
-import { signOut } from "@/lib/actions/auth/signout.action"
-import { toast } from "sonner"
 import { useRouter } from "next/navigation"
 import { useTheme } from "next-themes"
+import { useLogoutMutation } from "@/hooks/useLogoutMutation"
 
 export const AppSidebarFooter = ({
     user
 }: {
     user: NonNullable<TCurrentUser>
 }) => {
-    const [isPending, startTransition] = useTransition();
     const { open } = useSidebar();
     const router = useRouter();
     const { setTheme } = useTheme();
-
-    function handleLogout() {
-        startTransition(async () => {
-            try {
-                await signOut();
-            } catch (e) {
-                toast.error("Failed to log out")
-            }
-        })
-    }
+    const { handleLogout, isPending: isLogoutPending } = useLogoutMutation();
 
     return (
         <SidebarFooter>
@@ -80,11 +68,11 @@ export const AppSidebarFooter = ({
                             <button
                                 type="button"
                                 onClick={handleLogout}
-                                disabled={isPending}
+                                disabled={isLogoutPending}
                                 className="text-left flex gap-2 items-center w-full px-2 py-1.5 text-sm hover:bg-secondary transition-colors select-none rounded-sm disabled:opacity-70"
                             >
                                 {
-                                    isPending
+                                    isLogoutPending
                                         ? <>
                                             <LoaderCircle className="h-4 w-4 animate-spin" />
                                             <span>Signing out...</span>

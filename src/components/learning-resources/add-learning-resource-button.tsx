@@ -18,7 +18,6 @@ const AddLearningResourcesButton = () => {
         <div>
             <Button
                 onClick={() => setIsOpen(true)}
-                variant="outline"
             >
                 <Plus />
                 {id ? "Add Sub Resource" : "Add Resources"}

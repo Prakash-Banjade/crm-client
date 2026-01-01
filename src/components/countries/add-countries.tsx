@@ -14,7 +14,6 @@ const AddCountriesButton = () => {
         <div>
             <Button
                 onClick={() => setIsOpen(true)}
-                variant="outline"
             >
                 <Plus />
                 Add Countries

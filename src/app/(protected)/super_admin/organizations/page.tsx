@@ -10,10 +10,7 @@ export default function OrganizationsPage() {
             title="Organizations"
             description="Manage organizations"
             action={
-                <Button
-                    variant="outline"
-                    asChild
-                >
+                <Button asChild>
                     <Link href="organizations/new">
                         <Plus />
                         Add Organization
