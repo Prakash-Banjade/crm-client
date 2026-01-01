@@ -9,14 +9,17 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@
 import { TOrganizationsResponse } from '@/lib/types/organization.type';
 import { DataTableToolbar } from '../data-table/data-table-toolbar';
 import { DataTablePagination } from '../data-table/data-table-pagination';
-import { cn } from '@/lib/utils';
+import { cn, createQueryString } from '@/lib/utils';
 import DataTableLoadingSkeleton from '../data-table/data-table-loading-skeleton';
 
-export default function OrganizationDataTable() {
+export default function OrganizationDataTable({ createdById }: { createdById?: string }) {
     const searchParams = useSearchParams();
 
     const { data, isLoading } = useGetOrganizations({
-        queryString: searchParams.toString(),
+        queryString: createQueryString({
+            createdById,
+            ...Object.fromEntries(searchParams.entries()),
+        }),
     });
 
     if (isLoading) return <DataTableLoadingSkeleton />

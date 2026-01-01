@@ -5,6 +5,7 @@ import { Toaster } from "@/components/ui/sonner";
 import "../globals.css";
 import { getSession } from "@/lib/get-session";
 import { redirect } from "next/navigation";
+import { Suspense } from "react";
 
 const publicSans = Public_Sans({ subsets: ['latin'], variable: '--font-sans' });
 
@@ -23,17 +24,21 @@ export const metadata: Metadata = {
     description: "Complete 360° CRM Solution for Education Consultancies",
 };
 
-export default async function PublicRootLayout({
+async function AuthenticatedRedirect({ children }: { children: React.ReactNode }) {
+    const session = await getSession();
+
+    if (session) {
+        redirect(`/${session.role}/dashboard`);
+    }
+
+    return children;
+}
+
+export default function PublicRootLayout({
     children,
 }: Readonly<{
     children: React.ReactNode;
 }>) {
-    const session = await getSession();
-
-    if (session) {
-        return redirect(`/${session.role}/dashboard`);
-    }
-
     return (
         <html lang="en" className={publicSans.variable} suppressHydrationWarning>
             <body
@@ -45,7 +50,11 @@ export default async function PublicRootLayout({
                     enableSystem
                     disableTransitionOnChange
                 >
-                    {children}
+                    <Suspense fallback={null}>
+                        <AuthenticatedRedirect>
+                            {children}
+                        </AuthenticatedRedirect>
+                    </Suspense>
                     <Toaster richColors />
                 </ThemeProvider>
             </body>

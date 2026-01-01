@@ -24,5 +24,6 @@ export const enum QueryKey {
     COUNTRIES = "countries",
     COURSES = "courses",
     CATEGORIES = "categories",
-    COUNSELORS = "counselors"
+    COUNSELORS = "counselors",
+    BDES = "bdes",
 };

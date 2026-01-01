@@ -11,6 +11,8 @@ import { useState } from "react"
 import { formatDate } from "date-fns";
 import OrganizationDeleteDialog from "./organization-delete-dialog";
 import OrganizationBlockAlertDialog from "./organization-block-alert-dialog";
+import { useAuth } from "@/context/auth-provider";
+import { Role } from "@/lib/types";
 
 export const organizationsColumns: ColumnDef<TOrganization>[] = [
     {
@@ -96,11 +98,14 @@ export const organizationsColumns: ColumnDef<TOrganization>[] = [
         enableHiding: false,
         cell: ({ row }) => {
             const isBlacklisted = row.original.blacklistedAt !== null;
+            const { user } = useAuth();
 
             const [isDeleteConfirmDialogOpen, setIsDeleteConfirmDialogOpen] = useState(false);
             const [isBlockOpen, setIsBlockOpen] = useState(false);
 
             if (row.original.name === "Default") return <div className="h-8" />;
+
+            if (user?.role !== Role.SUPER_ADMIN) return null;
 
             return (
                 <>
