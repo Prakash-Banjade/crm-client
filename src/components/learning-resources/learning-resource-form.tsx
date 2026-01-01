@@ -1,59 +1,66 @@
+"use client";
+
 import { Button, LoadingButton } from "@/components/ui/button";
-import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
+import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
+import { Textarea } from "@/components/ui/textarea";
 import { useServerAction } from "@/hooks/use-server-action";
 import { QueryKey } from "@/lib/react-query/queryKeys";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
-import ImageUpload from "../forms/image-upload";
-import { TCountry } from "@/lib/types/countries.types";
-import { countriesDefaultValues, countriesSchema, TCountriesSchema } from "@/lib/schema/countries.schema";
-import { createCountry, updateCountry } from "@/lib/actions/countries.action";
 import { useEffect } from "react";
 import { useConfirmExit } from "@/hooks/use-confirm-exit";
+import { learningResourceDefaultValues, learningResourceSchema, TLearningResourceSchema } from "@/lib/schema/learning-resources.schema";
+import { createLearningResource, updateLearningResource } from "@/lib/actions/learning-resources.action";
+import { FileUpload } from "../forms/file-upload";
+import { useParams } from "next/navigation";
 
 type Props = {
     setIsOpen: (value: boolean) => void;
-    defaultValues?: TCountry,
+    defaultValues?: TLearningResourceSchema & { id: string },
     setIsFormDirty?: (value: boolean) => void;
 }
 
-export default function CountriesForm({ setIsOpen, defaultValues, setIsFormDirty }: Props) {
+export default function LearningResourcesForm({ setIsOpen, defaultValues, setIsFormDirty }: Props) {
+    const { id } = useParams();
+
     const isEditing = !!defaultValues?.id;
 
     const { isPending: isCreating, mutate: create } = useServerAction({
-        action: createCountry,
-        invalidateTags: [QueryKey.COUNTRIES],
+        action: createLearningResource,
+        invalidateTags: [QueryKey.LEARNING_RESOURCES],
         onSuccess: () => {
             setIsOpen(false);
         },
     });
 
     const { isPending: isUpdating, mutate: update } = useServerAction({
-        action: updateCountry,
-        invalidateTags: [QueryKey.COUNTRIES],
+        action: updateLearningResource,
+        invalidateTags: [QueryKey.LEARNING_RESOURCES],
         onSuccess: () => {
             setIsOpen(false);
         },
     });
 
-    const form = useForm<TCountriesSchema>({
-        resolver: zodResolver(countriesSchema),
+    const form = useForm<TLearningResourceSchema>({
+        resolver: zodResolver(learningResourceSchema),
         defaultValues: {
-            ...(defaultValues || countriesDefaultValues),
+            ...(defaultValues || learningResourceDefaultValues),
         },
     });
 
-    const onSubmit = (data: TCountriesSchema) => {
-        if (isEditing) {
+
+    const onSubmit = (data: TLearningResourceSchema) => {
+        if (isEditing && defaultValues?.id) {
             update({ id: defaultValues.id, formData: data });
         } else {
-            create(data);
+            create({ ...data, parentId: id as string | null });
         }
     }
+
     useEffect(() => {
         setIsFormDirty?.(form.formState.isDirty);
-    }, [form.formState.isDirty]);
+    }, [form.formState.isDirty, setIsFormDirty]);
 
     useConfirmExit(form.formState.isDirty);
 
@@ -62,56 +69,54 @@ export default function CountriesForm({ setIsOpen, defaultValues, setIsFormDirty
             <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
                 <FormField
                     control={form.control}
-                    name="name"
+                    name="title"
                     render={({ field }) => (
                         <FormItem>
-                            <FormLabel>Name<span className="text-destructive">*</span></FormLabel>
+                            <FormLabel>Title<span className="text-destructive">*</span></FormLabel>
                             <FormControl>
-                                <Input required {...field} />
+                                <Input required placeholder="Enter title" {...field} />
                             </FormControl>
                             <FormMessage />
                         </FormItem>
                     )}
                 />
 
-
                 <FormField
                     control={form.control}
-                    name="states"
+                    name="description"
                     render={({ field }) => (
                         <FormItem>
-                            <FormLabel>States<span className="text-destructive">*</span></FormLabel>
+                            <FormLabel>Description<span className="text-destructive">*</span></FormLabel>
                             <FormControl>
-                                <Input
-                                    type="text"
-                                    placeholder="Eg. NYC, California..."
-                                    required
+                                <Textarea
+                                    placeholder="Enter description"
+                                    className="resize-none"
                                     {...field}
-                                    value={Array.isArray(field.value) ? field.value.join(', ') : field.value || ''}
-                                    onChange={(e) => field.onChange(e.target.value.split(', ').map(s => s.trim()))}
                                 />
                             </FormControl>
-                            <FormDescription>
-                                Enter states separated by commas.
-                            </FormDescription>
                             <FormMessage />
                         </FormItem>
                     )}
                 />
 
-                <FormField
+                {id && <FormField
                     control={form.control}
-                    name="flag"
+                    name="files"
                     render={({ field }) => (
                         <FormItem className="flex flex-col">
-                            <FormLabel>Flag</FormLabel>
+                            <FormLabel>File<span className="text-destructive">*</span></FormLabel>
                             <FormControl>
-                                <ImageUpload name="flag" value={field.value} onValueChange={field.onChange} />
+                                <FileUpload
+                                    name="files"
+                                    value={field.value ?? []}
+                                    multiple
+                                    onValueChange={(url) => field.onChange(url)}
+                                />
                             </FormControl>
                             <FormMessage />
                         </FormItem>
                     )}
-                />
+                />}
 
                 <div className="flex justify-end">
                     <div className="grid grid-cols-2 gap-3">

@@ -4,11 +4,15 @@ import { useState } from 'react'
 import { Button } from '../ui/button'
 import { Plus } from 'lucide-react'
 import { ResponsiveDialog } from '../ui/responsive-dialog'
-import CountriesForm from './countries-form'
+import LearningResourcesForm from './learning-resource-form'
+import { useParams } from 'next/navigation'
 
-const AddCountriesButton = () => {
+const AddLearningResourcesButton = () => {
     const [isOpen, setIsOpen] = useState(false);
     const [isFormDirty, setIsFormDirty] = useState(false);
+    const { id, subId } = useParams();
+
+    if (subId) return null;
 
     return (
         <div>
@@ -17,18 +21,19 @@ const AddCountriesButton = () => {
                 variant="outline"
             >
                 <Plus />
-                Add Countries
+                {id ? "Add Sub Resource" : "Add Resources"}
             </Button>
             <ResponsiveDialog
                 isOpen={isOpen}
                 setIsOpen={setIsOpen}
-                title="Add Countries"
+                title={id ? "Add Sub Resource" : "Add Resources"}
                 confirmOnExit={isFormDirty}
+
             >
-                <CountriesForm setIsOpen={setIsOpen} setIsFormDirty={setIsFormDirty} />
+                <LearningResourcesForm setIsOpen={setIsOpen} setIsFormDirty={setIsFormDirty} />
             </ResponsiveDialog>
         </div>
     )
 }
 
-export default AddCountriesButton
+export default AddLearningResourcesButton

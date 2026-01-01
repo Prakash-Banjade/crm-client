@@ -2,7 +2,7 @@
 
 import { ColumnDef } from "@tanstack/react-table";
 import { Button } from "@/components/ui/button";
-import { MoreHorizontal, Pencil, Trash, User } from "lucide-react";
+import { MoreHorizontal, Pencil, Trash } from "lucide-react";
 import { DataTableColumnHeader } from "@/components/data-table/data-table-column-header";
 import {
     DropdownMenu,
@@ -16,88 +16,53 @@ import { ResponsiveDialog } from "../ui/responsive-dialog";
 import { ResponsiveAlertDialog } from "../ui/responsive-alert-dialog";
 import { useServerAction } from "@/hooks/use-server-action";
 import { QueryKey } from "@/lib/react-query/queryKeys";
-import { getObjectUrl } from "@/lib/utils";
-import { TCountry } from "@/lib/types/countries.types";
-import CountriesForm from "./countries-form";
-import { deleteCountry } from "@/lib/actions/countries.action";
-import Image from "next/image";
+import { TLearningResource } from "@/lib/types/learning-resources.types";
+import { deleteLearningResource } from "@/lib/actions/learning-resources.action";
+import LearningResourcesForm from "./learning-resource-form";
+import Link from "next/link";
 
-export const countriesColumns: ColumnDef<TCountry>[] = [
+export const learningResourcesColumns: ColumnDef<TLearningResource>[] = [
     {
         header: "S.N",
         cell: ({ row }) => <p className="text-14 font-medium"> {row.index + 1} </p>,
     },
     {
-        accessorKey: "name",
+        accessorKey: "title",
         header: ({ column }) => {
-            return <DataTableColumnHeader column={column} title="Name" />;
+            return <DataTableColumnHeader column={column} title="Title" />;
         },
         cell: ({ row }) => {
             return (
-                <div className="hover:text-blue-500 hover:underline flex gap-4 items-center w-fit">
-                    {row.original.flag ? (
-                        <Image
-                            src={getObjectUrl(row.original.flag)}
-                            alt={row.original.name}
-                            width={40}
-                            height={40}
-                        />
-                    ) : (
-                        <div className="size-10 grid place-items-center">
-                            <User className="size-8" />
-                        </div>
-                    )}
-                    <span className="font-medium">{row.original.name}</span>
-                </div>
+                <Link href={`/super_admin/learning-resources/${row.original.id}`}>
+                    <span className="font-medium">{row.original.title}</span>
+                </Link>
             );
         },
     },
-    {
-        accessorKey: "states",
-        header: 'States',
-        cell: ({ row }) => {
-            return (
-                <div>
-                    {row.original.states?.length ? (
-                        <ol className="list-decimal list-inside space-y-1">
-                            {row.original.states.map((state, index) => (
-                                <li key={index}>{state}</li>
-                            ))}
-                        </ol>
-                    ) : (
-                        <span className="text-muted-foreground">No states</span>
-                    )}
-                </div>
-            );
-        }
-    },
-
     {
         id: "actions",
         enableHiding: false,
         cell: ({ row }) => {
-            const [isDeleteConfirmDialogOpen, setIsDeleteConfirmDialogOpen] =
-                useState(false);
+            const [isDeleteConfirmDialogOpen, setIsDeleteConfirmDialogOpen] = useState(false);
 
             const [isEditing, setIsEditing] = useState(false);
             const [isEditFormDirty, setIsEditFormDirty] = useState(false);
 
-            const { isPending: deletePending, mutate: deleteMutate } =
-                useServerAction({
-                    action: deleteCountry,
-                    invalidateTags: [QueryKey.COUNTRIES],
-                    onSuccess: () => {
-                        setIsDeleteConfirmDialogOpen(false);
-                    },
-                });
+            const { isPending: deletePending, mutate: deleteMutate } = useServerAction({
+                action: deleteLearningResource,
+                invalidateTags: [QueryKey.LEARNING_RESOURCES],
+                onSuccess: () => {
+                    setIsDeleteConfirmDialogOpen(false);
+                },
+            });
 
             return (
                 <>
                     <ResponsiveAlertDialog
                         isOpen={isDeleteConfirmDialogOpen}
                         setIsOpen={setIsDeleteConfirmDialogOpen}
-                        title="Delete Country"
-                        description="Are you sure you want to delete this country?"
+                        title="Delete Learning Resource"
+                        description="Are you sure you want to delete this learning resource?"
                         action={() => deleteMutate(row.original.id)}
                         actionLabel="Yes, Delete"
                         isLoading={deletePending}
@@ -105,11 +70,11 @@ export const countriesColumns: ColumnDef<TCountry>[] = [
                     <ResponsiveDialog
                         isOpen={isEditing}
                         setIsOpen={setIsEditing}
-                        title="Edit Country"
+                        title="Edit Learning Resource"
                         confirmOnExit={isEditFormDirty}
                     >
-                        <CountriesForm
-                            defaultValues={row.original}
+                        <LearningResourcesForm
+                            defaultValues={{ ...row.original, parentId: row.original.parent?.id || null }}
                             setIsOpen={setIsEditing}
                             setIsFormDirty={setIsEditFormDirty}
                         />

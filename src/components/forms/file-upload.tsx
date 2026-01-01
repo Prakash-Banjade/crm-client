@@ -142,7 +142,7 @@ export function FileUpload({
                                 uploaded.map((file) => (
                                     <div className="flex items-center gap-2 justify-between hover:bg-secondary/50 p-2 rounded-md transition-all" key={file.url}>
                                         <a href={file.url} key={file.url} className="text-blue-500 hover:underline text-sm wrap-break-word w-fit">
-                                            {truncateFilename(file.originalName, 40)}
+                                            {truncateFilename(file.filename.replace('temp/', ''), 40)}
                                         </a>
 
                                         <button type="button" onClick={() => handleRemoveFile(file.url)} aria-label="Remove file" title="Remove file">
