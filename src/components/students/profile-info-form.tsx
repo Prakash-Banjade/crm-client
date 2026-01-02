@@ -1,10 +1,10 @@
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Button, LoadingButton } from "../ui/button";
-import { Briefcase, FileText, Save, User } from "lucide-react";
-import { Activity, useState } from "react";
+import { Button } from "../ui/button";
+import { Briefcase, FileText, User } from "lucide-react";
+import { Activity, startTransition, useState } from "react";
 import { cn } from "@/lib/utils";
 import StudentPersonalInfoForm from "./personal-info-form";
-import StudentAcademicQualificationForm from "./academic-qualificatino-form";
+import StudentAcademicQualificationForm from "./academic-qualification-form";
 import StudentWorkExperienceForm from "./work-experience-form";
 import { TSingleStudent } from "@/lib/types/student.types";
 
@@ -37,7 +37,11 @@ export default function StudentProfileInfoForm({ student }: Props) {
                                 type="button"
                                 variant={activeTab === tab.value ? "secondary" : "ghost"}
                                 className={cn("w-full justify-start font-medium text-muted-foreground", activeTab === tab.value && "text-foreground border-l-2 border-l-primary")}
-                                onClick={() => setActiveTab(tab.value)}
+                                onClick={() => {
+                                    startTransition(() => {
+                                        setActiveTab(tab.value)
+                                    })
+                                }}
                             >
                                 <tab.icon className="mr-2 h-4 w-4" /> {tab.label}
                             </Button>

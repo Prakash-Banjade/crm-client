@@ -3,6 +3,7 @@ import { DataTableColumnHeader } from "../data-table/data-table-column-header";
 import { TStudent } from "@/lib/types/student.types";
 import { cn } from "@/lib/utils";
 import Link from "next/link";
+import { formatDate } from "date-fns";
 
 export const studentColumns: ColumnDef<TStudent>[] = [
     {
@@ -30,7 +31,7 @@ export const studentColumns: ColumnDef<TStudent>[] = [
     {
         accessorKey: "createdAt",
         header: "Created At",
-        cell: ({ row }) => <p> {row.original.createdAt} </p>,
+        cell: ({ row }) => <p> {formatDate(row.original.createdAt, "dd/MM/yyyy HH:mm")} </p>,
     },
     {
         accessorKey: "email",

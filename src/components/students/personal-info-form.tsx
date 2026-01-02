@@ -6,10 +6,10 @@ import { Label } from "../ui/label";
 import { Input } from "../ui/input";
 import { Separator } from "../ui/separator";
 import { useForm } from "react-hook-form";
-import { StudentSchema, TStudentSchema } from "@/lib/schema/student.schema";
+import { studentAddressDefaultValues, studentBackgroundInfoDefaultValues, studentEmergencyContactDefaultValues, studentNationalityDefaultValues, studentPassportDefaultValues, StudentSchema, TStudentSchema } from "@/lib/schema/student.schema";
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { EGender, EMaritalStatus } from "@/lib/types";
-import { ECountry } from "@/lib/types/country.type";
+import { ESouthAsianCountry } from "@/lib/types/country.type";
 import { NumberInput } from "../ui/number-input";
 import { MultiSelect, MultiSelectContent, MultiSelectGroup, MultiSelectItem, MultiSelectTrigger, MultiSelectValue } from "../ui/multi-select";
 import { Checkbox } from "../ui/checkbox";
@@ -19,24 +19,26 @@ import { useServerAction } from "@/hooks/use-server-action";
 import { QueryKey } from "@/lib/react-query/queryKeys";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { TSingleStudent } from "@/lib/types/student.types";
+import { useEffect, useMemo } from "react";
+import { cn } from "@/lib/utils";
 
 export default function StudentPersonalInfoForm({ student }: { student: TSingleStudent }) {
     return (
         <div className="flex-1 space-y-6 mb-40">
-            {/* Section 1: Basic Personal Info */}
             <BasicInfoForm student={student} />
 
-            {/* Section 2: Addresses (Combined for cleaner UI) */}
-            <AddressForm student={student} />
+            <div
+                className={cn("space-y-6", !student.personalInfo && "opacity-50 pointer-events-none cursor-not-allowed")}
+                title={!!student.personalInfo ? "" : "Please fill basic information first"}
+            >
+                <AddressForm student={student} />
 
-            {/* Section 3: Passport & Nationality */}
-            <PassportAndNationalityForm student={student} />
+                <PassportAndNationalityForm student={student} />
 
-            {/* Section 4: Background Info (Simplified YES/NO toggles visually) */}
-            <BackgroundInfoForm student={student} />
+                <BackgroundInfoForm student={student} />
 
-            {/* Section 5: Emergency Contact */}
-            <EmergencyContactForm student={student} />
+                <EmergencyContactForm student={student} />
+            </div>
         </div>
     )
 }
@@ -44,7 +46,15 @@ export default function StudentPersonalInfoForm({ student }: { student: TSingleS
 function BasicInfoForm({ student }: { student: TSingleStudent }) {
     const form = useForm<TStudentSchema>({
         resolver: zodResolver(StudentSchema),
-        defaultValues: student,
+        defaultValues: {
+            ...student,
+            personalInfo: {
+                ...student.personalInfo,
+                dob: (student.personalInfo?.dob || new Date().toISOString().split("T")[0]),
+                gender: EGender.Male,
+                maritalStatus: EMaritalStatus.Unmarried,
+            }
+        },
     });
 
     const { isPending: isUpdating, mutate: update } = useServerAction({
@@ -148,10 +158,30 @@ function BasicInfoForm({ student }: { student: TSingleStudent }) {
 }
 
 function AddressForm({ student }: { student: TSingleStudent }) {
+    const defaultValues = useMemo(() => {
+        return {
+            ...student,
+            personalInfo: {
+                ...student.personalInfo,
+                mailingAddress: {
+                    ...(student.personalInfo?.mailingAddress || studentAddressDefaultValues),
+                },
+                permanentAddress: {
+                    ...(student.personalInfo?.permanentAddress || studentAddressDefaultValues),
+                },
+            }
+        }
+    }, [student])
+
     const form = useForm<TStudentSchema>({
         resolver: zodResolver(StudentSchema),
-        defaultValues: student,
+        defaultValues: defaultValues,
     });
+
+    // important! to keep the form in sync with the student changes
+    useEffect(() => {
+        form.reset(defaultValues)
+    }, [defaultValues])
 
     const { isPending: isUpdating, mutate: update } = useServerAction({
         action: updateStudent,
@@ -217,7 +247,7 @@ function AddressForm({ student }: { student: TSingleStudent }) {
                                                 </FormControl>
                                                 <SelectContent>
                                                     {
-                                                        Object.values(ECountry).map((country) => (
+                                                        Object.values(ESouthAsianCountry).map((country) => (
                                                             <SelectItem key={country} value={country} className="capitalize">
                                                                 {country}
                                                             </SelectItem>
@@ -330,7 +360,7 @@ function AddressForm({ student }: { student: TSingleStudent }) {
                                                 </FormControl>
                                                 <SelectContent>
                                                     {
-                                                        Object.values(ECountry).map((country) => (
+                                                        Object.values(ESouthAsianCountry).map((country) => (
                                                             <SelectItem key={country} value={country} className="capitalize">
                                                                 {country}
                                                             </SelectItem>
@@ -400,10 +430,30 @@ function AddressForm({ student }: { student: TSingleStudent }) {
 }
 
 function PassportAndNationalityForm({ student }: { student: TSingleStudent }) {
+    const defaultValues = useMemo(() => {
+        return {
+            ...student,
+            personalInfo: {
+                ...student.personalInfo,
+                passport: {
+                    ...(student.personalInfo?.passport || studentPassportDefaultValues),
+                },
+                nationality: {
+                    ...(student.personalInfo?.nationality || studentNationalityDefaultValues),
+                }
+            }
+        }
+    }, [student])
+
     const form = useForm<TStudentSchema>({
         resolver: zodResolver(StudentSchema),
-        defaultValues: student,
+        defaultValues,
     });
+
+    // important! to keep the form in sync with the student changes
+    useEffect(() => {
+        form.reset(defaultValues)
+    }, [defaultValues])
 
     const { isPending: isUpdating, mutate: update } = useServerAction({
         action: updateStudent,
@@ -478,7 +528,7 @@ function PassportAndNationalityForm({ student }: { student: TSingleStudent }) {
                                             </FormControl>
                                             <SelectContent>
                                                 {
-                                                    Object.values(ECountry).map((country) => (
+                                                    Object.values(ESouthAsianCountry).map((country) => (
                                                         <SelectItem key={country} value={country} className="capitalize">
                                                             {country}
                                                         </SelectItem>
@@ -517,7 +567,7 @@ function PassportAndNationalityForm({ student }: { student: TSingleStudent }) {
                                             </FormControl>
                                             <SelectContent>
                                                 {
-                                                    Object.values(ECountry).map((country) => (
+                                                    Object.values(ESouthAsianCountry).map((country) => (
                                                         <SelectItem key={country} value={country} className="capitalize">
                                                             {country}
                                                         </SelectItem>
@@ -543,7 +593,7 @@ function PassportAndNationalityForm({ student }: { student: TSingleStudent }) {
                                             </FormControl>
                                             <SelectContent>
                                                 {
-                                                    Object.values(ECountry).map((country) => (
+                                                    Object.values(ESouthAsianCountry).map((country) => (
                                                         <SelectItem key={country} value={country} className="capitalize">
                                                             {country}
                                                         </SelectItem>
@@ -571,7 +621,7 @@ function PassportAndNationalityForm({ student }: { student: TSingleStudent }) {
                                             <MultiSelectContent>
                                                 <MultiSelectGroup>
                                                     {
-                                                        Object.values(ECountry).map((country) => (
+                                                        Object.values(ESouthAsianCountry).map((country) => (
                                                             <MultiSelectItem key={country} value={country}>{country}</MultiSelectItem>
                                                         ))
                                                     }
@@ -600,10 +650,27 @@ function PassportAndNationalityForm({ student }: { student: TSingleStudent }) {
 }
 
 function BackgroundInfoForm({ student }: { student: TSingleStudent }) {
+    const defaultValues = useMemo(() => {
+        return {
+            ...student,
+            personalInfo: {
+                ...student.personalInfo,
+                backgroundInfo: {
+                    ...(student.personalInfo?.backgroundInfo || studentBackgroundInfoDefaultValues),
+                }
+            }
+        }
+    }, [student])
+
     const form = useForm<TStudentSchema>({
         resolver: zodResolver(StudentSchema),
         defaultValues: student,
     });
+
+    // important! to keep the form in sync with the student changes
+    useEffect(() => {
+        form.reset(defaultValues)
+    }, [defaultValues])
 
     const { isPending: isUpdating, mutate: update } = useServerAction({
         action: updateStudent,
@@ -639,7 +706,7 @@ function BackgroundInfoForm({ student }: { student: TSingleStudent }) {
                                             </FormControl>
                                             <SelectContent>
                                                 {
-                                                    Object.values(ECountry).map((country) => (
+                                                    Object.values(ESouthAsianCountry).map((country) => (
                                                         <SelectItem key={country} value={country} className="capitalize">
                                                             {country}
                                                         </SelectItem>
@@ -713,10 +780,27 @@ function BackgroundInfoForm({ student }: { student: TSingleStudent }) {
 }
 
 function EmergencyContactForm({ student }: { student: TSingleStudent }) {
+    const defaultValues = useMemo(() => {
+        return {
+            ...student,
+            personalInfo: {
+                ...student.personalInfo,
+                emergencyContact: {
+                    ...(student.personalInfo?.emergencyContact || studentEmergencyContactDefaultValues),
+                }
+            }
+        }
+    }, [student])
+
     const form = useForm<TStudentSchema>({
         resolver: zodResolver(StudentSchema),
-        defaultValues: student,
+        defaultValues,
     });
+
+    // important! to keep the form in sync with the student changes
+    useEffect(() => {
+        form.reset(defaultValues)
+    }, [defaultValues])
 
     const { isPending: isUpdating, mutate: update } = useServerAction({
         action: updateStudent,
