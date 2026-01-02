@@ -12,7 +12,7 @@ export async function serverMutate({
     body: any;
 }): Promise<ActionResponse> {
     const res = await serverFetch(endpoint, {
-        method,
+        method, 
         body: JSON.stringify(body),
         cache: 'no-store'
     });

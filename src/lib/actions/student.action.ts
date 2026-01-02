@@ -1,11 +1,12 @@
 "use server";
 
 import { QueryKey } from "../react-query/queryKeys";
+import { TLeadSchema } from "../schema/lead.schema";
 import { TStudentSchema } from "../schema/student.schema";
 import { serverMutate } from "../server-mutate";
 import { ActionResponse } from "../types";
 
-export async function createStudent(formData: TStudentSchema): Promise<ActionResponse> {
+export async function createStudent(formData: TStudentSchema | TLeadSchema): Promise<ActionResponse> {
     return await serverMutate({
         body: {
             ...formData,
@@ -15,7 +16,7 @@ export async function createStudent(formData: TStudentSchema): Promise<ActionRes
     })
 }
 
-export async function updateStudent({ id, formData }: { id: string, formData: TStudentSchema }): Promise<ActionResponse> {
+export async function updateStudent({ id, formData }: { id: string, formData: TStudentSchema | TLeadSchema }): Promise<ActionResponse> {
     return await serverMutate({
         body: {
             ...formData,
