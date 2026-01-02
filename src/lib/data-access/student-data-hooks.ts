@@ -3,14 +3,14 @@ import { UseQueryOptions } from "@tanstack/react-query";
 import { QueryKey } from "../react-query/queryKeys";
 import { TSingleStudent, TStudentsResponse } from "../types/student.types";
 
-export const useGetStudents = ({
+export const useGetStudents = <T = TStudentsResponse>({
     queryString,
     options,
 }: {
     queryString?: string;
-    options?: Partial<UseQueryOptions<TStudentsResponse>>
+    options?: Partial<UseQueryOptions<T>>
 }) => {
-    const response = useFetch<TStudentsResponse>({
+    const response = useFetch<T>({
         endpoint: QueryKey.STUDENTS,
         queryString,
         queryKey: queryString ? [QueryKey.STUDENTS, queryString] : [QueryKey.STUDENTS],
