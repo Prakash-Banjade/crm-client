@@ -2,6 +2,7 @@ import { ColumnDef } from "@tanstack/react-table";
 import { DataTableColumnHeader } from "../data-table/data-table-column-header";
 import { TStudent } from "@/lib/types/student.types";
 import { cn } from "@/lib/utils";
+import Link from "next/link";
 
 export const studentColumns: ColumnDef<TStudent>[] = [
     {
@@ -11,14 +12,20 @@ export const studentColumns: ColumnDef<TStudent>[] = [
     {
         accessorKey: "refNo",
         header: "Ref No.",
-        cell: ({ row }) => <div className="h-8 flex items-center">{row.original.refNo} </div>,
+        cell: ({ row }) => (
+            <div className="h-8 flex items-center">
+                <Link href={`application/${row.original.id}`}>
+                    {row.original.refNo}
+                </Link>
+            </div>
+        ),
     },
     {
         accessorKey: "fullName",
         header: ({ column }) => {
             return <DataTableColumnHeader column={column} title="Name" />
         },
-        cell: ({ row }) => <p className="capitalize font-medium"> {row.original.fullName} </p>,
+        cell: ({ row }) => <Link href={`application/${row.original.id}`} className="capitalize font-medium hover:text-blue-500 hover:underline"> {row.original.fullName} </Link>,
     },
     {
         accessorKey: "createdAt",

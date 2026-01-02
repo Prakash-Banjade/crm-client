@@ -23,7 +23,7 @@ export interface IStudentAddress {
     address1: string;
     address2?: string;
     city: string;
-    country: string;
+    country: ECountry;
     state: string;
     zipCode: number;
 }
@@ -132,8 +132,8 @@ export type TStudentsResponse = PaginatedResponse<TStudent>;
 export type TSingleStudent = Pick<TStudent, 'id' | 'refNo' | 'fullName' | 'email' | 'createdAt' | 'phoneNumber' | 'statusMessage'> & {
     firstName: string,
     lastName: string,
-    personalInfo: IStudentPersonalInfo | null,
-    academicQualification: IStudentAcademicQualification | null,
-    documents: IStudentDocuments | null,
-    workExperiences: IStudentWorkExperience[] | null,
+    personalInfo: IStudentPersonalInfo | undefined,
+    academicQualification: IStudentAcademicQualification | undefined,
+    documents: IStudentDocuments | undefined,
+    workExperiences: IStudentWorkExperience[] | undefined,
 }
