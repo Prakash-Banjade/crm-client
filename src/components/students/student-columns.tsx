@@ -54,6 +54,13 @@ export const studentColumns: ColumnDef<TStudent>[] = [
     {
         accessorKey: "statusMessage",
         header: "Status",
-        cell: ({ row }) => <p className={cn(!!row.original.statusMessage && "text-destructive")}> {row.original.statusMessage} </p>,
+        cell: ({ row }) => {
+            const message = row.original.statusMessage;
+            const applicatiosCount = row.original.applicationsCount;
+
+            return (
+                <p className={cn("italic", !!message ? "text-destructive" : applicatiosCount > 0 ? "text-green-600" : "text-muted-foreground")}> {message.length > 0 ? message : applicatiosCount > 0 ? `${applicatiosCount} Application(s)` : "No application submitted"} </p>
+            )
+        },
     },
 ]

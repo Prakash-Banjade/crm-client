@@ -138,6 +138,7 @@ export type TStudent = {
         id: string;
         lowerCasedFullName: string;
     } | null
+    applicationsCount: number
 }
 
 export type TStudentsResponse = PaginatedResponse<TStudent>;

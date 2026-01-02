@@ -5,6 +5,7 @@ import StudentWorkExperienceForm from './work-experience-form';
 import { AlertCircleIcon, CheckCircle, Mail, Phone } from 'lucide-react';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Alert, AlertTitle } from '../ui/alert';
+import StudentApplicationForm from './applications-form';
 
 type Props = {
     student: TSingleStudent;
@@ -61,7 +62,7 @@ export default function SingleStudentForm({ student }: Props) {
                     <StudentDocumentsForm student={student} />
                 </TabsContent>
                 <TabsContent value="applications">
-                    <StudentWorkExperienceForm student={student} />
+                    <StudentApplicationForm />
                 </TabsContent>
             </Tabs>
         </div>

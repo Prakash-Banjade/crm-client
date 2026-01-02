@@ -72,7 +72,7 @@ function BasicInfoForm({ student }: { student: TSingleStudent }) {
                 <Card>
                     <CardHeader>
                         <CardTitle>Personal Details</CardTitle>
-                        <CardDescription>Basic identification details as per your legal documents.</CardDescription>
+                        <CardDescription>Basic identification details as per your the documents.</CardDescription>
                     </CardHeader>
                     <CardContent className="space-y-6">
                         <section className="grid md:grid-cols-3 gap-4">

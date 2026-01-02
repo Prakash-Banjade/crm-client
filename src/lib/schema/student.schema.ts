@@ -1,6 +1,6 @@
 import z from "zod";
 import { ECountry } from "../types/country.type";
-import { differenceInYears, isFuture, isPast } from "date-fns";
+import { differenceInYears, isDate, isFuture, isPast } from "date-fns";
 import { EGender, EMaritalStatus } from "../types";
 import { EGradingSystem, ELevelOfEducation, EModeOfSalary } from "../types/student.types";
 import { NAME_REGEX, NAME_WITH_SPACE_REGEX, PHONE_NUMBER_REGEX } from "../constants";
@@ -15,6 +15,17 @@ export const StudentDocumentsSchema = z.object({
     recommendationLetter: z.string().min(1, 'Recommendation Letter is required'),
     workExperience: z.string().nullish(),
 });
+
+export const studentDocumentsDefaultValues: z.infer<typeof StudentDocumentsSchema> = {
+    cv: '',
+    gradeTenMarksheet: '',
+    gradeElevenMarksheet: '',
+    gradeTwelveMarksheet: '',
+    passport: '',
+    ielts: '',
+    recommendationLetter: '',
+    workExperience: '',
+};
 
 export const StudentAddressSchema = z.object({
     address1: z.string().min(1, 'Address 1 is required').max(250, 'Address 1 must be less than 250 characters'),
@@ -161,17 +172,33 @@ export const StudentWorkExperienceSchema = z.object({
     organization: z.string().min(1, 'Organization is required').max(100, 'Organization must be less than 100 characters'),
     position: z.string().min(1, 'Position is required').max(100, 'Position must be less than 100 characters'),
     jobProfile: z.string().min(1, 'Job Profile is required').max(100, 'Job Profile must be less than 100 characters'),
-    workingFrom: z.string().datetime({ message: 'Working From is required' }),
-    workingTo: z.string().datetime({ message: 'Working To is required' }).nullish(),
+    workingFrom: z.string().date(),
+    workingTo: z.string().optional().refine(data => {
+        if (!data) return true;
+        return isDate(data);
+    }, { message: 'Invalid Date' }),
     modeOfSalary: z.nativeEnum(EModeOfSalary, { message: 'Mode of Salary is required' }),
-    comment: z.string().max(250, 'Comment must be less than 250 characters').nullish(),
-}).refine((data) => data.workingTo && (isPast(data.workingTo) && data.workingTo >= data.workingFrom), {
+    comment: z.string().max(250, 'Comment must be less than 250 characters'),
+}).refine((data) => {
+    if (!data.workingTo) return true;
+    return isPast(data.workingTo) && data.workingTo >= data.workingFrom;
+}, {
     message: 'Working To must be a past date and greater than Working From',
     path: ['workingTo'],
 }).refine((data) => isPast(data.workingFrom), {
     message: 'Working From must be a past date',
     path: ['workingFrom'],
 })
+
+export const studentWorkExperienceDefaultValues: z.infer<typeof StudentWorkExperienceSchema> = {
+    organization: '',
+    position: '',
+    jobProfile: '',
+    workingFrom: '',
+    workingTo: '',
+    modeOfSalary: EModeOfSalary.Bank,
+    comment: '',
+}
 
 export const StudentSchema = z.object({
     firstName: z.string().min(1, "First Name is required").regex(NAME_REGEX, { message: "Invalid First Name. First Name should contain only letters" }),
