@@ -7,15 +7,17 @@ import SingleStudentForm from '@/components/students/single-student-form';
 
 type Props = {
     params: Promise<{
-        id: string;
+        studentId: string;
     }>
 }
 
 export default function Page({ params }: Props) {
-    const { id } = use(params);
+    const { studentId } = use(params);
+
+    console.log(studentId)
 
     const { data: student, isLoading } = useGetStudent({
-        id,
+        id: studentId,
     })
 
     if (isLoading) return <div>Loading...</div>

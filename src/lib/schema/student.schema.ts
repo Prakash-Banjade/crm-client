@@ -12,7 +12,7 @@ export const StudentDocumentsSchema = z.object({
     gradeTwelveMarksheet: z.string().min(1, 'Grade 12 Marksheet is required'),
     passport: z.string().min(1, 'Passport is required'),
     ielts: z.string().min(1, 'IELTS is required'),
-    recommendationLetter: z.string().min(1, 'Recommendation Letter is required'),
+    recommendationLetters: z.array(z.string().min(1, 'Recommendation Letter is required')).min(1, 'Recommendation Letter is required').max(2, 'Maximum 2 Recommendation Letters are allowed'),
     workExperience: z.string().nullish(),
 });
 
@@ -23,7 +23,7 @@ export const studentDocumentsDefaultValues: z.infer<typeof StudentDocumentsSchem
     gradeTwelveMarksheet: '',
     passport: '',
     ielts: '',
-    recommendationLetter: '',
+    recommendationLetters: [],
     workExperience: '',
 };
 

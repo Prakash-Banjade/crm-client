@@ -5,7 +5,8 @@ import StudentWorkExperienceForm from './work-experience-form';
 import { AlertCircleIcon, CheckCircle, Mail, Phone } from 'lucide-react';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Alert, AlertTitle } from '../ui/alert';
-import StudentApplicationForm from './applications-form';
+import StudentApplicationView from './applications-view';
+import { ProfileAvatar } from '../ui/avatar';
 
 type Props = {
     student: TSingleStudent;
@@ -18,9 +19,11 @@ export default function SingleStudentForm({ student }: Props) {
             {/* Top Header / Profile Summary */}
             <div className="flex flex-col md:flex-row justify-between items-start md:items-center p-6 rounded-xl border shadow-sm gap-4">
                 <div className="flex items-center gap-4">
-                    <div className="h-16 w-16 rounded-full flex items-center justify-center text-2xl font-bold">
-                        {student.fullName.charAt(0).toUpperCase()}
-                    </div>
+                    <ProfileAvatar
+                        name={student.fullName}
+                        src={undefined}
+                        className='size-16'
+                    />
                     <div>
                         <h1 className="text-2xl font-bold">{student.fullName}</h1>
                         <div className="flex gap-4 text-sm mt-1">
@@ -62,7 +65,7 @@ export default function SingleStudentForm({ student }: Props) {
                     <StudentDocumentsForm student={student} />
                 </TabsContent>
                 <TabsContent value="applications">
-                    <StudentApplicationForm />
+                    <StudentApplicationView />
                 </TabsContent>
             </Tabs>
         </div>
