@@ -16,26 +16,34 @@ export const superAdminSidebarMenuItems: TGroupMenuItem[] = [
                     { title: "Lead Students", url: `lead` },
                 ]
             },
-            { title: "Applications", url: `/${Role.SUPER_ADMIN}/applications`, icon: FileText },
-            { title: "IELTS/PTE Bookings", url: `/${Role.SUPER_ADMIN}/bookings`, icon: CalendarCheck },
+            { title: "Applications", url: `/applications`, icon: FileText },
+            { title: "IELTS/PTE Bookings", url: `/bookings`, icon: CalendarCheck },
         ]
     },
     {
         groupLabel: "Directory",
         menuItems: [
-            { title: "Universities", url: `/${Role.SUPER_ADMIN}/universities`, icon: School },
-            { title: "Courses", url: `/${Role.SUPER_ADMIN}/courses`, icon: BookOpen },
-            { title: "Countries", url: `/${Role.SUPER_ADMIN}/countries`, icon: Globe },
-            { title: "Learning Resources", url: `/${Role.SUPER_ADMIN}/learning-resources`, icon: Library },
+            { title: "Universities", url: `/universities`, icon: School },
+            {
+                title: "Courses",
+                url: `/courses`,
+                icon: BookOpen,
+                items: [
+                    { title: "Manage Courses", url: `` },
+                    { title: "Advance Search", url: `search` },
+                ]
+            },
+            { title: "Countries", url: `/countries`, icon: Globe },
+            { title: "Learning Resources", url: `/learning-resources`, icon: Library },
         ]
     },
     {
         groupLabel: "Partners & Team",
         menuItems: [
             { title: "Counselors", url: `/counselors`, icon: UserCheck },
-            { title: "BDE", url: `/${Role.SUPER_ADMIN}/bdes`, icon: TrendingUp },
-            { title: "Regional Incharge", url: `/${Role.SUPER_ADMIN}/regional-incharge`, icon: MapPin },
-            { title: "Organizations", url: `/${Role.SUPER_ADMIN}/organizations`, icon: Building2 }, // Partner agencies/B2B
+            { title: "BDE", url: `/bdes`, icon: TrendingUp },
+            { title: "Regional Incharge", url: `/regional-incharge`, icon: MapPin },
+            { title: "Organizations", url: `/organizations`, icon: Building2 }, // Partner agencies/B2B
         ]
     },
 ]

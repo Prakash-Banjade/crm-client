@@ -8,10 +8,11 @@ import { Role } from "@/lib/types";
 import { superAdminSidebarMenuItems } from "@/lib/config/super-admin-menu-items";
 import { Bell } from "lucide-react";
 import { Button } from "../ui/button";
+import { adminSidebarMenuItems } from "@/lib/config/admin-menu-items";
 
 const roleToMenuItemsMap = {
     [Role.SUPER_ADMIN]: superAdminSidebarMenuItems,
-    [Role.ADMIN]: [],
+    [Role.ADMIN]: adminSidebarMenuItems,
     [Role.COUNSELOR]: [],
     [Role.BDE]: [],
     [Role.USER]: [],

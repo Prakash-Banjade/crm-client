@@ -1,17 +1,17 @@
+"use client";
+
 import SingleOrganizationActionBtns from "@/components/organization/single-organization-action-btns";
 import OrganizationUsersDataTable from "@/components/organization/users/organization-users-data-table";
 import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
-import { serverFetch } from "@/lib/server-fetch";
-import { TSingleOrganization } from "@/lib/types/organization.type";
+import { useGetOrganizationById } from "@/lib/data-access/organization-data-hooks";
 import { getObjectUrl } from "@/lib/utils";
 import { formatDate } from "date-fns";
-import { AlertCircle, Building2, Calendar, CreditCard, File, Globe, Landmark, Mail, MapPin, Palette, Pencil, Phone, User } from "lucide-react";
+import { AlertCircle, Building2, Calendar, CreditCard, File, Globe, Landmark, Mail, MapPin, Phone, User } from "lucide-react";
 import Image from "next/image";
-import Link from "next/link";
 import { notFound } from "next/navigation";
+import { use } from "react";
 
 type Props = {
     params: Promise<{
@@ -19,16 +19,14 @@ type Props = {
     }>
 }
 
-export default async function SingleOrganizationPage({ params }: Props) {
-    const { id } = await params;
+export default function SingleOrganizationPage({ params }: Props) {
+    const { id } = use(params);
 
-    const res = await serverFetch(`/organizations/${id}`, {
-        next: { revalidate: 60 }
-    });
+    const { data: organization, isLoading } = useGetOrganizationById({ id })
 
-    if (!res.ok) return notFound();
+    if (isLoading) return <div>Loading...</div>
 
-    const organization: TSingleOrganization = await res.json();
+    if (!organization) notFound();
 
     return (
         <div className="@container container space-y-6 py-4">

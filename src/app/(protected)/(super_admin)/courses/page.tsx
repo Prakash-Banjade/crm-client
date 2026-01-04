@@ -7,8 +7,8 @@ import Link from "next/link";
 export default function Page() {
     return (
         <ContainerLayout
-            title="Courses"
-            description="Manage courses"
+            title="Manage Courses"
+            description="All the courses listed here"
             action={
                 <Button asChild>
                     <Link href={"courses/new"}>
