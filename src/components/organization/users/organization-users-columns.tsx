@@ -4,11 +4,9 @@ import { formatDate } from "date-fns";
 import { useState } from "react";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuTrigger } from "@/components/ui/dropdown-menu"
 import { Button } from "@/components/ui/button";
-import { MoreHorizontal, Trash } from "lucide-react";
-import { ResponsiveAlertDialog } from "@/components/ui/responsive-alert-dialog";
-import { useServerAction } from "@/hooks/use-server-action";
-import { QueryKey } from "@/lib/react-query/queryKeys";
-import { deleteUser } from "@/lib/actions/user.action";
+import { Lock, MoreHorizontal, Trash, Unlock } from "lucide-react";
+import OrganizationUserDeleteDialog from "./organization-user-delete-dialog";
+import OrganizationUserBlockAlertDialog from "./organization-user-block-alert-dialog";
 
 export const organizationUsersColumns: ColumnDef<TUser>[] = [
     {
@@ -39,26 +37,28 @@ export const organizationUsersColumns: ColumnDef<TUser>[] = [
         id: "actions",
         enableHiding: false,
         cell: ({ row }) => {
-            const [isDeleteOpen, setIsDeleteOpen] = useState(false);
+            const [isDeleteConfirmDialogOpen, setIsDeleteConfirmDialogOpen] = useState(false);
 
-            const { isPending: deletePending, mutate: deleteMutate } = useServerAction({
-                action: deleteUser,
-                invalidateTags: [QueryKey.USERS],
-                onSuccess: () => {
-                    setIsDeleteOpen(false);
-                }
-            });
+            const [isBlockOpen, setIsBlockOpen] = useState(false);
+            const isBlacklisted = row.original.blacklistedAt !== null;
+
+
 
             return (
                 <>
-                    <ResponsiveAlertDialog
-                        isOpen={isDeleteOpen}
-                        setIsOpen={setIsDeleteOpen}
-                        title="Delete User"
-                        description="Are you sure you want to delete this user?"
-                        action={() => deleteMutate(row.original.userId)}
-                        actionLabel="Yes, Delete"
-                        isLoading={deletePending}
+                    <OrganizationUserDeleteDialog
+                        isOpen={isDeleteConfirmDialogOpen}
+                        setIsOpen={setIsDeleteConfirmDialogOpen}
+                        userId={row.original.userId}
+                        userName={row.original.fullName}
+                    />
+
+                    <OrganizationUserBlockAlertDialog
+                        isOpen={isBlockOpen}
+                        setIsOpen={setIsBlockOpen}
+                        userId={row.original.userId}
+                        userName={row.original.fullName}
+                        isBlacklisted={isBlacklisted}
                     />
 
                     <DropdownMenu>
@@ -70,7 +70,12 @@ export const organizationUsersColumns: ColumnDef<TUser>[] = [
                         </DropdownMenuTrigger>
                         <DropdownMenuContent align="end">
                             <DropdownMenuLabel>Actions</DropdownMenuLabel>
-                            <DropdownMenuItem variant="destructive" onClick={() => setIsDeleteOpen(true)}>
+
+                            <DropdownMenuItem className="whitespace-nowrap" onClick={() => setIsBlockOpen(true)}>
+                                {isBlacklisted ? <Unlock /> : <Lock />}
+                                {isBlacklisted ? "Unblock" : "Block"}
+                            </DropdownMenuItem>
+                            <DropdownMenuItem variant="destructive" onClick={() => setIsDeleteConfirmDialogOpen(true)}>
                                 <Trash />
                                 Remove
                             </DropdownMenuItem>
