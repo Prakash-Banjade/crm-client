@@ -12,8 +12,8 @@ export const superAdminSidebarMenuItems: TGroupMenuItem[] = [
                 url: `/students`,
                 icon: Users,
                 items: [
-                    { title: "Application", url: `application` },
-                    { title: "Lead", url: `lead` },
+                    { title: "Application Students", url: `application` },
+                    { title: "Lead Students", url: `lead` },
                 ]
             },
             { title: "Applications", url: `/${Role.SUPER_ADMIN}/applications`, icon: FileText },

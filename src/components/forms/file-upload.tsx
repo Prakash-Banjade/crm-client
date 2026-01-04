@@ -11,9 +11,10 @@ type FileUploadProps = {
     name: string;
     multiple?: boolean;
     maxLimit?: number,
-    value: string[] | string;
+    value: string[] | string | undefined;
     onValueChange: (value: string[]) => void;
     onError?: (error: string) => void;
+    accept?: string;
 }
 
 export function FileUpload({
@@ -22,15 +23,18 @@ export function FileUpload({
     value,
     onValueChange,
     onError,
-    maxLimit = 10
+    maxLimit = 10,
+    accept
 }: FileUploadProps) {
     const axios = useAxios();
     const [uploadProgress, setUploadProgress] = useState(0)
 
     const [uploaded, setUploaded] = useState<TFileUploadResponse>(() => {
+        if (!value) return [];
+
         const fileUrlArray = typeof value === 'string' ? [value] : value;
 
-        return fileUrlArray.map(url => {
+        return fileUrlArray?.map(url => {
             const filename = url.split('/').pop() || '';
             const originalName = truncateFilename(filename, 10);
 
@@ -94,11 +98,9 @@ export function FileUpload({
     };
 
     const handleRemoveFile = (url: string) => {
-        setUploaded(prev => {
-            const newState = prev.filter(file => file.url !== url);
-            onValueChange(multiple ? newState.map(file => file.url) : [newState[0].url]);
-            return newState;
-        });
+        const newState = uploaded.filter(file => file.url !== url);
+        setUploaded(newState);
+        onValueChange(multiple ? newState.map(file => file.url) : [newState[0]?.url || ""]);
     };
 
     return (
@@ -130,18 +132,19 @@ export function FileUpload({
                 multiple={multiple}
                 value={undefined} // no need to track the value else throws error since the value will be registered by react-hook-form
                 onChange={handleChange}
+                accept={accept}
                 className={cn("sr-only -left-[100000px]")} // negative positioning is to fix overflow scroll issue
             />
 
             {
                 uploaded.length > 0 && (
                     <div>
-                        <span className="text-xs text-muted-foreground">Uploaded files:</span>
+                        <span className="text-xs text-muted-foreground">Uploaded:</span>
                         <div className="flex flex-col">
                             {
                                 uploaded.map((file) => (
                                     <div className="flex items-center gap-2 justify-between hover:bg-secondary/50 p-2 rounded-md transition-all" key={file.url}>
-                                        <a href={file.url} key={file.url} className="text-blue-500 hover:underline text-sm wrap-break-word w-fit">
+                                        <a href={file.url} target="_blank" rel="noopener noreferrer" className="text-blue-500 hover:underline text-sm wrap-break-word w-fit">
                                             {truncateFilename(file.filename.replace('temp/', ''), 40)}
                                         </a>
 

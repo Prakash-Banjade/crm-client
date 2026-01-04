@@ -5,8 +5,8 @@ import LeadDataTable from "@/components/students/lead/lead-data-table";
 export default function Page() {
     return (
         <ContainerLayout
-            title="Manage Student Lead"
-            description="The registered application Student Lead are listed here."
+            title="Manage Leads"
+            description="The student leads are listed here."
             action={
                 <AddLeadBtn />
             }

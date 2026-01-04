@@ -12,7 +12,7 @@ import { Input } from "@/components/ui/input";
 import { Button, LoadingButton } from "@/components/ui/button";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { EGender } from "@/lib/types";
-import { ECountry } from "@/lib/types/country.type";
+import { ESouthAsianCountry } from "@/lib/types/country.type";
 import { createStudent, updateStudent } from "@/lib/actions/student.action";
 
 type Props = {
@@ -21,8 +21,9 @@ type Props = {
     setIsFormDirty: (value: boolean) => void;
 }
 
-export default function AddLeadForm({ setIsOpen, defaultValues, setIsFormDirty }: Props) {
+export default function LeadForm({ setIsOpen, defaultValues, setIsFormDirty }: Props) {
     const isEditing = !!defaultValues?.id;
+
     const form = useForm<TLeadSchema>({
         resolver: zodResolver(LeadSchema),
         defaultValues: defaultValues || LeadsDefaultValues
@@ -48,7 +49,6 @@ export default function AddLeadForm({ setIsOpen, defaultValues, setIsFormDirty }
 
     const onSubmit = async (data: TLeadSchema) => {
         if (isEditing) {
-            
             update({ id: defaultValues.id, formData: data });
         } else {
             create(data);
@@ -132,7 +132,7 @@ export default function AddLeadForm({ setIsOpen, defaultValues, setIsFormDirty }
                                 <FormLabel>Gender<span className="text-destructive">*</span></FormLabel>
                                 <Select onValueChange={field.onChange} defaultValue={field.value}>
                                     <FormControl>
-                                        <SelectTrigger className="w-full">
+                                        <SelectTrigger className="w-full capitalize">
                                             <SelectValue placeholder="Select Gender" />
                                         </SelectTrigger>
                                     </FormControl>
@@ -162,7 +162,7 @@ export default function AddLeadForm({ setIsOpen, defaultValues, setIsFormDirty }
                                         </SelectTrigger>
                                     </FormControl>
                                     <SelectContent>
-                                        {Object.entries(ECountry).map(([code, name]) => (
+                                        {Object.entries(ESouthAsianCountry).map(([code, name]) => (
                                             <SelectItem key={code} value={name}>
                                                 {name}
                                             </SelectItem>

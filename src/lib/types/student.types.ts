@@ -23,7 +23,7 @@ export interface IStudentAddress {
     address1: string;
     address2?: string;
     city: string;
-    country: string;
+    country: ECountry;
     state: string;
     zipCode: number;
 }
@@ -73,8 +73,15 @@ export interface IStudentPersonalInfo {
 export enum ELevelOfEducation {
     Postgraduate = 'postgraduate',
     Undergraduate = 'undergraduate',
-    Grade12 = 'grade12',
-    Grade10 = 'grade10',
+    Grade12 = 'grade_12',
+    Grade10 = 'grade_10',
+}
+
+export enum EGradingSystem {
+    CGPA = 'CGPA',
+    Percentage = 'Percentage',
+    Marks = 'Marks',
+    Scale = 'Scale',
 }
 
 export interface IStudentLevelOfStudy {
@@ -85,6 +92,7 @@ export interface IStudentLevelOfStudy {
     state: string;
     city: string;
     degreeAwarded: string;
+    gradingSystem: EGradingSystem;
     score: number;
     primaryLanguage: string;
     startDate: string;
@@ -94,7 +102,12 @@ export interface IStudentLevelOfStudy {
 export interface IStudentAcademicQualification {
     countryOfEducation: ECountry;
     highestLevelOfEducation: ELevelOfEducation;
-    levelOfStudies: IStudentLevelOfStudy[];
+    levelOfStudies?: {
+        [ELevelOfEducation.Postgraduate]?: IStudentLevelOfStudy;
+        [ELevelOfEducation.Undergraduate]?: IStudentLevelOfStudy;
+        [ELevelOfEducation.Grade12]?: IStudentLevelOfStudy;
+        [ELevelOfEducation.Grade10]?: IStudentLevelOfStudy;
+    };
 }
 
 export enum EModeOfSalary {
@@ -125,6 +138,7 @@ export type TStudent = {
         id: string;
         lowerCasedFullName: string;
     } | null
+    applicationsCount: number
 }
 
 export type TStudentsResponse = PaginatedResponse<TStudent>;
@@ -132,8 +146,8 @@ export type TStudentsResponse = PaginatedResponse<TStudent>;
 export type TSingleStudent = Pick<TStudent, 'id' | 'refNo' | 'fullName' | 'email' | 'createdAt' | 'phoneNumber' | 'statusMessage'> & {
     firstName: string,
     lastName: string,
-    personalInfo: IStudentPersonalInfo | null,
-    academicQualification: IStudentAcademicQualification | null,
-    documents: IStudentDocuments | null,
-    workExperiences: IStudentWorkExperience[] | null,
+    personalInfo: IStudentPersonalInfo | undefined,
+    academicQualification: IStudentAcademicQualification | undefined,
+    documents: IStudentDocuments | undefined,
+    workExperiences: IStudentWorkExperience[] | undefined,
 }

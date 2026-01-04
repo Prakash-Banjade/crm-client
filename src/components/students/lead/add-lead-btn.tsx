@@ -2,7 +2,7 @@
 
 import { useSearchParams } from "next/navigation";
 import { useState } from "react";
-import AddLeadForm from "./lead-form";
+import LeadForm from "./lead-form";
 import { Plus } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { ResponsiveDialog } from "@/components/ui/responsive-dialog";
@@ -18,18 +18,18 @@ export default function () {
             <ResponsiveDialog
                 isOpen={isOpen}
                 setIsOpen={setIsOpen}
-                title="Register New Lead"
+                title="New Lead"
                 confirmOnExit={isFormDirty}
                 className='sm:min-w-2xl'
             >
-                <AddLeadForm setIsOpen={setIsOpen} setIsFormDirty={setIsFormDirty} />
+                <LeadForm setIsOpen={setIsOpen} setIsFormDirty={setIsFormDirty} />
             </ResponsiveDialog>
 
             <Button
                 onClick={() => setIsOpen(true)}
             >
                 <Plus />
-                Register New Lead
+                New Lead
             </Button>
         </>
     )
