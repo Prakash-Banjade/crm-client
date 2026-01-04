@@ -126,6 +126,12 @@ export interface IStudentWorkExperience {
     comment?: string;
 }
 
+export const studentStatusMessages = {
+    personalInfo: 'Personal info incomplete',
+    academicQualification: 'Academic qualification incomplete',
+    documents: 'Documents incomplete',
+} as const;
+
 export type TStudent = {
     id: string;
     refNo: string;
@@ -133,7 +139,7 @@ export type TStudent = {
     email: string;
     createdAt: string;
     phoneNumber: string;
-    statusMessage: string;
+    statusMessage: typeof studentStatusMessages[keyof typeof studentStatusMessages];
     createdBy: {
         id: string;
         lowerCasedFullName: string;
@@ -150,4 +156,5 @@ export type TSingleStudent = Pick<TStudent, 'id' | 'refNo' | 'fullName' | 'email
     academicQualification: IStudentAcademicQualification | undefined,
     documents: IStudentDocuments | undefined,
     workExperiences: IStudentWorkExperience[] | undefined,
+    applicationsCount: number
 }

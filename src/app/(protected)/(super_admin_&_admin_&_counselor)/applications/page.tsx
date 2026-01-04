@@ -1,7 +1,12 @@
-type Props = {}
+import ContainerLayout from "@/components/container-layout"
+import ApplicationsDataTable from "@/components/students/application/applications-data-table"
 
-export default function Page({ }: Props) {
+export default function Page() {
     return (
-        <div>Page</div>
+        <ContainerLayout
+            title="Manage Applications"
+        >
+            <ApplicationsDataTable />
+        </ContainerLayout>
     )
 }

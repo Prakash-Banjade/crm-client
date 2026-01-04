@@ -1,9 +1,10 @@
 import { ColumnDef } from "@tanstack/react-table";
 import { DataTableColumnHeader } from "../data-table/data-table-column-header";
-import { TStudent } from "@/lib/types/student.types";
+import { studentStatusMessages, TStudent } from "@/lib/types/student.types";
 import { cn } from "@/lib/utils";
 import Link from "next/link";
 import { formatDate } from "date-fns";
+import { profileTabs, StudentTabs } from "./single-student-form";
 
 export const studentColumns: ColumnDef<TStudent>[] = [
     {
@@ -13,20 +14,46 @@ export const studentColumns: ColumnDef<TStudent>[] = [
     {
         accessorKey: "refNo",
         header: "Ref No.",
-        cell: ({ row }) => (
-            <div className="h-8 flex items-center">
-                <Link href={`application/${row.original.id}`}>
-                    {row.original.refNo}
-                </Link>
-            </div>
-        ),
+        cell: ({ row }) => {
+            /** based on status message, redirect to the appropriate tab */
+            const statusMessage = row.original.statusMessage;
+            const link = statusMessage === studentStatusMessages.personalInfo
+                ? `application/${row.original.id}?tab=${StudentTabs.Profile}&subTab=${profileTabs[0].value}`
+                : statusMessage === studentStatusMessages.academicQualification
+                    ? `application/${row.original.id}?tab=${StudentTabs.Profile}&subTab=${profileTabs[1].value}`
+                    : statusMessage === studentStatusMessages.documents
+                        ? `application/${row.original.id}?tab=${StudentTabs.Documents}`
+                        : `application/${row.original.id}?tab=${StudentTabs.Applications}`;
+
+            return (
+                <div className="h-8 flex items-center">
+                    <Link href={link}>
+                        {row.original.refNo}
+                    </Link>
+                </div>
+            )
+        },
     },
     {
         accessorKey: "fullName",
         header: ({ column }) => {
             return <DataTableColumnHeader column={column} title="Name" />
         },
-        cell: ({ row }) => <Link href={`application/${row.original.id}`} className="capitalize font-medium hover:text-blue-500 hover:underline"> {row.original.fullName} </Link>,
+        cell: ({ row }) => {
+            /** based on status message, redirect to the appropriate tab */
+            const statusMessage = row.original.statusMessage;
+            const link = statusMessage === studentStatusMessages.personalInfo
+                ? `application/${row.original.id}?tab=${StudentTabs.Profile}&subTab=${profileTabs[0].value}`
+                : statusMessage === studentStatusMessages.academicQualification
+                    ? `application/${row.original.id}?tab=${StudentTabs.Profile}&subTab=${profileTabs[1].value}`
+                    : statusMessage === studentStatusMessages.documents
+                        ? `application/${row.original.id}?tab=${StudentTabs.Documents}`
+                        : `application/${row.original.id}?tab=${StudentTabs.Applications}`;
+
+            return (
+                <Link href={link} className="capitalize font-medium hover:text-blue-500 hover:underline"> {row.original.fullName} </Link>
+            )
+        },
     },
     {
         accessorKey: "createdAt",

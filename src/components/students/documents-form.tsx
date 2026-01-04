@@ -184,16 +184,16 @@ export default function StudentDocumentsForm({ student }: { student: TSingleStud
                                 />
                                 <FormField
                                     control={form.control}
-                                    name="documents.recommendationLetter"
+                                    name="documents.recommendationLetters"
                                     render={({ field }) => (
                                         <FormItem className="h-fit">
-                                            <FormLabel>Recommendation Letter (2)<span className="text-destructive">*</span></FormLabel>
+                                            <FormLabel>Recommendation Letters (2)<span className="text-destructive">*</span></FormLabel>
                                             <FormControl>
                                                 <FileUpload
-                                                    name="documents.recommendationLetter"
+                                                    name="documents.recommendationLetters"
                                                     value={field.value}
                                                     onValueChange={val => {
-                                                        field.onChange(val[0])
+                                                        field.onChange(val)
                                                     }}
                                                     maxLimit={2}
                                                     accept=".pdf"

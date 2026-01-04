@@ -1,18 +1,60 @@
-import { TSingleStudent } from '@/lib/types/student.types';
+import { studentStatusMessages, TSingleStudent } from '@/lib/types/student.types';
 import StudentProfileInfoForm from './profile-info-form';
 import StudentDocumentsForm from './documents-form';
-import StudentWorkExperienceForm from './work-experience-form';
-import { AlertCircleIcon, CheckCircle, Mail, Phone } from 'lucide-react';
+import { AlertCircleIcon, Briefcase, CheckCircle, FileText, Mail, Phone, User } from 'lucide-react';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Alert, AlertTitle } from '../ui/alert';
 import StudentApplicationView from './applications-view';
 import { ProfileAvatar } from '../ui/avatar';
+import { useState } from 'react';
+import { useCustomSearchParams } from '@/hooks/useCustomSearchParams';
+import z from 'zod';
+
+export const enum StudentTabs {
+    Profile = "profile",
+    Documents = "documents",
+    Applications = "applications",
+}
+
+export const profileTabs = [
+    { value: "personal-info", label: "Personal Info", icon: User },
+    { value: "academic-qualification", label: "Academic Qualification", icon: FileText },
+    { value: "work-experience", label: "Work Experience", icon: Briefcase },
+];
+
+const tabsSchema = z.enum([StudentTabs.Profile, StudentTabs.Documents, StudentTabs.Applications]);
+const subTabsSchema = z.enum([profileTabs[0].value, profileTabs[1].value, profileTabs[2].value]);
+
+export const enum ProfileSubTabs {
+    PersonalInfo = "personal-info",
+    AcademicQualification = "academic-qualification",
+    WorkExperience = "work-experience",
+}
 
 type Props = {
     student: TSingleStudent;
 }
 
 export default function SingleStudentForm({ student }: Props) {
+    const { searchParams, setSearchParams } = useCustomSearchParams();
+
+    const [activeTab, setActiveTab] = useState<StudentTabs>(() => {
+        const tab = tabsSchema.safeParse(searchParams.get("tab"));
+        if (tab.success) {
+            return tab.data;
+        } else {
+            return StudentTabs.Profile;
+        }
+    });
+
+    const [activeSubTab, setActiveSubTab] = useState<string>(() => {
+        const tab = subTabsSchema.safeParse(searchParams.get("subTab"));
+        if (tab.success) {
+            return tab.data;
+        } else {
+            return profileTabs[0].value;
+        }
+    });
 
     return (
         <div className="container space-y-6 @container">
@@ -51,21 +93,40 @@ export default function SingleStudentForm({ student }: Props) {
             </div>
 
             {/* Main Navigation Tabs */}
-            <Tabs defaultValue="profile" className="w-full">
+            <Tabs
+                defaultValue={activeTab}
+                onValueChange={val => {
+                    setActiveTab(val as StudentTabs);
+                    setSearchParams({ tab: val });
+                }}
+                className="w-full"
+            >
                 <TabsList className="grid w-full grid-cols-3 max-w-md mb-6 border">
                     <TabsTrigger value="profile">Profile Information</TabsTrigger>
-                    <TabsTrigger value="documents">Documents</TabsTrigger>
-                    <TabsTrigger value="applications">Applications</TabsTrigger>
+                    <TabsTrigger
+                        value="documents"
+                        disabled={
+                            student.statusMessage === studentStatusMessages.personalInfo
+                            || student.statusMessage === studentStatusMessages.academicQualification
+                        }
+                    >
+                        Documents
+                    </TabsTrigger>
+                    <TabsTrigger value="applications" disabled={student.statusMessage.length > 0}>Applications</TabsTrigger>
                 </TabsList>
 
                 <TabsContent value="profile" className="mt-0">
-                    <StudentProfileInfoForm student={student} />
+                    <StudentProfileInfoForm
+                        activeSubTab={activeSubTab}
+                        setActiveSubTab={setActiveSubTab}
+                        student={student}
+                    />
                 </TabsContent>
                 <TabsContent value="documents">
                     <StudentDocumentsForm student={student} />
                 </TabsContent>
                 <TabsContent value="applications">
-                    <StudentApplicationView />
+                    <StudentApplicationView student={student} />
                 </TabsContent>
             </Tabs>
         </div>

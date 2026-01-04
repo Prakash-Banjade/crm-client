@@ -30,19 +30,23 @@ import { useInfiniteOptions } from "@/hooks/useInfiniteOptions";
 
 interface InfiniteSelectProps {
   endpoint: string;
+  queryParams?: Record<string, string>;
   placeholder?: string;
   selected?: SelectOption;
   onSelectionChange?: (values: SelectOption) => void;
   className?: string;
   limit?: number;
+  enabled?: boolean
 }
 
 export function InfiniteSelect({
   endpoint,
   placeholder = "Select options...",
+  queryParams,
   selected = undefined,
   onSelectionChange,
   className,
+  enabled = true
 }: InfiniteSelectProps) {
   const [open, setOpen] = React.useState(false);
   const [search, setSearch] = React.useState("");
@@ -63,7 +67,9 @@ export function InfiniteSelect({
     endpoint,
     createQueryString({
       q: debouncedSearch,
-    })
+      ...queryParams,
+    }),
+    enabled
   );
 
   const observerRef = React.useRef<HTMLDivElement>(null);
@@ -101,6 +107,8 @@ export function InfiniteSelect({
             variant="outline"
             role="combobox"
             aria-expanded={open}
+            disabled={isLoading || !enabled}
+            aria-disabled={isLoading || !enabled}
             className="w-full justify-between bg-transparent"
           >
             <div className="flex flex-wrap gap-1 flex-1">

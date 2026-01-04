@@ -14,8 +14,6 @@ type Props = {
 export default function Page({ params }: Props) {
     const { studentId } = use(params);
 
-    console.log(studentId)
-
     const { data: student, isLoading } = useGetStudent({
         id: studentId,
     })

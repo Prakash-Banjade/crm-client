@@ -39,7 +39,7 @@ export default function CourseForm({ defaultValues }: Props) {
         action: createCourse,
         invalidateTags: [QueryKey.COURSES],
         onSuccess: () => {
-            router.push(`/${Role.SUPER_ADMIN}/courses`);
+            router.push(`/courses`);
         },
     });
 
@@ -64,7 +64,7 @@ export default function CourseForm({ defaultValues }: Props) {
         name: "name",
     });
 
-    useConfirmExit(form.formState.isDirty);
+    useConfirmExit(form.formState.isDirty && !form.formState.isSubmitSuccessful);
 
     return (
         <Form {...form}>

@@ -1,6 +1,6 @@
 "use client"
 
-import { useInfiniteQuery } from "@tanstack/react-query"
+import { useInfiniteQuery, UseInfiniteQueryOptions } from "@tanstack/react-query"
 import { useMemo } from "react"
 import { PaginatedResponse, SelectOption, TPaginatedOptions } from "@/lib/types"
 import { useAxios } from "@/lib/axios-client"
@@ -17,7 +17,7 @@ const emptyPaginatedData: TPaginatedOptions = {
     }
 }
 
-export function useInfiniteOptions<T = SelectOption>(endpoint: string, queryString = "") {
+export function useInfiniteOptions<T = SelectOption>(endpoint: string, queryString = "", enabled = true) {
     const axios = useAxios();
 
     const { data, error, fetchNextPage, hasNextPage, isFetching, isFetchingNextPage, status, refetch } = useInfiniteQuery({
@@ -31,7 +31,7 @@ export function useInfiniteOptions<T = SelectOption>(endpoint: string, queryStri
         getNextPageParam: (lastPage) => {
             return lastPage.meta.hasNextPage ? lastPage.meta.page + 1 : undefined
         },
-        enabled: true,
+        enabled,
     });
 
     // Flatten all pages into a single array of options
