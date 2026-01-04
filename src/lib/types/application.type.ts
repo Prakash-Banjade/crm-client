@@ -1,4 +1,4 @@
-import { EMonth, PaginatedResponse } from ".";
+import { EMonth, PaginatedResponse, Role } from ".";
 
 
 export enum EApplicationStatus {
@@ -72,4 +72,43 @@ export type TApplication = {
 
 export type TApplicationsResponse = PaginatedResponse<TApplication>
 
-export type TSingleApplication = TApplication;
+export enum EConversationType {
+    Admin = 'admin',
+    Student = 'student',
+}
+
+export type TSingleApplication = TApplication & {
+    paymentDocument: string | null;
+    conversations: {
+        id: string,
+        createdAt: string,
+        type: EConversationType,
+    }[],
+    course: {
+        id: string;
+        name: string;
+        courseUrl: string;
+        university: {
+            id: string;
+            name: string;
+            state: string;
+            country: {
+                id: string,
+                name: string,
+            }
+        }
+    }
+
+};
+
+export type TApplicationMessage = {
+    id: string;
+    content: string;
+    files: string[];
+    createdAt: string;
+    sender: {
+        id: string;
+        lowerCasedFullName: string;
+        role: Role
+    }
+}

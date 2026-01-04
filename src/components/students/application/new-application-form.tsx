@@ -10,7 +10,6 @@ import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "
 import { EMonth } from "@/lib/types";
 import { Button, LoadingButton } from "@/components/ui/button";
 import { InfiniteSelect } from "@/components/forms/infinite-select";
-import { useEffect } from "react";
 import { createQueryString } from "@/lib/utils";
 
 type Props = {
@@ -52,14 +51,6 @@ export default function NewApplicationForm({ setIsOpen }: Props) {
         name: ["university", "intake"],
     });
 
-    useEffect(() => {
-        form.setValue("university", { label: "", value: "" })
-    }, [intake])
-
-    useEffect(() => {
-        form.setValue("course", { label: "", value: "" })
-    }, [university])
-
     return (
         <Form {...form}>
             <form onSubmit={form.handleSubmit(onSubmit)} className="grid grid-cols-2 gap-4">
@@ -95,7 +86,14 @@ export default function NewApplicationForm({ setIsOpen }: Props) {
                     render={({ field }) => (
                         <FormItem>
                             <FormLabel>Intake<span className="text-destructive">*</span></FormLabel>
-                            <Select onValueChange={val => field.onChange(val)} defaultValue={field.value.toString()}>
+                            <Select
+                                onValueChange={val => {
+                                    field.onChange(val)
+                                    form.setValue("university", { label: "", value: "" })
+                                    form.setValue("course", { label: "", value: "" })
+                                }}
+                                defaultValue={field.value.toString()}
+                            >
                                 <FormControl>
                                     <SelectTrigger className="w-full capitalize">
                                         <SelectValue placeholder="Select intake" />
@@ -124,6 +122,7 @@ export default function NewApplicationForm({ setIsOpen }: Props) {
                                     endpoint={`/universities/options`}
                                     onSelectionChange={val => {
                                         field.onChange(val);
+                                        form.setValue("course", { label: "", value: "" })
                                     }}
                                     selected={field.value}
                                     queryParams={{

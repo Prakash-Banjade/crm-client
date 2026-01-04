@@ -4,7 +4,7 @@ import StudentDocumentsForm from './documents-form';
 import { AlertCircleIcon, Briefcase, CheckCircle, FileText, Mail, Phone, User } from 'lucide-react';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Alert, AlertTitle } from '../ui/alert';
-import StudentApplicationView from './applications-view';
+import StudentApplicationView from './application/applications-view';
 import { ProfileAvatar } from '../ui/avatar';
 import { useState } from 'react';
 import { useCustomSearchParams } from '@/hooks/useCustomSearchParams';
@@ -57,7 +57,7 @@ export default function SingleStudentForm({ student }: Props) {
     });
 
     return (
-        <div className="container space-y-6 @container">
+        <div className="h-full container @container flex flex-col gap-6">
             {/* Top Header / Profile Summary */}
             <div className="flex flex-col md:flex-row justify-between items-start md:items-center p-6 rounded-xl border shadow-sm gap-4">
                 <div className="flex items-center gap-4">
@@ -99,7 +99,7 @@ export default function SingleStudentForm({ student }: Props) {
                     setActiveTab(val as StudentTabs);
                     setSearchParams({ tab: val });
                 }}
-                className="w-full"
+                className="w-full flex-1"
             >
                 <TabsList className="grid w-full grid-cols-3 max-w-md mb-6 border">
                     <TabsTrigger value="profile">Profile Information</TabsTrigger>
@@ -125,7 +125,7 @@ export default function SingleStudentForm({ student }: Props) {
                 <TabsContent value="documents">
                     <StudentDocumentsForm student={student} />
                 </TabsContent>
-                <TabsContent value="applications">
+                <TabsContent value="applications" className='h-full'>
                     <StudentApplicationView student={student} />
                 </TabsContent>
             </Tabs>

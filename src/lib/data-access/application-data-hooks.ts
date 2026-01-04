@@ -1,7 +1,7 @@
 import { useFetch } from "@/hooks/useFetch";
 import { UseQueryOptions } from "@tanstack/react-query";
 import { QueryKey } from "../react-query/queryKeys";
-import { TApplicationsResponse, TSingleApplication } from "../types/application.type";
+import { TApplicationMessage, TApplicationsResponse, TSingleApplication } from "../types/application.type";
 
 export const useGetApplications = <T = TApplicationsResponse>({
     queryString,
@@ -30,6 +30,22 @@ export const useGetApplication = ({
     const response = useFetch<TSingleApplication>({
         endpoint: `${QueryKey.APPLICATIONS}/${id}`,
         queryKey: [QueryKey.APPLICATIONS, id],
+        options,
+    })
+
+    return response;
+}
+
+export const useGetMessages = ({
+    conversationId,
+    options,
+}: {
+    conversationId: string;
+    options?: Partial<UseQueryOptions<TApplicationMessage[]>>
+}) => {
+    const response = useFetch<TApplicationMessage[]>({
+        endpoint: `${QueryKey.MESSAGES}/${conversationId}`,
+        queryKey: [QueryKey.MESSAGES, conversationId],
         options,
     })
 

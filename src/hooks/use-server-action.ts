@@ -23,7 +23,7 @@ interface UseServerActionOptions<TInput> {
 
 export function useServerAction<TInput>({
     action,
-    invalidateTags,
+    invalidateTags = [],
     toastOnSuccess = true,
     toastOnError = true,
     onSuccess,
