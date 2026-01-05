@@ -9,6 +9,7 @@ import { superAdminSidebarMenuItems } from "@/lib/config/super-admin-menu-items"
 import { Bell } from "lucide-react";
 import { Button } from "../ui/button";
 import { adminSidebarMenuItems } from "@/lib/config/admin-menu-items";
+import NotificationBellIcon from "./notification-view";
 
 const roleToMenuItemsMap = {
     [Role.SUPER_ADMIN]: superAdminSidebarMenuItems,
@@ -35,13 +36,7 @@ export default function SidebarLayout({
                     <SidebarTrigger className="-ml-1" />
                     <AppBreadCrumb user={user} menuItems={menuItems} />
 
-                    <Button
-                        variant="ghost"
-                        size="icon"
-                        className="ml-auto"
-                    >
-                        <Bell className="size-5" />
-                    </Button>
+                    <NotificationBellIcon />
                 </header>
                 <main className="h-full">
                     {children}

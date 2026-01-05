@@ -30,4 +30,5 @@ export const enum QueryKey {
     STUDENTS = "students",
     APPLICATIONS = "applications",
     MESSAGES = "messages",
+    NOTIFICATIONS = "notifications",
 };
