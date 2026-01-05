@@ -7,13 +7,7 @@ import {
 } from '@/components/ui/card';
 import { Label } from '@/components/ui/label';
 import { CreditCard, Eye, FileCheck, MoreVertical, Trash, Upload } from 'lucide-react';
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from '@/components/ui/select';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { EApplicationPriority, EApplicationStatus, TSingleApplication } from '@/lib/types/application.type';
 import { updateApplication, verifyPaymentDocument } from '@/lib/actions/application.action';
 import { useServerAction } from '@/hooks/use-server-action';

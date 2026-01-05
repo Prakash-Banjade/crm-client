@@ -5,6 +5,12 @@ import { cn } from "@/lib/utils";
 import Link from "next/link";
 import { formatDate } from "date-fns";
 import { profileTabs, StudentTabs } from "./single-student-form";
+import { useSearchParams } from "next/navigation";
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover"
+import { Button } from "../ui/button";
+import { ChevronsUpDown } from "lucide-react";
+import SearchInput from "../search-components/search-input";
+import { DateRangeFilter } from "../search-components/date-range-filter";
 
 export const studentColumns: ColumnDef<TStudent>[] = [
     {
@@ -13,7 +19,28 @@ export const studentColumns: ColumnDef<TStudent>[] = [
     },
     {
         accessorKey: "refNo",
-        header: "Ref No.",
+        header: () => {
+            const searchParams = useSearchParams();
+            const key = "refNo";
+
+            return (
+                <Popover>
+                    <PopoverTrigger asChild>
+                        <Button
+                            variant={searchParams.get(key) ? "secondary" : "ghost"}
+                            size="sm"
+                            className='-ml-3 h-8 data-[state=open]:bg-accent'
+                        >
+                            <span>Ref No.</span>
+                            <ChevronsUpDown className="size-4 ml-2" />
+                        </Button>
+                    </PopoverTrigger>
+                    <PopoverContent>
+                        <SearchInput searchKey={key} placeholder="Search by Ref No." />
+                    </PopoverContent>
+                </Popover>
+            )
+        },
         cell: ({ row }) => {
             /** based on status message, redirect to the appropriate tab */
             const statusMessage = row.original.statusMessage;
@@ -57,7 +84,29 @@ export const studentColumns: ColumnDef<TStudent>[] = [
     },
     {
         accessorKey: "createdAt",
-        header: "Created At",
+        header: () => {
+            const searchParams = useSearchParams();
+            const dateFromKey = "dateFrom";
+            const dateToKey = "dateTo";
+
+            return (
+                <Popover>
+                    <PopoverTrigger asChild>
+                        <Button
+                            variant={(searchParams.get(dateFromKey) || searchParams.get(dateToKey)) ? "secondary" : "ghost"}
+                            size="sm"
+                            className='-ml-3 h-8 data-[state=open]:bg-accent'
+                        >
+                            <span>Created At</span>
+                            <ChevronsUpDown className="size-4 ml-2" />
+                        </Button>
+                    </PopoverTrigger>
+                    <PopoverContent className="w-fit">
+                        <DateRangeFilter />
+                    </PopoverContent>
+                </Popover>
+            )
+        },
         cell: ({ row }) => <p> {formatDate(row.original.createdAt, "dd/MM/yyyy HH:mm")} </p>,
     },
     {

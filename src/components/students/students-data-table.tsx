@@ -14,6 +14,7 @@ export default function StudentsDataTable() {
     const { data, isLoading } = useGetStudents({
         queryString: createQueryString({
             [SEARCH_KEY]: searchParams.get(SEARCH_KEY),
+            ...Object.fromEntries(searchParams.entries()),
         }),
     });
 
@@ -26,7 +27,7 @@ export default function StudentsDataTable() {
             meta={data?.meta}
             filters={
                 <section className="flex gap-2">
-                    <SearchInput />
+                    <SearchInput placeholder="Search by student name" />
                 </section>
             }
         />

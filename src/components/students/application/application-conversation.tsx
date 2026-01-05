@@ -257,7 +257,7 @@ function RenderMessages({
             </Activity>
 
             <Activity mode={(!messages || messages?.length === 0) ? 'visible' : 'hidden'}>
-                <div className='py-20 text-center text-muted-foreground'>No comments yet !</div>
+                <div className='h-[500px] flex items-center justify-center text-center text-muted-foreground'>No comments yet !</div>
             </Activity>
 
             {/* Comment Input */}
