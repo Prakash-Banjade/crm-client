@@ -5,7 +5,7 @@ import { TApplicationMessageSchema, TCreateApplicationSchema, TUpdateApplication
 import { serverMutate } from "../server-mutate";
 import { ActionResponse } from "../types";
 
-export async function createApplication(formData: TCreateApplicationSchema): Promise<ActionResponse> {
+export async function createApplication(formData: TCreateApplicationSchema): Promise<ActionResponse<{ applicationId: string, message: string }>> {
     return await serverMutate({
         body: {
             ...formData,
@@ -28,6 +28,14 @@ export async function updateApplication({ id, formData }: { id: string, formData
     })
 }
 
+export async function verifyPaymentDocument({ id }: { id: string }): Promise<ActionResponse> {
+    return await serverMutate({
+        body: {},
+        endpoint: `/${QueryKey.APPLICATIONS}/${id}/payment-verify`,
+        method: "PATCH",
+    })
+}
+
 export async function deleteApplication(id: string): Promise<ActionResponse> {
     return await serverMutate({
         body: {},
@@ -40,8 +48,10 @@ export async function sendMessage({ formData }: { formData: TApplicationMessageS
     return await serverMutate({
         body: {
             ...formData,
+            files: formData.files.map(file => file.fileName),
         },
         endpoint: `/${QueryKey.MESSAGES}`,
         method: "POST",
     })
 }
+

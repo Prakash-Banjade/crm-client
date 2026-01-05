@@ -3,11 +3,11 @@ import { useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
 import { ActionResponse } from "@/lib/types";
 
-type ServerAction<TInput> = (data: TInput) => Promise<ActionResponse>;
+type ServerAction<TInput, TResponse extends { message?: string }> = (data: TInput) => Promise<ActionResponse<TResponse>>;
 
-interface UseServerActionOptions<TInput> {
+interface UseServerActionOptions<TInput, TResponse extends { message?: string }> {
     // The actual server action function reference
-    action: ServerAction<TInput>;
+    action: ServerAction<TInput, TResponse>;
 
     // Optional: Query keys to invalidate on success
     invalidateTags?: string[] | string[][];
@@ -17,18 +17,18 @@ interface UseServerActionOptions<TInput> {
     toastOnError?: boolean;
 
     // Callbacks
-    onSuccess?: (data: Extract<ActionResponse, { success: true }>) => void;
+    onSuccess?: (data: Extract<ActionResponse<TResponse>, { success: true }>) => void;
     onError?: (error: unknown) => void;
 }
 
-export function useServerAction<TInput>({
+export function useServerAction<TInput, TResponse extends { message?: string } = { message?: string }>({
     action,
     invalidateTags = [],
     toastOnSuccess = true,
     toastOnError = true,
     onSuccess,
     onError,
-}: UseServerActionOptions<TInput>) {
+}: UseServerActionOptions<TInput, TResponse>) {
     const [isPending, startTransition] = useTransition();
     const queryClient = useQueryClient();
 
@@ -45,7 +45,7 @@ export function useServerAction<TInput>({
 
                     if (invalidateTags?.length) {
                         if (Array.isArray(invalidateTags[0])) {
-                            await Promise.all(invalidateTags.map(tag => queryClient.invalidateQueries({ queryKey: typeof tag === "string" ? [tag] : tag })));
+                            await Promise.all(invalidateTags.map((tag: string | string[]) => queryClient.invalidateQueries({ queryKey: typeof tag === "string" ? [tag] : tag })));
                         } else {
                             await queryClient.invalidateQueries({ queryKey: invalidateTags });
                         }

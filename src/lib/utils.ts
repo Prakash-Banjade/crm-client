@@ -64,3 +64,12 @@ export function getObjectUrl(filename: string): string {
 export function getKeyByValue(obj: { [key: string]: any }, value: any) {
   return Object.keys(obj).find(key => obj[key] === value);
 }
+
+export function getAcronym(name: string) {
+  const words = name.split(" ")
+
+  const firstInitial = words[0] ? words[0][0].toUpperCase() : ""
+  const secondInitial = words[1] ? words[1][0].toUpperCase() : ""
+
+  return firstInitial + secondInitial
+}

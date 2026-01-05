@@ -3,7 +3,7 @@ import { createApplication } from "@/lib/actions/application.action";
 import { QueryKey } from "@/lib/react-query/queryKeys";
 import { createApplicationDefaultValues, createApplicationSchema, TCreateApplicationSchema } from "@/lib/schema/application.schema"
 import { zodResolver } from "@hookform/resolvers/zod"
-import { useParams } from "next/navigation";
+import { useParams, useSearchParams } from "next/navigation";
 import { useForm, useWatch } from "react-hook-form"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
@@ -11,6 +11,7 @@ import { EMonth } from "@/lib/types";
 import { Button, LoadingButton } from "@/components/ui/button";
 import { InfiniteSelect } from "@/components/forms/infinite-select";
 import { createQueryString } from "@/lib/utils";
+import { useCustomSearchParams } from "@/hooks/useCustomSearchParams";
 
 type Props = {
     setIsOpen: (value: boolean) => void;
@@ -18,6 +19,7 @@ type Props = {
 
 export default function NewApplicationForm({ setIsOpen }: Props) {
     const { studentId } = useParams();
+    const { setSearchParams } = useCustomSearchParams();
 
     const form = useForm<TCreateApplicationSchema>({
         resolver: zodResolver(createApplicationSchema),
@@ -37,7 +39,8 @@ export default function NewApplicationForm({ setIsOpen }: Props) {
                 take: 50,
             })
         ],
-        onSuccess: () => {
+        onSuccess: (res) => {
+            setSearchParams({ applicationId: res.data.applicationId });
             setIsOpen(false);
         },
     });

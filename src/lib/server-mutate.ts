@@ -2,7 +2,7 @@ import { serverFetch } from "./server-fetch";
 import { ActionResponse } from "./types";
 import { extractErrorMessage } from "./utils";
 
-export async function serverMutate({
+export async function serverMutate<T extends { message?: string } = { message?: string }>({
     endpoint,
     method,
     body,
@@ -10,7 +10,7 @@ export async function serverMutate({
     endpoint: string;
     method: "POST" | "PATCH" | "DELETE";
     body: any;
-}): Promise<ActionResponse> {
+}): Promise<ActionResponse<T>> {
     const res = await serverFetch(endpoint, {
         method,
         body: JSON.stringify(body),

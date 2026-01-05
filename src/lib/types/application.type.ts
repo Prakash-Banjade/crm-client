@@ -79,6 +79,7 @@ export enum EConversationType {
 
 export type TSingleApplication = TApplication & {
     paymentDocument: string | null;
+    paymentVerifiedAt: string | null;
     conversations: {
         id: string,
         createdAt: string,
@@ -88,6 +89,8 @@ export type TSingleApplication = TApplication & {
         id: string;
         name: string;
         courseUrl: string;
+        applicationFee: number;
+        currency: string;
         university: {
             id: string;
             name: string;
@@ -110,5 +113,10 @@ export type TApplicationMessage = {
         id: string;
         lowerCasedFullName: string;
         role: Role
+        createdAt?: string;
+        organization: {
+            id: string;
+            name: string;
+        }
     }
 }

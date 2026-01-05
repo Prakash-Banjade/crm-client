@@ -35,13 +35,14 @@ export const createApplicationDefaultValues: TCreateApplicationSchema = {
 export const updateApplicationSchema = z.object({
     status: z.nativeEnum(EApplicationStatus).optional(),
     priority: z.nativeEnum(EApplicationPriority).optional(),
+    paymentDocument: z.string().nullish()
 });
 
 export type TUpdateApplicationSchema = z.infer<typeof updateApplicationSchema>;
 
 export const applicationMessageSchema = z.object({
     conversationId: z.string().uuid(),
-    content: z.string().max(250, { message: "Message must be at most 250 characters long" }).optional(),
+    content: z.string().max(500, { message: "Message must be at most 500 characters long" }).optional(),
     files: z.array(z.object({
         fileName: z.string().min(1, { message: "File is required" })
     })),

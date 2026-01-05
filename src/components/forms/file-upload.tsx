@@ -28,6 +28,7 @@ export function FileUpload({
 }: FileUploadProps) {
     const axios = useAxios();
     const [uploadProgress, setUploadProgress] = useState(0)
+    const [inputVal, setInputVal] = useState('')
 
     const [uploaded, setUploaded] = useState<TFileUploadResponse>(() => {
         if (!value) return [];
@@ -130,7 +131,7 @@ export function FileUpload({
                 id={'file_' + (name as string)}
                 disabled={isPending}
                 multiple={multiple}
-                value={undefined} // no need to track the value else throws error since the value will be registered by react-hook-form
+                value={inputVal}
                 onChange={handleChange}
                 accept={accept}
                 className={cn("sr-only -left-[100000px]")} // negative positioning is to fix overflow scroll issue

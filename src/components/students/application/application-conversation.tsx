@@ -1,37 +1,28 @@
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Textarea } from '@/components/ui/textarea';
 import { Avatar, AvatarFallback, ProfileAvatar } from '@/components/ui/avatar';
 import { ScrollArea } from '@/components/ui/scroll-area';
-import { Card } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
-import { ArrowUpIcon, FileText, Paperclip, Send, X } from 'lucide-react';
+import { FileText, Image, Paperclip, Send, X } from 'lucide-react';
 import { useGetMessages } from '@/lib/data-access/application-data-hooks';
-import { formatDistanceToNow } from 'date-fns';
+import { formatDate, formatDistanceToNow } from 'date-fns';
 import { TCurrentUser, useAuth } from '@/context/auth-provider';
-import {
-    InputGroup,
-    InputGroupAddon,
-    InputGroupButton,
-    InputGroupInput,
-    InputGroupText,
-    InputGroupTextarea,
-} from "@/components/ui/input-group"
-import { Activity, ChangeEvent, useEffect, useState } from 'react';
+import { InputGroup, InputGroupAddon, InputGroupButton, InputGroupTextarea } from "@/components/ui/input-group"
+import { Activity, ChangeEvent, useEffect, useRef, useState } from 'react';
 import { EConversationType, TApplicationMessage, TSingleApplication } from '@/lib/types/application.type';
-import { useFieldArray, useForm, useFormContext } from 'react-hook-form';
+import { useFieldArray, useForm } from 'react-hook-form';
 import { applicationMessageDefaultValues, applicationMessageSchema, TApplicationMessageSchema } from '@/lib/schema/application.schema';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
+import { Form, FormControl, FormItem, FormMessage } from "@/components/ui/form";
 import { Badge } from '@/components/ui/badge';
 import Link from 'next/link';
 import { useAxios } from '@/lib/axios-client';
-import { TFileUploadResponse } from '@/lib/types';
+import { Role, TFileUploadResponse } from '@/lib/types';
 import { useMutation } from '@tanstack/react-query';
 import { QueryKey } from '@/lib/react-query/queryKeys';
-import { extractErrorMessage, getObjectUrl, truncateFilename } from '@/lib/utils';
+import { cn, extractErrorMessage, getAcronym, getObjectUrl, truncateFilename } from '@/lib/utils';
 import { toast } from 'sonner';
 import { useServerAction } from '@/hooks/use-server-action';
 import { sendMessage } from '@/lib/actions/application.action';
+import { HoverCard, HoverCardContent, HoverCardTrigger } from "@/components/ui/hover-card"
 
 type Props = {
     application: TSingleApplication;
@@ -76,8 +67,6 @@ function AdminTypeConversation({ conversationId }: { conversationId: string }) {
     )
 }
 
-
-
 function RenderMessages({
     messages: defaultMessages,
     user,
@@ -89,23 +78,20 @@ function RenderMessages({
 }) {
     const [messages, setMessages] = useState<TApplicationMessage[]>(defaultMessages || []);
     const [isFileUploading, setIsFileUploading] = useState(false);
+    const messagesBottomRef = useRef<HTMLDivElement>(null);
 
     const avatarName = user.firstName.charAt(0).toUpperCase() + user.lastName.charAt(0).toUpperCase();
 
     const form = useForm<TApplicationMessageSchema>({
         resolver: zodResolver(applicationMessageSchema),
         defaultValues: {
+            ...applicationMessageDefaultValues,
             conversationId: conversationId,
-            content: "",
-            files: [],
         },
     });
 
     const { isPending: isSending, mutate: send } = useServerAction({
         action: sendMessage,
-        onSuccess: () => {
-            form.reset();
-        },
         onError: () => {
             // since last message was added to messages, remove it on error
             setMessages(prev => {
@@ -117,7 +103,6 @@ function RenderMessages({
         toastOnSuccess: false,
     });
 
-
     const { fields, append, remove } = useFieldArray({
         control: form.control,
         name: 'files'
@@ -126,7 +111,7 @@ function RenderMessages({
     function onSubmit(data: TApplicationMessageSchema) {
         if (isFileUploading || isSending) return;
 
-        // immediately add message to the list
+        // immediately add message to the list and reset form
         setMessages(prev => [
             ...prev,
             {
@@ -137,13 +122,38 @@ function RenderMessages({
                 sender: {
                     id: user.accountId,
                     lowerCasedFullName: user.firstName.toLowerCase() + ' ' + user.lastName.toLowerCase(),
-                    role: user.role
+                    role: user.role,
+                    organization: {
+                        id: user.organizationId,
+                        name: user.organizationName,
+                    }
                 },
             }
         ]);
 
+        form.reset({
+            ...applicationMessageDefaultValues,
+            conversationId: conversationId,
+        });
+
         send({ formData: data });
     }
+
+    useEffect(() => {
+        if (messagesBottomRef.current) {
+            // scroll only the inline axis (horizontal) so it moves left/right
+            messagesBottomRef.current.scrollIntoView({
+                behavior: "smooth",
+                block: "nearest",   // no vertical scroll change
+                inline: "nearest",  // move horizontally just enough to see it
+            });
+        }
+    }, [messages]);
+
+    // update messages when defaultMessages change !important when switching between applications
+    useEffect(() => {
+        setMessages(defaultMessages || []);
+    }, [defaultMessages])
 
     return (
         <div className='border'>
@@ -151,32 +161,97 @@ function RenderMessages({
                 <ScrollArea className='h-[500px] p-4'>
                     <div className="flex flex-col gap-4">
                         {messages?.map((message) => (
-                            <div className="flex items-start gap-3 self-end" key={message.id}>
+                            <div
+                                className={cn("flex items-start gap-3 max-w-[60%]", message.sender.id === user.accountId ? "self-end" : "self-start")}
+                                key={message.id}
+                            >
                                 {
                                     message.sender.id !== user.accountId && (
-                                        <ProfileAvatar
-                                            src={undefined}
-                                            name={message.sender.lowerCasedFullName}
-                                        />
+                                        <HoverCard openDelay={100} closeDelay={100}>
+                                            <HoverCardTrigger asChild>
+                                                <Avatar>
+                                                    <AvatarFallback className={cn(message.sender.role === Role.SUPER_ADMIN && 'bg-primary text-primary-foreground')}>
+                                                        {getAcronym(message.sender.lowerCasedFullName)}
+                                                    </AvatarFallback>
+                                                </Avatar>
+                                            </HoverCardTrigger>
+                                            <HoverCardContent className="w-fit">
+                                                <div className="flex gap-4">
+                                                    <ProfileAvatar
+                                                        src={undefined}
+                                                        name={message.sender.lowerCasedFullName}
+                                                    />
+                                                    <div className="space-y-1">
+                                                        <h4 className="text-sm font-semibold capitalize">
+                                                            {message.sender.lowerCasedFullName}
+                                                        </h4>
+                                                        {message.sender.role === Role.SUPER_ADMIN ? (
+                                                            <p className='text-sm'>Super Admin at Abhyam CRM</p>
+                                                        ) : (
+                                                            <p className="text-sm">
+                                                                <span className='capitalize'>{message.sender.role}</span> at <span className='capitalize'>{message.sender.organization.name}</span>
+                                                            </p>
+                                                        )}
+                                                        {
+                                                            message.sender.role !== Role.SUPER_ADMIN && message.sender.createdAt && (
+                                                                <div className="text-muted-foreground text-xs">
+                                                                    Joined {formatDate(message.sender.createdAt, "MMMM yyyy")}
+                                                                </div>
+                                                            )
+                                                        }
+                                                    </div>
+                                                </div>
+                                            </HoverCardContent>
+                                        </HoverCard>
                                     )
                                 }
-                                <Card className="p-3 bg-secondary w-3/4 gap-2">
-                                    <p className="text-sm font-semibold">
-                                        {
-                                            message.sender.id !== user.accountId ? (
-                                                message.sender.lowerCasedFullName
-                                            ) : (
-                                                "You"
-                                            )
-                                        }
-                                        <span className="text-xs text-muted-foreground font-normal ml-2">
-                                            {formatDistanceToNow(new Date(message.createdAt))} ago
-                                        </span>
-                                    </p>
-                                    <p className="text-sm mt-1">{message.content}</p>
-                                </Card>
+                                <section className='w-fit'>
+                                    {
+                                        message.content && (
+                                            <div className="p-3 bg-secondary w-full">
+                                                <p className="text-sm whitespace-pre-wrap">{message.content}</p>
+                                            </div>
+                                        )
+                                    }
+                                    {
+                                        message.files.length > 0 && (
+                                            <div className='flex gap-2 mt-2'>
+                                                {
+                                                    message.files.map((file, index) => {
+                                                        const ext = file.split('.').pop();
+                                                        const fileType = ["png", "jpg", "jpeg", "gif", "webp"].includes(ext!)
+                                                            ? "image"
+                                                            : "file";
+
+                                                        return (
+                                                            (
+                                                                <Link
+                                                                    href={getObjectUrl(file.replace("temp/", ""))}
+                                                                    key={index}
+                                                                    target="_blank"
+                                                                    className="flex items-center gap-2 border p-3">
+                                                                    {
+                                                                        fileType === "image" ? (
+                                                                            <Image className='size-10' />
+                                                                        ) : (
+                                                                            <FileText className="size-10" />
+                                                                        )
+                                                                    }
+                                                                </Link>
+                                                            )
+                                                        )
+                                                    })
+                                                }
+                                            </div>
+                                        )
+                                    }
+                                    <span className="text-xs text-muted-foreground font-normal ml-2">
+                                        {formatDistanceToNow(new Date(message.createdAt))} ago
+                                    </span>
+                                </section>
                             </div>
                         ))}
+                        <div className='h-10' ref={messagesBottomRef} />
                     </div>
                 </ScrollArea>
             </Activity>
@@ -197,7 +272,9 @@ function RenderMessages({
                         <form onSubmit={form.handleSubmit(onSubmit)}>
                             <InputGroup>
                                 <InputGroupTextarea
+                                    key={form.formState.submitCount}
                                     placeholder="Write a comment..."
+                                    maxLength={500}
                                     {...form.register("content")}
                                 />
                                 <InputGroupAddon align="block-end">
@@ -284,6 +361,7 @@ function FileAttach({
                 onFilesUploaded(data.map(f => ({ fileName: f.filename })));
             }
             setUploadProgress(0);
+            setInputVal('')
         },
         onError: (error) => {
             setUploadProgress(0);
@@ -341,7 +419,7 @@ function FileAttach({
                 id={'file_attach'}
                 disabled={isUploading}
                 multiple
-                value={inputVal} // no need to track the value else throws error since the value will be registered by react-hook-form
+                value={inputVal}
                 onChange={handleChange}
                 accept="image/*,application/pdf"
                 className="sr-only -left-[100000px]" // negative positioning is to fix overflow scroll issue
