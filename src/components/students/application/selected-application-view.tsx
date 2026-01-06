@@ -2,7 +2,7 @@ import { useGetApplication } from "@/lib/data-access/application-data-hooks";
 import { useSearchParams } from "next/navigation";
 import { Separator } from '@/components/ui/separator';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Building2, CalendarDays, CheckCircle2, Hash } from "lucide-react";
+import { Building2, CalendarDays, CheckCircle2, FileX, Hash } from "lucide-react";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { EApplicationStatus } from "@/lib/types/application.type";
 import { Badge } from "@/components/ui/badge";
@@ -11,6 +11,7 @@ import ApplicationConversation from "./application-conversation";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
 import { Skeleton } from "@/components/ui/skeleton";
+import { Empty, EmptyDescription, EmptyHeader, EmptyMedia, EmptyTitle } from "@/components/ui/empty"
 
 export default function SelectedApplicationView() {
     const searchParams = useSearchParams();
@@ -32,7 +33,17 @@ export default function SelectedApplicationView() {
     if (isLoading) return <Loading />;
 
     if (!application) return (
-        <div>Application not found</div>
+        <Empty>
+            <EmptyHeader>
+                <EmptyMedia variant="icon">
+                    <FileX />
+                </EmptyMedia>
+                <EmptyTitle>Application not found</EmptyTitle>
+                <EmptyDescription>
+                    The application you are looking for does not exist. This may be because the application has been deleted or you do not have access to it.
+                </EmptyDescription>
+            </EmptyHeader>
+        </Empty>
     )
 
     return (

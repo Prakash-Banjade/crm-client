@@ -2,6 +2,9 @@ import { EMonth, PaginatedResponse, Role } from ".";
 
 
 export enum EApplicationStatus {
+    // --- STAGE 0: SUBMISSION ---
+    Received_Application_At_Abhyam = 'received_application_at_abhyam',
+
     // --- STAGE 1: SUBMISSION ---
     Application_In_Progress = 'application_in_progress',
     // Represents the "Action Required" bucket (combining all specific pending types)
