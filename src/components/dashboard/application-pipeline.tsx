@@ -45,7 +45,7 @@ export default function ApplicationPipeline() {
                     </SelectContent>
                 </Select>
             </CardHeader>
-            <CardContent className="p-6 space-y-8">
+            <CardContent className="p-6 pb-0 space-y-8">
                 <div className="space-y-4">
                     <div className="flex justify-between text-sm">
                         <span className="font-medium">Under Review (Lopho)</span>

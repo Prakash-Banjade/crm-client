@@ -141,12 +141,7 @@ function RenderMessages({
 
     useEffect(() => {
         if (messagesBottomRef.current) {
-            // scroll only the inline axis (horizontal) so it moves left/right
-            messagesBottomRef.current.scrollIntoView({
-                behavior: "smooth",
-                block: "nearest",   // no vertical scroll change
-                inline: "nearest",  // move horizontally just enough to see it
-            });
+            messagesBottomRef.current.scrollIntoView({ behavior: "smooth" });
         }
     }, [messages]);
 
@@ -274,6 +269,7 @@ function RenderMessages({
                                 <InputGroupTextarea
                                     key={form.formState.submitCount}
                                     placeholder="Write a comment..."
+                                    minLength={1}
                                     maxLength={500}
                                     {...form.register("content")}
                                 />

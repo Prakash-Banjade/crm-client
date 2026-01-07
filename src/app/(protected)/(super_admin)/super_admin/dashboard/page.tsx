@@ -1,23 +1,8 @@
 "use client";
 
-import React from 'react';
-import {
-    Users,
-    FileText,
-    BookOpen,
-    Search,
-    Plus,
-    Building2,
-    TrendingUp,
-    ArrowUpRight,
-    UserCheck,
-    Globe2,
-    MoreHorizontal,
-    Bell
-} from 'lucide-react';
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
+import { Search } from 'lucide-react';
+import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Separator } from "@/components/ui/separator";
 import { Progress } from "@/components/ui/progress";
@@ -28,7 +13,8 @@ import ApplicationPipeline from '@/components/dashboard/application-pipeline';
 import { useAuth } from '@/context/auth-provider';
 import { Role } from '@/lib/types';
 import DashboardOrganizationsShortcut from '@/components/dashboard/organizations-shortcut';
-
+import DashboardChatBox from '@/components/dashboard/chat-box';
+import DashboardRecentQueries from '@/components/dashboard/recent-queries';
 
 export default function Page() {
     const { user } = useAuth();
@@ -72,24 +58,7 @@ export default function Page() {
                     {/* Quick Management Shortcuts */}
                     <div className="space-y-6">
                         <DashboardOrganizationsShortcut />
-
-                        <Card className="border-none shadow-sm">
-                            <CardHeader className="pb-2">
-                                <CardTitle className="text-lg">Recent Queries</CardTitle>
-                            </CardHeader>
-                            <CardContent className="space-y-4">
-                                {[1, 2, 3].map((_, i) => (
-                                    <div key={i} className="flex items-center gap-3 group cursor-pointer">
-                                        <div className="w-2 h-2 rounded-full bg-blue-500" />
-                                        <div className="flex-1">
-                                            <p className="text-sm font-medium leading-none">Nursing Course Intake Question</p>
-                                            <p className="text-xs text-slate-400 mt-1">2 mins ago • University of Sunderland</p>
-                                        </div>
-                                        <ArrowUpRight className="w-4 h-4 text-slate-300 group-hover:text-blue-500" />
-                                    </div>
-                                ))}
-                            </CardContent>
-                        </Card>
+                        <DashboardRecentQueries />
                     </div>
                 </div>
             </main>
@@ -152,12 +121,7 @@ export default function Page() {
                     </div>
                 </div>
 
-                <div className="bg-slate-900 rounded-2xl p-6 text-white text-center relative overflow-hidden">
-                    <div className="absolute -top-10 -right-10 w-24 h-24 bg-white/10 rounded-full blur-2xl" />
-                    <p className="text-xs text-slate-400 mb-2">System Status</p>
-                    <p className="text-sm font-medium mb-4">All services are operational</p>
-                    <Button variant="secondary" size="sm" className="w-full text-xs">View API Logs</Button>
-                </div>
+                <DashboardChatBox />
             </aside>
         </div>
     );

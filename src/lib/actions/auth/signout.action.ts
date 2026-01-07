@@ -1,7 +1,6 @@
 "use server";
 
 import { cookies } from "next/headers";
-import { redirect } from "next/navigation";
 import { serverFetch } from "@/lib/server-fetch";
 import { CookieKey } from "@/lib/constants";
 

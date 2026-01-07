@@ -31,4 +31,6 @@ export const enum QueryKey {
     APPLICATIONS = "applications",
     MESSAGES = "messages",
     NOTIFICATIONS = "notifications",
+    SUPPORT_CHAT = "support-chat",
+    SUPPORT_CHAT_MESSAGES = "support-chat-messages",
 };
