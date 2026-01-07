@@ -14,6 +14,7 @@ type RecentQuery = {
     sender: string;
     senderRole: Role;
     organizationName: string;
+    supportChatId: string;
 }
 
 export default function DashboardRecentQueries() {
@@ -21,6 +22,8 @@ export default function DashboardRecentQueries() {
         endpoint: `${QueryKey.DASHBOARD}/support-chat-messages`,
         queryKey: [QueryKey.DASHBOARD, 'support-chat-messages'],
     });
+
+    if (isLoading) return <div>Loading...</div>;
 
     return (
         <Card className="border-none shadow-sm">
@@ -33,10 +36,10 @@ export default function DashboardRecentQueries() {
                         <p className="text-center text-muted-foreground">No recent queries</p>
                     ) : (
                         data?.map((query) => (
-                            <Link href={`/support-chat/${query.id}`} key={query.id} className="flex items-center gap-3 group cursor-pointer">
+                            <Link href={`/support-chat/${query.supportChatId}`} key={query.id} className="flex items-center gap-3 group cursor-pointer">
                                 <div className="w-2 h-2 rounded-full bg-blue-500" />
                                 <div className="flex-1">
-                                    <p className="text-sm font-medium leading-none">By {query.sender} ({query.senderRole})</p>
+                                    <p className="text-sm font-medium leading-none capitalize">By {query.sender} ({query.senderRole})</p>
                                     <p className="text-xs text-slate-400 mt-1">{formatDistanceToNow(query.createdAt)} ago • {query.organizationName}</p>
                                 </div>
                                 <ArrowUpRight className="w-4 h-4 text-slate-300 group-hover:text-blue-500 group-hover:rotate-45 origin-center transition-all" />

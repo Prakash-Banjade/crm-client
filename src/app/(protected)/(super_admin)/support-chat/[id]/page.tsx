@@ -3,10 +3,10 @@
 import { TCurrentUser, useAuth } from '@/context/auth-provider';
 import { useServerAction } from '@/hooks/use-server-action';
 import { useFetch } from '@/hooks/useFetch';
-import { sendSupportMessage } from '@/lib/actions/support-chat.action';
+import { markAsSeen, sendSupportMessage } from '@/lib/actions/support-chat.action';
 import { QueryKey } from '@/lib/react-query/queryKeys';
 import { supportChatDefaultValues, supportChatSchema, TSupportChatSchema } from '@/lib/schema/support-chat.schema';
-import { TSupportChatMessage, TSupportChatMessagesResponse } from '@/lib/types/support-chat.type';
+import { TSingleSupportChat, TSupportChatMessage, TSupportChatMessagesResponse } from '@/lib/types/support-chat.type';
 import { cn, createQueryString } from '@/lib/utils';
 import { zodResolver } from '@hookform/resolvers/zod';
 import React, { use, useEffect, useRef, useState } from 'react'
@@ -16,6 +16,9 @@ import { ScrollArea } from '@/components/ui/scroll-area';
 import { Spinner } from '@/components/ui/spinner';
 import { Send } from 'lucide-react';
 import { formatDate, isSameYear, isToday } from 'date-fns';
+import { ProfileAvatar } from '@/components/ui/avatar';
+import { Badge } from '@/components/ui/badge';
+import { Skeleton } from '@/components/ui/skeleton';
 
 type Props = {
     params: Promise<{
@@ -64,6 +67,7 @@ export default function Page({ params }: Props) {
                     lowerCasedFullName: user.firstName.toLowerCase() + ' ' + user.lastName.toLowerCase(),
                     role: user.role,
                 },
+                seenAt: null,
             }
         ]);
 
@@ -81,6 +85,8 @@ export default function Page({ params }: Props) {
 
     return (
         <div className='bg-card flex flex-col h-[calc(100%-7px)] border'>
+            <ChatHeader id={id} />
+
             <section className='flex-1'>
                 <RenderMessages
                     user={user}
@@ -127,6 +133,51 @@ export default function Page({ params }: Props) {
     )
 }
 
+function ChatHeader({ id }: { id: string }) {
+    const { data, isLoading } = useFetch<TSingleSupportChat>({
+        endpoint: `${QueryKey.SUPPORT_CHAT}/${id}`,
+        queryKey: [QueryKey.SUPPORT_CHAT, id],
+    });
+
+    if (isLoading) return (
+        <ChatHeaderSkeleton />
+    );
+
+    if (!data) return null;
+
+    return (
+        <header className='bg-secondary p-4 flex items-center gap-6'>
+            <ProfileAvatar
+                src={undefined}
+                name={data.account.lowerCasedFullName}
+                className="size-12"
+            />
+            <section>
+                <h2 className="font-semibold capitalize">{data.account.lowerCasedFullName}</h2>
+                <p className="text-sm">{data.account.organization.name}</p>
+            </section>
+            <Badge
+                variant="outline"
+                className="capitalize"
+            >
+                {data.account.role}
+            </Badge>
+        </header>
+    )
+}
+
+function ChatHeaderSkeleton() {
+    return (
+        <header className='bg-secondary/10 p-4 flex items-center gap-6'>
+            <Skeleton className="size-12 rounded-full" />
+            <section className='flex-1 space-y-2'>
+                <Skeleton className="h-5 w-[150px]" />
+                <Skeleton className="h-4 w-[100px]" />
+            </section>
+        </header>
+    )
+}
+
 function RenderMessages({
     messages,
     user,
@@ -143,14 +194,25 @@ function RenderMessages({
     const { data, isLoading } = useFetch<TSupportChatMessagesResponse>({
         endpoint: QueryKey.SUPPORT_CHAT_MESSAGES,
         queryString: createQueryString({
-            supportChatId: id
+            supportChatId: id,
+            take: 30
         }),
         queryKey: [QueryKey.SUPPORT_CHAT_MESSAGES, id],
+    });
+
+    const { mutate: markSeen } = useServerAction({
+        action: markAsSeen,
+        toastOnSuccess: false,
+        toastOnError: false,
     });
 
     useEffect(() => {
         if (data?.data) {
             setMessages(data.data);
+
+            // mark last message as seen
+            const lastMessageId = data.data.at(-1)?.id;
+            if (lastMessageId) markSeen(lastMessageId);
         }
     }, [data]);
 
@@ -163,7 +225,7 @@ function RenderMessages({
     return (
         <>
             <div className="flex-1 overflow-y-auto bg-card">
-                <ScrollArea className='h-[calc(100vh-220px)] p-4'>
+                <ScrollArea className='h-[calc(100vh-300px)] p-4'>
                     {messages.length === 0 ? (
                         <div className="text-center text-muted-foreground mt-8">
                             <p>Start a conversation with our support team!</p>
@@ -190,7 +252,7 @@ function RenderMessages({
                                         >
                                             <p className="whitespace-pre-wrap">{message.content}</p>
                                         </div>
-                                        <span className="text-xs opacity-70 mt-1 block">
+                                        <span className={cn("text-xs opacity-70 mt-1 block", message.sender.id === user.accountId ? 'text-right' : 'text-left')}>
                                             {
                                                 isToday(message.createdAt)
                                                     ? formatDate(message.createdAt, 'h:mm a')

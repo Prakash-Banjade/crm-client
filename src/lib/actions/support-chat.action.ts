@@ -12,3 +12,11 @@ export async function sendSupportMessage(formData: TSupportChatSchema): Promise<
         method: "POST",
     })
 }
+
+export async function markAsSeen(messageId: string): Promise<ActionResponse> {
+    return await serverMutate({
+        body: {},
+        endpoint: `/${QueryKey.SUPPORT_CHAT_MESSAGES}/${messageId}/seen`,
+        method: "PATCH",
+    })
+}
