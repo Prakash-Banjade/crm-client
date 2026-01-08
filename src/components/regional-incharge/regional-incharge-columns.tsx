@@ -28,21 +28,20 @@ export const regionalInchargeColumns: ColumnDef<TRegionalIncharge>[] = [
         },
         cell: ({ row }) => {
             return <div className="flex gap-4 items-center w-fit">
-                {
-                    row.original.profileImage ? (
-                        <ProfileAvatar
-                            name={row.original.name}
-                            src={getObjectUrl(row.original.profileImage)}
-                            className="size-10"
-                        />
-                    ) : (
-                        <div className="size-10 grid place-items-center">
-                            <User className="size-8" />
-                        </div>
-                    )
-                }
+                <ProfileAvatar
+                    name={row.original.name}
+                    src={row.original.profileImage ? getObjectUrl(row.original.profileImage) : ""}
+                    className="size-10"
+                />
                 <span className="font-medium">{row.original.name}</span>
             </div>
+        }
+    },
+    {
+        accessorKey: "role",
+        header: "Role",
+        cell: ({ row }) => {
+            return <span className="font-medium">{row.original.role}</span>
         }
     },
     {

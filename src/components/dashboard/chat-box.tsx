@@ -8,7 +8,7 @@ import { MessageCircle, Send, X } from "lucide-react";
 import { TSupportChatMessage, TSupportChatMessagesResponse } from "@/lib/types/support-chat.type";
 import { useFetch } from "@/hooks/useFetch";
 import { QueryKey } from "@/lib/react-query/queryKeys";
-import { cn } from "@/lib/utils";
+import { cn, createQueryString } from "@/lib/utils";
 import { useServerAction } from "@/hooks/use-server-action";
 import { sendSupportMessage } from "@/lib/actions/support-chat.action";
 import { useForm } from "react-hook-form";
@@ -18,6 +18,9 @@ import { InputGroup, InputGroupAddon, InputGroupButton, InputGroupTextarea } fro
 import { Spinner } from "../ui/spinner";
 import { ScrollArea } from "../ui/scroll-area";
 import { formatDate, isSameYear, isToday } from "date-fns";
+import { Textarea } from "../ui/textarea";
+
+const DEFAULT_TAKE = 30;
 
 export default function DashboardChatBox() {
     const { user } = useAuth();
@@ -28,7 +31,10 @@ export default function DashboardChatBox() {
         queryKey: [QueryKey.SUPPORT_CHAT_MESSAGES],
         options: {
             enabled: (!!user && user?.role !== Role.SUPER_ADMIN && isChatOpen)
-        }
+        },
+        queryString: createQueryString({
+            take: DEFAULT_TAKE,
+        })
     });
 
     if (!user || user?.role === Role.SUPER_ADMIN) return null; // this is not for super admin
@@ -59,7 +65,7 @@ export default function DashboardChatBox() {
                         </button>
                     </div>
 
-                    <RenderMessages initialMessages={data?.data || []} user={user} isLoading={isLoading} />
+                    <RenderMessages initialMessages={data?.data.toReversed() || []} user={user} isLoading={isLoading} />
 
                 </div>
             </Activity>
@@ -79,6 +85,7 @@ function RenderMessages({
 }) {
     const [messages, setMessages] = useState<TSupportChatMessage[]>(initialMessages);
     const messagesEndRef = useRef<HTMLDivElement>(null);
+    const textareaRef = useRef<HTMLTextAreaElement>(null);
 
     const form = useForm<TSupportChatSchema>({
         resolver: zodResolver(supportChatSchema),
@@ -111,6 +118,7 @@ function RenderMessages({
                     lowerCasedFullName: user.firstName.toLowerCase() + ' ' + user.lastName.toLowerCase(),
                     role: user.role,
                 },
+                seenAt: null,
             }
         ]);
 
@@ -119,9 +127,8 @@ function RenderMessages({
             supportChatId: data.supportChatId,
         });
 
-        form.setFocus("content");
-
         send(data);
+        textareaRef.current?.focus();
     }
 
     useEffect(() => {
@@ -181,12 +188,20 @@ function RenderMessages({
                 <form onSubmit={form.handleSubmit(onSubmit)} className="flex gap-2">
                     <InputGroup>
                         <InputGroupTextarea
-                            key={form.formState.submitCount}
+                            ref={textareaRef}
                             placeholder="Type your message here..."
                             minLength={1}
                             maxLength={500}
                             className="max-h-40"
-                            {...form.register("content")}
+                            value={form.watch("content")}
+                            onChange={(e) => form.setValue("content", e.target.value)}
+                            onKeyDown={e => {
+                                // if ctrl + enter, submit form
+                                if (e.key === 'Enter' && e.ctrlKey) {
+                                    e.preventDefault();
+                                    form.handleSubmit(onSubmit)();
+                                }
+                            }}
                         />
                         <InputGroupAddon align="block-end">
                             <InputGroupButton

@@ -1,16 +1,17 @@
 import { Button } from '../ui/button';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '../ui/dropdown-menu';
-import { Bell, FileUser, MessageSquarePlus, UserPlus } from 'lucide-react';
+import { Bell, FileUser, MessageCircle, MessageSquarePlus, UserPlus } from 'lucide-react';
 import { useFetch } from '@/hooks/useFetch';
 import { QueryKey } from '@/lib/react-query/queryKeys';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { useAxios } from '@/lib/axios-client';
 import { useRouter } from 'next/navigation';
-import { ENotificationType, NotificationResponse } from '@/lib/types/notification.type';
+import { ENotificationType, NotificationResponse, TNotification } from '@/lib/types/notification.type';
 import { cn } from '@/lib/utils';
 import { formatDate } from 'date-fns';
 import { useNotificationStream } from '@/hooks/useNotificationStream';
 import { ScrollArea } from '../ui/scroll-area';
+import Link from 'next/link';
 
 export default function NotificationBellIcon() {
     const { data } = useFetch<{ totalCount: number, unreadCount: number }>({
@@ -58,6 +59,7 @@ const getNotificationIcon = (type: ENotificationType) => {
         case ENotificationType.APPLICATION_SUBMITTED: return <FileUser className="size-5 text-primary" />;
         case ENotificationType.STUDENT_CREATED: return <UserPlus className="size-5 text-blue-500" />;
         case ENotificationType.CONVERSATION: return <MessageSquarePlus className="size-5 text-green-500" />;
+        case ENotificationType.SUPPORT_CHAT_MESSAGE: return <MessageCircle className="size-5 text-cyan-500" />;
         default: return <Bell className="size-5 text-gray-500" />;
     }
 };
@@ -83,9 +85,9 @@ export function NotificationsList() {
         }
     });
 
-    const handleNotificationClick = (n: any) => {
-        // Optimistic Navigation: Navigate immediately
-        router.push(n.url);
+    const handleNotificationClick = (n: TNotification) => {
+        // // Optimistic Navigation: Navigate immediately
+        // router.push(n.url);
 
         // Mark as seen in background only if not already seen
         if (!n.seenAt) {
@@ -106,30 +108,33 @@ export function NotificationsList() {
                     key={n.id}
                     onClick={() => handleNotificationClick(n)}
                     className={cn(
-                        "cursor-pointer flex items-start gap-4 p-3 mx-2 rounded-lg transition-colors",
+                        "flex items-start gap-4 p-3 mx-2 rounded-lg transition-colors hover:bg-accent cursor-pointer",
                         n.seenAt ? "opacity-60" : "bg-muted/30 font-medium"
                     )}
+                    asChild
                 >
-                    <div className="shrink-0 mt-1">
-                        {getNotificationIcon(n.type)}
-                    </div>
-                    <div className="grow space-y-1">
-                        <div className="flex justify-between items-start gap-2">
-                            <p className="text-sm leading-snug text-foreground">
-                                {n.title}
+                    <Link href={n.url} onClick={() => handleNotificationClick(n)}>
+                        <div className="shrink-0 mt-1">
+                            {getNotificationIcon(n.type)}
+                        </div>
+                        <div className="grow space-y-1">
+                            <div className="flex justify-between items-start gap-2">
+                                <p className="text-sm leading-snug text-foreground">
+                                    {n.title}
+                                </p>
+                            </div>
+                            <p className="text-xs text-muted-foreground line-clamp-2">
+                                {n.description}
+                            </p>
+                            <p className="text-[10px] text-muted-foreground/70">
+                                {formatDate(new Date(n.date), 'dd MMM yyyy, h:mm a')}
                             </p>
                         </div>
-                        <p className="text-xs text-muted-foreground line-clamp-2">
-                            {n.description}
-                        </p>
-                        <p className="text-[10px] text-muted-foreground/70">
-                            {formatDate(new Date(n.date), 'dd MMM yyyy, h:mm a')}
-                        </p>
-                    </div>
-                    {/* Visual indicator for unread */}
-                    {!n.seenAt && (
-                        <span className="size-2 bg-blue-600 rounded-full mt-2 shrink-0" />
-                    )}
+                        {/* Visual indicator for unread */}
+                        {!n.seenAt && (
+                            <span className="size-2 bg-blue-600 rounded-full mt-2 shrink-0" />
+                        )}
+                    </Link>
                 </DropdownMenuItem>
             ))}
         </div>

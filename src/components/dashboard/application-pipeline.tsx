@@ -6,6 +6,8 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '../ui
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '../ui/select';
 import { Progress } from '../ui/progress';
 import { Skeleton } from '../ui/skeleton';
+import { useState } from 'react';
+import { createQueryString } from '@/lib/utils';
 
 type ApplicationPipelineResponse = {
     totalActiveApplicationsCount: number,
@@ -17,18 +19,26 @@ type ApplicationPipelineResponse = {
 }
 
 export default function ApplicationPipeline() {
+    const [year, setYear] = useState(new Date().getFullYear().toString());
+
     const { data, isLoading } = useFetch<ApplicationPipelineResponse>({
         endpoint: `${QueryKey.DASHBOARD}/application-pipeline`,
-        queryKey: [QueryKey.DASHBOARD, 'application-pipeline'],
+        queryKey: [QueryKey.DASHBOARD, 'application-pipeline', year],
+        queryString: createQueryString({
+            year
+        })
     });
 
     if (isLoading) return <Loading />;
 
     if (!data) return null;
 
-    const underReviewPercentage = Math.round((data.applicationsUnderReview / data.totalActiveApplicationsCount) * 100);
-    const visaProcessPercentage = Math.round((data.applicationsInVisaProcess / data.totalActiveApplicationsCount) * 100);
-    const finalEnrollmentPercentage = Math.round((data.applicationsInClosure / data.totalActiveApplicationsCount) * 100);
+    const underReviewPercentage = data.applicationsUnderReview === 0 ? 0 : Math.round((data.applicationsUnderReview / data.totalActiveApplicationsCount) * 100);
+    const visaProcessPercentage = data.applicationsInVisaProcess === 0 ? 0 : Math.round((data.applicationsInVisaProcess / data.totalActiveApplicationsCount) * 100);
+    const finalEnrollmentPercentage = data.applicationsInClosure === 0 ? 0 : Math.round((data.applicationsInClosure / data.totalActiveApplicationsCount) * 100);
+
+    const PAST_YEARS = 5;
+    const FUTURE_YEARS = 4;
 
     return (
         <Card className="lg:col-span-2 border-none shadow-sm">
@@ -37,11 +47,23 @@ export default function ApplicationPipeline() {
                     <CardTitle>Application Pipeline</CardTitle>
                     <CardDescription>Visual tracking of current application stages</CardDescription>
                 </div>
-                <Select defaultValue="2026">
-                    <SelectTrigger className="w-32"><SelectValue /></SelectTrigger>
+                <Select defaultValue={year} onValueChange={setYear}>
+                    <SelectTrigger className="w-32" title="Intake year"><SelectValue placeholder="Intake year" /></SelectTrigger>
                     <SelectContent>
-                        <SelectItem value="2026">Year 2026</SelectItem>
-                        <SelectItem value="2025">Year 2025</SelectItem>
+                        {
+                            Array.from({ length: PAST_YEARS }).map((_, index) => (
+                                <SelectItem key={index} value={(new Date().getFullYear() - (PAST_YEARS - index)).toString()}>
+                                    {new Date().getFullYear() - (PAST_YEARS - index)}
+                                </SelectItem>
+                            ))
+                        }
+                        {
+                            Array.from({ length: FUTURE_YEARS }).map((_, index) => (
+                                <SelectItem key={index} value={(new Date().getFullYear() + index).toString()}>
+                                    {new Date().getFullYear() + index}
+                                </SelectItem>
+                            ))
+                        }
                     </SelectContent>
                 </Select>
             </CardHeader>

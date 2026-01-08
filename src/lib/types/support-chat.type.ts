@@ -16,7 +16,6 @@ export type TSupportChatMessagesResponse = PaginatedResponse<TSupportChatMessage
 
 export type TSupportChat = {
     id: string
-    latestMessageContent: string
     latestMessageCreatedAt: string
     organizationId: string
     organizationName: string;
@@ -24,6 +23,7 @@ export type TSupportChat = {
     senderId: string;
     senderRole: Role
     latestMessageSeenAt: string | null;
+    latestMessageSenderId: string;
 }
 
 export type TSupportChatResponse = PaginatedResponse<TSupportChat>;

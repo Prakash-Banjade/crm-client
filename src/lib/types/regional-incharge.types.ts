@@ -7,7 +7,7 @@ export type TRegionalIncharge = {
   phone: string;
   profileImage: string | null;
   email: string;
-
+  role: string;
   createdAt: string;
 };
 

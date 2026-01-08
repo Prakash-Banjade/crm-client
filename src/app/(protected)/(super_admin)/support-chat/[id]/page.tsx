@@ -6,7 +6,7 @@ import { useFetch } from '@/hooks/useFetch';
 import { markAsSeen, sendSupportMessage } from '@/lib/actions/support-chat.action';
 import { QueryKey } from '@/lib/react-query/queryKeys';
 import { supportChatDefaultValues, supportChatSchema, TSupportChatSchema } from '@/lib/schema/support-chat.schema';
-import { TSingleSupportChat, TSupportChatMessage, TSupportChatMessagesResponse } from '@/lib/types/support-chat.type';
+import { TSingleSupportChat, TSupportChatMessage, TSupportChatMessagesResponse, TSupportChatResponse } from '@/lib/types/support-chat.type';
 import { cn, createQueryString } from '@/lib/utils';
 import { zodResolver } from '@hookform/resolvers/zod';
 import React, { use, useEffect, useRef, useState } from 'react'
@@ -19,6 +19,9 @@ import { formatDate, isSameYear, isToday } from 'date-fns';
 import { ProfileAvatar } from '@/components/ui/avatar';
 import { Badge } from '@/components/ui/badge';
 import { Skeleton } from '@/components/ui/skeleton';
+import { useParams } from 'next/navigation';
+import { InfiniteData, useInfiniteQuery, useQueryClient } from '@tanstack/react-query';
+import { useAxios } from '@/lib/axios-client';
 
 type Props = {
     params: Promise<{
@@ -28,8 +31,9 @@ type Props = {
 
 export default function Page({ params }: Props) {
     const { id } = use(params);
-    const [messages, setMessages] = useState<TSupportChatMessage[]>([]);
     const { user } = useAuth();
+    const queryClient = useQueryClient();
+    const textareaRef = useRef<HTMLTextAreaElement>(null);
 
     const form = useForm<TSupportChatSchema>({
         resolver: zodResolver(supportChatSchema),
@@ -42,12 +46,20 @@ export default function Page({ params }: Props) {
     const { isPending: isSending, mutate: send } = useServerAction({
         action: sendSupportMessage,
         onError: () => {
-            // since last message was added to messages, remove it on error
-            setMessages(prev => {
-                const array = [...prev];
-                array.pop();
-                return array;
-            })
+            // rollback optimistic update
+            queryClient.setQueryData<InfiniteData<TSupportChatMessagesResponse>>(
+                [QueryKey.SUPPORT_CHAT_MESSAGES, id],
+                (oldData) => {
+                    if (!oldData || !oldData.pages.length) return oldData;
+                    const newPages = [...oldData.pages];
+                    // Remove the optimistically added message (first item of first page)
+                    newPages[0] = {
+                        ...newPages[0],
+                        data: newPages[0].data.slice(1)
+                    };
+                    return { ...oldData, pages: newPages };
+                }
+            );
         },
         toastOnSuccess: false,
     });
@@ -55,28 +67,54 @@ export default function Page({ params }: Props) {
     function onSubmit(data: TSupportChatSchema) {
         if (!user) return;
 
-        // immediately add message to the list and reset form
-        setMessages(prev => [
-            ...prev,
-            {
-                id: crypto.randomUUID(),
-                content: data.content,
-                createdAt: new Date().toISOString(),
-                sender: {
-                    id: user.accountId,
-                    lowerCasedFullName: user.firstName.toLowerCase() + ' ' + user.lastName.toLowerCase(),
-                    role: user.role,
-                },
-                seenAt: null,
+        const newMessage: TSupportChatMessage = {
+            id: crypto.randomUUID(),
+            content: data.content,
+            createdAt: new Date().toISOString(),
+            sender: {
+                id: user.accountId,
+                lowerCasedFullName: user.firstName.toLowerCase() + ' ' + user.lastName.toLowerCase(),
+                role: user.role,
+            },
+            seenAt: null,
+        };
+
+        // Optimistic update
+        queryClient.setQueryData<InfiniteData<TSupportChatMessagesResponse>>(
+            [QueryKey.SUPPORT_CHAT_MESSAGES, id],
+            (oldData) => {
+                if (!oldData) {
+                    return {
+                        pages: [{
+                            data: [newMessage],
+                            meta: {
+                                hasNextPage: false, hasPreviousPage: false, itemCount: 1, page: 1, pageCount: 1, take: 10
+                            }
+                        }],
+                        pageParams: [1]
+                    } as InfiniteData<TSupportChatMessagesResponse>;
+                }
+
+                const newPages = [...oldData.pages];
+                if (newPages.length > 0) {
+                    newPages[0] = {
+                        ...newPages[0],
+                        data: [newMessage, ...newPages[0].data]
+                    };
+                }
+                return {
+                    ...oldData,
+                    pages: newPages,
+                };
             }
-        ]);
+        );
 
         form.reset({
             ...supportChatDefaultValues,
             supportChatId: data.supportChatId,
         });
 
-        form.setFocus("content");
+        textareaRef.current?.focus();
 
         send(data);
     }
@@ -90,9 +128,7 @@ export default function Page({ params }: Props) {
             <section className='flex-1'>
                 <RenderMessages
                     user={user}
-                    id={id}
-                    messages={messages}
-                    setMessages={setMessages}
+                    supportChatId={id}
                 />
             </section>
 
@@ -100,12 +136,20 @@ export default function Page({ params }: Props) {
                 <form onSubmit={form.handleSubmit(onSubmit)} className="flex gap-2">
                     <InputGroup>
                         <InputGroupTextarea
-                            key={form.formState.submitCount}
+                            ref={textareaRef}
                             placeholder="Type your message here..."
                             minLength={1}
                             maxLength={500}
                             className="max-h-40"
-                            {...form.register("content")}
+                            value={form.watch("content")}
+                            onChange={(e) => form.setValue("content", e.target.value)}
+                            onKeyDown={e => {
+                                // if ctrl + enter, submit form
+                                if (e.key === 'Enter' && e.ctrlKey) {
+                                    e.preventDefault();
+                                    form.handleSubmit(onSubmit)();
+                                }
+                            }}
                         />
                         <InputGroupAddon align="block-end">
                             <InputGroupButton
@@ -178,27 +222,47 @@ function ChatHeaderSkeleton() {
     )
 }
 
+const DEFAULT_TAKE = 30;
+
 function RenderMessages({
-    messages,
     user,
-    id,
-    setMessages,
+    supportChatId,
 }: {
     user: NonNullable<TCurrentUser>
-    id: string
-    messages: TSupportChatMessage[]
-    setMessages: React.Dispatch<React.SetStateAction<TSupportChatMessage[]>>
+    supportChatId: string
 }) {
+    const queryClient = useQueryClient();
+    const axios = useAxios();
     const messagesEndRef = useRef<HTMLDivElement>(null);
+    const viewportRef = useRef<HTMLDivElement>(null);
+    const [prevScrollHeight, setPrevScrollHeight] = useState(0);
 
-    const { data, isLoading } = useFetch<TSupportChatMessagesResponse>({
-        endpoint: QueryKey.SUPPORT_CHAT_MESSAGES,
-        queryString: createQueryString({
-            supportChatId: id,
-            take: 30
-        }),
-        queryKey: [QueryKey.SUPPORT_CHAT_MESSAGES, id],
+    const {
+        data,
+        isLoading,
+        fetchNextPage,
+        hasNextPage,
+        isFetchingNextPage
+    } = useInfiniteQuery({
+        queryKey: [QueryKey.SUPPORT_CHAT_MESSAGES, supportChatId],
+        queryFn: async ({ pageParam = 1 }) => {
+            const queryString = createQueryString({
+                supportChatId,
+                take: DEFAULT_TAKE,
+                page: pageParam
+            });
+            const response = await axios.get<TSupportChatMessagesResponse>(`/${QueryKey.SUPPORT_CHAT_MESSAGES}?${queryString}`);
+            return response.data;
+        },
+        initialPageParam: 1,
+        getNextPageParam: (lastPage) => {
+            return lastPage.meta.hasNextPage ? lastPage.meta.page + 1 : undefined;
+        },
     });
+
+    const messages = data?.pages.flatMap((page) => page.data).slice().reverse() ?? [];
+
+    const lastMarkedSeenIdRef = useRef<string | null>(null);
 
     const { mutate: markSeen } = useServerAction({
         action: markAsSeen,
@@ -207,36 +271,121 @@ function RenderMessages({
     });
 
     useEffect(() => {
-        if (data?.data) {
-            setMessages(data.data);
+        if (data?.pages[0]?.data.length) {
+            // mark latest message as seen (first item in first page)
+            const latestMessage = data.pages[0].data[0];
+            const lastMessageId = latestMessage?.id;
 
-            // mark last message as seen
-            const lastMessageId = data.data.at(-1)?.id;
-            if (lastMessageId) markSeen(lastMessageId);
+            if (lastMessageId && !latestMessage.seenAt && latestMessage.sender.id !== user.accountId && lastMarkedSeenIdRef.current !== lastMessageId) {
+                lastMarkedSeenIdRef.current = lastMessageId;
+                markSeen(lastMessageId);
+
+                // update the corresponding conversation lastMessageSeenAt on the side
+                queryClient.setQueryData([QueryKey.SUPPORT_CHAT], (oldData: InfiniteData<TSupportChatResponse, unknown> | undefined) => {
+                    if (!oldData) return oldData;
+
+                    return {
+                        ...oldData,
+                        pages: oldData.pages.map((page) => {
+                            return {
+                                ...page,
+                                data: page.data.map((item) => {
+                                    if (item.id === supportChatId && !item.latestMessageSeenAt) {
+                                        return {
+                                            ...item,
+                                            latestMessageSeenAt: new Date().toISOString(),
+                                        }
+                                    }
+                                    return item;
+                                })
+                            }
+                        })
+                    }
+                });
+            }
         }
-    }, [data]);
+    }, [data, supportChatId, queryClient, markSeen, user.accountId]);
 
+    // Handle scroll to load more
     useEffect(() => {
-        if (messagesEndRef.current) {
-            messagesEndRef.current.scrollIntoView({ behavior: 'smooth' });
+        const viewport = viewportRef.current;
+        if (!viewport) return;
+
+        const handleScroll = () => {
+            if (viewport.scrollTop === 0 && hasNextPage && !isFetchingNextPage) {
+                setPrevScrollHeight(viewport.scrollHeight);
+                fetchNextPage();
+            }
+        };
+
+        viewport.addEventListener('scroll', handleScroll);
+        return () => viewport.removeEventListener('scroll', handleScroll);
+    }, [hasNextPage, isFetchingNextPage, fetchNextPage]);
+
+    // Restore scroll position after loading more
+    React.useLayoutEffect(() => {
+        const viewport = viewportRef.current;
+        if (prevScrollHeight > 0 && viewport) {
+            const newScrollHeight = viewport.scrollHeight;
+            const scrollDiff = newScrollHeight - prevScrollHeight;
+            viewport.scrollTop = scrollDiff;
+            setPrevScrollHeight(0);
+        }
+    }, [messages, prevScrollHeight]);
+
+    // Track the last message ID to detect if we received a NEW message (at the bottom)
+    const lastMessageRef = useRef<string | null>(null);
+
+    // Initial scroll to bottom
+    useEffect(() => {
+        if (messages.length > 0 && !lastMessageRef.current) {
+            messagesEndRef.current?.scrollIntoView({ behavior: 'auto' });
+            lastMessageRef.current = messages[messages.length - 1].id;
         }
     }, [messages]);
 
+    // Scroll to bottom ONLY when a NEW message is added (tail of the list)
+    useEffect(() => {
+        if (messages.length === 0) return;
+
+        const currentLastMessageId = messages[messages.length - 1].id;
+
+        // If the last message ID has changed, it means we have a new message at the bottom.
+        // We do NOT want to scroll if we just loaded older messages (which changes messages array but NOT the last message ID usually, unless it was empty before)
+        if (lastMessageRef.current && lastMessageRef.current !== currentLastMessageId) {
+            messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
+        }
+
+        lastMessageRef.current = currentLastMessageId;
+    }, [messages]);
+
     return (
-        <>
-            <div className="flex-1 overflow-y-auto bg-card">
-                <ScrollArea className='h-[calc(100vh-300px)] p-4'>
-                    {messages.length === 0 ? (
-                        <div className="text-center text-muted-foreground mt-8">
-                            <p>Start a conversation with our support team!</p>
-                        </div>
-                    ) : isLoading ? (
-                        <div className="py-20 flex items-center justify-center">
-                            <Spinner />
-                        </div>
-                    ) : (
-                        <div className="space-y-3">
-                            {messages.map((message) => (
+        <div className="flex-1 overflow-y-auto bg-card h-full">
+            <ScrollArea
+                className='h-[calc(100vh - 300px)]! p-4'
+                style={{
+                    height: `calc(100vh - 300px)`
+                }}
+                viewportRef={viewportRef}
+            >
+                {isLoading ? (
+                    <div className="py-20 flex items-center justify-center">
+                        <Spinner />
+                    </div>
+                ) : (
+                    <div className="space-y-3">
+                        {isFetchingNextPage && (
+                            <div className="flex justify-center py-2">
+                                <Spinner className="size-4" />
+                            </div>
+                        )}
+
+                        {messages.length === 0 ? (
+                            <div className="text-center text-muted-foreground mt-8">
+                                <p>Start a conversation with our support team!</p>
+                            </div>
+                        ) : (
+                            messages.map((message) => (
                                 <div
                                     key={message.id}
                                     className={cn(`flex`, message.sender.id === user.accountId ? 'justify-end' : 'justify-start')}
@@ -263,13 +412,12 @@ function RenderMessages({
                                         </span>
                                     </div>
                                 </div>
-                            ))}
-                            <div ref={messagesEndRef} />
-                        </div>
-                    )}
-                </ScrollArea>
-            </div>
-
-        </>
+                            ))
+                        )}
+                        <div ref={messagesEndRef} />
+                    </div>
+                )}
+            </ScrollArea>
+        </div>
     )
 }

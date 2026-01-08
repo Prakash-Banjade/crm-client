@@ -96,13 +96,25 @@ export default function RegionalInchargeForm({ setIsOpen, defaultValues, setIsFo
                         <FormItem>
                             <FormLabel>Phone<span className="text-destructive">*</span></FormLabel>
                             <FormControl>
+                                <Input type="tel" required {...field} />
+                            </FormControl>
+                            <FormMessage />
+                        </FormItem>
+                    )}
+                />
+                <FormField
+                    control={form.control}
+                    name="role"
+                    render={({ field }) => (
+                        <FormItem>
+                            <FormLabel>Role<span className="text-destructive">*</span></FormLabel>
+                            <FormControl>
                                 <Input type="text" required {...field} />
                             </FormControl>
                             <FormMessage />
                         </FormItem>
                     )}
                 />
-
                 <FormField
                     control={form.control}
                     name="profileImage"

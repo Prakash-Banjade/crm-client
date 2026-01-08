@@ -7,6 +7,8 @@ import { Role } from "@/lib/types";
 import { formatDistanceToNow } from "date-fns";
 import { ArrowUpRight } from "lucide-react";
 import Link from "next/link";
+import { Button } from "../ui/button";
+import { Skeleton } from "../ui/skeleton";
 
 type RecentQuery = {
     id: string;
@@ -23,12 +25,17 @@ export default function DashboardRecentQueries() {
         queryKey: [QueryKey.DASHBOARD, 'support-chat-messages'],
     });
 
-    if (isLoading) return <div>Loading...</div>;
+    if (isLoading) return <RecentQueriesSkeleton />;
 
     return (
-        <Card className="border-none shadow-sm">
+        <Card className="h-full border-none shadow-sm">
             <CardHeader className="pb-2">
-                <CardTitle className="text-lg">Recent Queries</CardTitle>
+                <div className="flex justify-between items-center">
+                    <CardTitle className="text-lg">New Support Queries</CardTitle>
+                    <Button asChild>
+                        <Link href="/support-chat">View All</Link>
+                    </Button>
+                </div>
             </CardHeader>
             <CardContent className="space-y-4">
                 {
@@ -46,6 +53,31 @@ export default function DashboardRecentQueries() {
                             </Link>
                         ))
                     )}
+            </CardContent>
+        </Card>
+    )
+}
+
+function RecentQueriesSkeleton() {
+    return (
+        <Card className="h-full border-none shadow-sm">
+            <CardHeader className="pb-2">
+                <div className="flex justify-between items-center">
+                    <Skeleton className="h-6 w-[180px]" />
+                    <Skeleton className="h-9 w-[80px]" />
+                </div>
+            </CardHeader>
+            <CardContent className="space-y-4">
+                {Array.from({ length: 4 }).map((_, i) => (
+                    <div key={i} className="flex items-center gap-3">
+                        <Skeleton className="w-2 h-2 rounded-full" />
+                        <div className="flex-1 space-y-2">
+                            <Skeleton className="h-4 w-[200px]" />
+                            <Skeleton className="h-3 w-[150px]" />
+                        </div>
+                        <Skeleton className="w-4 h-4" />
+                    </div>
+                ))}
             </CardContent>
         </Card>
     )

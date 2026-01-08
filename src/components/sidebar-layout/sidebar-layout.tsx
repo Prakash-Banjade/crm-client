@@ -6,8 +6,6 @@ import AppBreadCrumb from "./app-bread-crumb";
 import { TCurrentUser } from "@/context/auth-provider";
 import { Role } from "@/lib/types";
 import { superAdminSidebarMenuItems } from "@/lib/config/super-admin-menu-items";
-import { Bell } from "lucide-react";
-import { Button } from "../ui/button";
 import { adminSidebarMenuItems } from "@/lib/config/admin-menu-items";
 import NotificationBellIcon from "./notification-view";
 
