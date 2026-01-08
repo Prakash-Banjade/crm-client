@@ -12,7 +12,7 @@ export async function serverMutate<T extends { message?: string } = { message?: 
     body: any;
 }): Promise<ActionResponse<T>> {
     const res = await serverFetch(endpoint, {
-        method,
+        method, 
         body: JSON.stringify(body),
         cache: 'no-store'
     });

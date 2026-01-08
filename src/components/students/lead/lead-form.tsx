@@ -49,7 +49,6 @@ export default function LeadForm({ setIsOpen, defaultValues, setIsFormDirty }: P
 
     const onSubmit = async (data: TLeadSchema) => {
         if (isEditing) {
-
             update({ id: defaultValues.id, formData: data });
         } else {
             create(data);

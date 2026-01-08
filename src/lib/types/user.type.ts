@@ -7,6 +7,7 @@ export type TUser = {
     email: string;
     role: Role
     createdAt: string;
+    blacklistedAt: string | null;
 }
 
 export type TUsersResponse = PaginatedResponse<TUser>
