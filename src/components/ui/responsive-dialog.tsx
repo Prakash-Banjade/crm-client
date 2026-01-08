@@ -15,6 +15,7 @@ import {
 } from '@/components/ui/drawer';
 import { useIsMobile } from '@/hooks/use-mobile';
 import { cn } from '@/lib/utils';
+import { ResponsiveAlertDialog } from './responsive-alert-dialog';
 
 export function ResponsiveDialog({
     children,
@@ -22,7 +23,8 @@ export function ResponsiveDialog({
     setIsOpen,
     title,
     description,
-    className
+    className,
+    confirmOnExit
 }: {
     children: React.ReactNode;
     isOpen: boolean;
@@ -30,16 +32,26 @@ export function ResponsiveDialog({
     title: string;
     description?: string;
     className?: string;
+    confirmOnExit?: boolean;
 }) {
     const isMobile = useIsMobile();
+    const [isAlertOpen, setIsAlertOpen] = React.useState(false);
 
-    if (!isMobile) {
-        return (
-            <Dialog open={isOpen} onOpenChange={setIsOpen}>
+    const onOpenChange = (open: boolean) => {
+        if (confirmOnExit) {
+            setIsAlertOpen(true);
+        } else {
+            setIsOpen(open);
+        }
+    }
+
+    const dialog = () => {
+        return !isMobile ? (
+            <Dialog open={isOpen} onOpenChange={onOpenChange}>
                 {/* TODO: FIX THIS OVERFLOW STYLE USING SCROLLAREA */}
                 <DialogContent className={cn('max-h-[97vh] overflow-y-auto', className)}>
                     <DialogHeader>
-                        <DialogTitle>{title}</DialogTitle>
+                        <DialogTitle className='text-lg'>{title}</DialogTitle>
                         {description && (
                             <DialogDescription>{description}</DialogDescription>
                         )}
@@ -47,20 +59,40 @@ export function ResponsiveDialog({
                     {children}
                 </DialogContent>
             </Dialog>
-        );
+        ) : (
+            <Drawer open={isOpen} onOpenChange={onOpenChange}>
+                <DrawerContent>
+                    <DrawerHeader className="text-left">
+                        <DrawerTitle>{title}</DrawerTitle>
+                        {description && <DialogDescription>{description}</DialogDescription>}
+                    </DrawerHeader>
+                    <section className='p-4'>
+                        {children}
+                    </section>
+                </DrawerContent>
+            </Drawer>
+        )
     }
 
     return (
-        <Drawer open={isOpen} onOpenChange={setIsOpen}>
-            <DrawerContent>
-                <DrawerHeader className="text-left">
-                    <DrawerTitle>{title}</DrawerTitle>
-                    {description && <DialogDescription>{description}</DialogDescription>}
-                </DrawerHeader>
-                <section className='p-4'>
-                    {children}
-                </section>
-            </DrawerContent>
-        </Drawer>
+        <>
+            {dialog()}
+            {
+                confirmOnExit && (
+                    <ResponsiveAlertDialog
+                        isOpen={isAlertOpen}
+                        setIsOpen={setIsAlertOpen}
+                        title="You have unsaved changes."
+                        description="Are you sure you want to leave?"
+                        action={() => {
+                            setIsAlertOpen(false);
+                            setIsOpen(false);
+                        }}
+                        actionLabel="Leave, any way"
+                        cancelLabel="Stay, here"
+                    />
+                )
+            }
+        </>
     );
 }

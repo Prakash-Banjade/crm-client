@@ -4,13 +4,8 @@ import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import { Card } from '@/components/ui/card'
 import { ArrowRight, Zap } from 'lucide-react'
-import { useTheme } from 'next-themes'
 
 export default function Hero() {
-    const { theme } = useTheme();
-
-    console.log(theme)
-
     return (
         <section className="relative min-h-screen overflow-hidden pt-20 pb-24 sm:pt-48 sm:pb-32 -mt-16">
             <div

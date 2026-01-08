@@ -12,12 +12,20 @@ export interface DataTableToolbarProps<TData> extends PropsWithChildren {
     table: Table<TData>,
     searchLabel?: string;
     reset?: boolean;
+    show?: {
+        viewColumn?: boolean;
+        resetButton?: boolean;
+    }
 }
 
 export function DataTableToolbar<TData>({
     table,
     children,
     reset = true,
+    show = {
+        viewColumn: true,
+        resetButton: true,
+    }
 }: DataTableToolbarProps<TData>) {
     const router = useRouter();
     const pathname = usePathname();
@@ -35,7 +43,7 @@ export function DataTableToolbar<TData>({
             </div>
 
             <section className='flex items-center gap-x-2'>
-                {searchParams.size > 0 && !(searchParams.size === 1 && searchParams.has('search')) && reset && (
+                {show.resetButton && searchParams.size > 0 && !(searchParams.size === 1 && searchParams.has('search')) && reset && (
                     <Button
                         variant='ghost'
                         onClick={handleReset}
@@ -45,7 +53,11 @@ export function DataTableToolbar<TData>({
                         <X className='ml-2 h-4 w-4' />
                     </Button>
                 )}
-                <DataTableViewOptions table={table} />
+                {
+                    show.viewColumn && (
+                        <DataTableViewOptions table={table} />
+                    )
+                }
             </section>
         </div>
     )

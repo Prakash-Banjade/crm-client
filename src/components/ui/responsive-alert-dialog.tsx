@@ -46,17 +46,19 @@ export function ResponsiveAlertDialog({
                     }
                 </AlertDialogHeader>
                 <AlertDialogFooter>
-                    <AlertDialogCancel>{cancelLabel}</AlertDialogCancel>
-                    <LoadingButton
-                        isLoading={isLoading}
-                        loadingText={loadingText}
-                        type="button"
-                        variant={"destructive"}
-                        onClick={action}
-                        {...loadingButtonProps}
-                    >
-                        {actionLabel}
-                    </LoadingButton>
+                    <div className="grid grid-cols-2 gap-2">
+                        <AlertDialogCancel>{cancelLabel}</AlertDialogCancel>
+                        <LoadingButton
+                            isLoading={isLoading}
+                            loadingText={loadingText}
+                            type="button"
+                            variant={"destructive"}
+                            onClick={action}
+                            {...loadingButtonProps}
+                        >
+                            {actionLabel}
+                        </LoadingButton>
+                    </div>
                 </AlertDialogFooter>
             </AlertDialogContent>
         </AlertDialog>

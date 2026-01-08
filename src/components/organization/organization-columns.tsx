@@ -2,18 +2,17 @@
 
 import { ColumnDef } from "@tanstack/react-table"
 import { Button } from "@/components/ui/button"
-import { MoreHorizontal, Pencil, Trash } from "lucide-react"
+import { Lock, MoreHorizontal, Pencil, Trash, Unlock } from "lucide-react"
 import { DataTableColumnHeader } from "@/components/data-table/data-table-column-header"
 import { TOrganization } from "@/lib/types/organization.type"
 import Link from "next/link"
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuTrigger } from "../ui/dropdown-menu"
-import { useRouter } from "next/navigation"
 import { useState } from "react"
 import { formatDate } from "date-fns";
-import { ResponsiveAlertDialog } from "../ui/responsive-alert-dialog";
-import { useServerAction } from "@/hooks/use-server-action";
-import { deleteOrganization } from "@/lib/actions/organization.action";
-import { QueryKey } from "@/lib/react-query/queryKeys";
+import OrganizationDeleteDialog from "./organization-delete-dialog";
+import OrganizationBlockAlertDialog from "./organization-block-alert-dialog";
+import { useAuth } from "@/context/auth-provider";
+import { Role } from "@/lib/types";
 
 export const organizationsColumns: ColumnDef<TOrganization>[] = [
     {
@@ -84,13 +83,13 @@ export const organizationsColumns: ColumnDef<TOrganization>[] = [
         },
     },
     {
-        accessorKey: "blackListedAt",
+        accessorKey: "blacklistedAt",
         header: "Blacklisted At",
         cell: ({ row }) => {
-            const blackListedAt = row.original.blackListedAt;
+            const blacklistedAt = row.original.blacklistedAt;
 
-            return blackListedAt ? (
-                <span>{formatDate(blackListedAt, "dd/MM/yyyy")}</span>
+            return blacklistedAt ? (
+                <span>{formatDate(blacklistedAt, "dd/MM/yyyy")}</span>
             ) : "-"
         },
     },
@@ -98,30 +97,31 @@ export const organizationsColumns: ColumnDef<TOrganization>[] = [
         id: "actions",
         enableHiding: false,
         cell: ({ row }) => {
-            const [isDeleteOpen, setIsDeleteOpen] = useState(false);
-            const { isPending, mutate } = useServerAction({
-                action: deleteOrganization,
-                invalidateTags: [QueryKey.ORGANIZATIONS],
-                onSuccess: () => {
-                    setIsDeleteOpen(false);
-                }
-            });
+            const isBlacklisted = row.original.blacklistedAt !== null;
+            const { user } = useAuth();
 
-            const router = useRouter();
+            const [isDeleteConfirmDialogOpen, setIsDeleteConfirmDialogOpen] = useState(false);
+            const [isBlockOpen, setIsBlockOpen] = useState(false);
 
             if (row.original.name === "Default") return <div className="h-8" />;
 
+            if (user?.role !== Role.SUPER_ADMIN) return null;
+
             return (
                 <>
-                    <ResponsiveAlertDialog
-                        isOpen={isDeleteOpen}
-                        setIsOpen={setIsDeleteOpen}
-                        title="Remove Organization"
-                        description={`Are you sure you want to remove ${row.original.name}? This action cannot be undone. This will also remove all the data related to this organization.`}
-                        action={() => mutate(row.original.id)}
-                        actionLabel="Yes, remove"
-                        isLoading={isPending}
-                        loadingText="Removing..."
+                    <OrganizationBlockAlertDialog
+                        isOpen={isBlockOpen}
+                        setIsOpen={setIsBlockOpen}
+                        organizationId={row.original.id}
+                        organizationName={row.original.name}
+                        isBlacklisted={isBlacklisted}
+                    />
+
+                    <OrganizationDeleteDialog
+                        isOpen={isDeleteConfirmDialogOpen}
+                        setIsOpen={setIsDeleteConfirmDialogOpen}
+                        organizationId={row.original.id}
+                        organizationName={row.original.name}
                     />
 
                     <DropdownMenu>
@@ -133,11 +133,17 @@ export const organizationsColumns: ColumnDef<TOrganization>[] = [
                         </DropdownMenuTrigger>
                         <DropdownMenuContent align="end">
                             <DropdownMenuLabel>Actions</DropdownMenuLabel>
-                            <DropdownMenuItem onClick={() => router.push(`organizations/${row.original.id}`)}>
-                                <Pencil />
-                                Edit
+                            <DropdownMenuItem asChild>
+                                <Link href={`organizations/${row.original.id}/edit`}>
+                                    <Pencil />
+                                    Edit
+                                </Link>
                             </DropdownMenuItem>
-                            <DropdownMenuItem variant="destructive" onClick={() => setIsDeleteOpen(true)}>
+                            <DropdownMenuItem className="whitespace-nowrap" onClick={() => setIsBlockOpen(true)}>
+                                {isBlacklisted ? <Unlock /> : <Lock />}
+                                {isBlacklisted ? "Unblock" : "Block"}
+                            </DropdownMenuItem>
+                            <DropdownMenuItem variant="destructive" onClick={() => setIsDeleteConfirmDialogOpen(true)}>
                                 <Trash />
                                 Remove
                             </DropdownMenuItem>

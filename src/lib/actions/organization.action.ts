@@ -1,5 +1,6 @@
 "use server";
 
+import { revalidatePath } from "next/cache";
 import { TOrganizationSchema } from "../schema/organization.schema";
 import { serverFetch } from "../server-fetch";
 import { ActionResponse } from "../types";
@@ -76,6 +77,34 @@ export async function deleteOrganization(id: string): Promise<ActionResponse> {
             }
         }
     }
+
+    return {
+        success: true,
+        data,
+    };
+}
+
+export async function blockOrganization(id: string): Promise<ActionResponse> {
+    const res = await serverFetch(`/organizations/${id}/toggle-block`, {
+        method: "PATCH",
+        cache: 'no-store',
+        body: JSON.stringify({}),
+    });
+
+    const data = await res.json();
+
+    if (!res.ok) {
+        const message = extractErrorMessage(data);
+        return {
+            success: false,
+            error: {
+                message: message.message,
+                error: message.error
+            }
+        }
+    }
+
+    revalidatePath(`/super_admin/organizations/${id}`);
 
     return {
         success: true,

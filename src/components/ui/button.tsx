@@ -72,9 +72,12 @@ function LoadingButton({ children, isLoading, loadingText, ...props }: Props) {
         isLoading ?
           <>
             <Spinner />
-            <span className="wrap-break-words max-w-full">{loadingText}</span>
-          </> :
-          <>{children}</>
+            {
+              loadingText ? (
+                <span className="wrap-break-words max-w-full">{loadingText}</span>
+              ) : children
+            }
+          </> : <>{children}</>
       }
     </Button>
   )

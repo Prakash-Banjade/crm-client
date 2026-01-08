@@ -3,7 +3,7 @@
 import * as React from "react"
 import { Avatar as AvatarPrimitive } from "radix-ui"
 
-import { cn } from "@/lib/utils"
+import { cn, getAcronym } from "@/lib/utils"
 
 function Avatar({
   className,
@@ -110,15 +110,10 @@ const ProfileAvatar = ({
   className?: string
   style?: React.CSSProperties
 }) => {
-  const words = name.split(" ")
-
-  const firstInitial = words[0] ? words[0][0].toUpperCase() : ""
-  const secondInitial = words[1] ? words[1][0].toUpperCase() : ""
-
   return <Avatar className={className} style={style} title={name}>
     <AvatarImage src={src} alt={name} className="object-cover" />
     <AvatarFallback>
-      {(firstInitial + secondInitial).slice(0, 2)}
+      {getAcronym(name)}
     </AvatarFallback>
   </Avatar>
 }

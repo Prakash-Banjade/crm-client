@@ -3,6 +3,10 @@ import { Geist, Geist_Mono, Public_Sans } from "next/font/google";
 import { ThemeProvider } from "@/context/theme-provider";
 import { Toaster } from "@/components/ui/sonner";
 import "../globals.css";
+import { getSession } from "@/lib/get-session";
+import { redirect } from "next/navigation";
+import { Suspense } from "react";
+import { AuthProvider } from "@/context/auth-provider";
 
 const publicSans = Public_Sans({ subsets: ['latin'], variable: '--font-sans' });
 
@@ -21,6 +25,16 @@ export const metadata: Metadata = {
     description: "Complete 360° CRM Solution for Education Consultancies",
 };
 
+async function AuthenticatedRedirect({ children }: { children: React.ReactNode }) {
+    const session = await getSession();
+
+    if (session) {
+        redirect(`/${session.role}/dashboard`);
+    }
+
+    return children;
+}
+
 export default function PublicRootLayout({
     children,
 }: Readonly<{
@@ -37,7 +51,13 @@ export default function PublicRootLayout({
                     enableSystem
                     disableTransitionOnChange
                 >
-                    {children}
+                    <Suspense fallback={null}>
+                        <AuthenticatedRedirect>
+                            <AuthProvider>
+                                {children}
+                            </AuthProvider>
+                        </AuthenticatedRedirect>
+                    </Suspense>
                     <Toaster richColors />
                 </ThemeProvider>
             </body>

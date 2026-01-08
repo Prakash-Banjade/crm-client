@@ -1,4 +1,4 @@
-export enum QueryKey {
+export const enum QueryKey {
     AUTH_LOGIN = "auth/login",
     AUTH_REFRESH = "auth/refresh",
     AUTH_LOGOUT = "auth/logout",
@@ -15,6 +15,22 @@ export enum QueryKey {
     DASHBOARD = "dashboard",
     ME = "users/me",
     USERS = "users",
+    BOOKINGS = "bookings",
     OPTIONS = "options",
     ORGANIZATIONS = "organizations",
+    FILES_UPLOAD = "files/upload",
+    REGIONAL_INCHARGES = "regional-incharges",
+    UNIVERSITIES = "universities",
+    COUNTRIES = "countries",
+    COURSES = "courses",
+    CATEGORIES = "categories",
+    COUNSELORS = "counselors",
+    BDES = "bdes",
+    LEARNING_RESOURCES = "learning-resources",
+    STUDENTS = "students",
+    APPLICATIONS = "applications",
+    MESSAGES = "messages",
+    NOTIFICATIONS = "notifications",
+    SUPPORT_CHAT = "support-chat",
+    SUPPORT_CHAT_MESSAGES = "support-chat-messages",
 };

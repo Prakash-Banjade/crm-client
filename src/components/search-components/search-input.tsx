@@ -14,9 +14,12 @@ type Props = {
     label?: string;
     placeholder?: string;
     searchKey?: string;
+    className?: string;
 }
 
-export default function SearchInput({ label, placeholder, searchKey = "q" }: Props) {
+export const SEARCH_KEY = "q" as const;
+
+export default function SearchInput({ label, placeholder, searchKey = SEARCH_KEY, className }: Props) {
     const { searchParams, setSearchParams } = useCustomSearchParams();
     const [searchTerm, setSearchTerm] = useState<string>(searchParams.get(searchKey) || '');
 
@@ -35,7 +38,7 @@ export default function SearchInput({ label, placeholder, searchKey = "q" }: Pro
     return !!label ? (
         <div className="space-y-2">
             <Label htmlFor="search">{label ?? "Search"}</Label>
-            <InputGroup>
+            <InputGroup className={className}>
                 <InputGroupInput
                     type="search"
                     placeholder={placeholder ?? "Search..."}
@@ -48,7 +51,7 @@ export default function SearchInput({ label, placeholder, searchKey = "q" }: Pro
             </InputGroup>
         </div>
     ) : (
-        <InputGroup>
+        <InputGroup className={className}>
             <InputGroupInput
                 type="search"
                 placeholder={placeholder ?? "Search..."}

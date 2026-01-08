@@ -22,6 +22,9 @@ export const organizationSchema = z.object({
     websiteUrl: z.string().url("Website URL must be a valid URL").optional(),
     brandColorPrimary: z.string().optional(),
     brandColorSecondary: z.string().optional(),
+    logo: z.string().nullish(),
+    panCertificate: z.string().nullish(),
+    registrationDocument: z.string().nullish(),
 });
 
 export type TBankingDetailsSchema = z.infer<typeof bankingDetailsSchema>;
@@ -47,4 +50,7 @@ export const organizationDefaultValues: TOrganizationSchema = {
     websiteUrl: "",
     brandColorPrimary: "#1447e6",
     brandColorSecondary: "#1447e6",
+    logo: null,
+    panCertificate: null,
+    registrationDocument: null,
 }

@@ -22,6 +22,7 @@ import { useServerAction } from "@/hooks/use-server-action";
 import { TSingleOrganization } from "@/lib/types/organization.type";
 import { useConfirmExit } from "@/hooks/use-confirm-exit";
 import { useConfirmExitAlert } from "@/context/confirm-exit-provider";
+import ImageUpload from "../forms/image-upload";
 
 type Props = {
     defaultValues?: TSingleOrganization
@@ -32,6 +33,11 @@ export default function OrganizationForm({ defaultValues }: Props) {
 
     const router = useRouter();
     const { setExitLocation, setIsOpen } = useConfirmExitAlert();
+
+    const form = useForm<TOrganizationSchema>({
+        resolver: zodResolver(organizationSchema),
+        defaultValues: defaultValues || organizationDefaultValues
+    });
 
     const { isPending: isCreating, mutate: create } = useServerAction({
         action: createOrganization,
@@ -46,10 +52,6 @@ export default function OrganizationForm({ defaultValues }: Props) {
         invalidateTags: [QueryKey.ORGANIZATIONS],
     });
 
-    const form = useForm<TOrganizationSchema>({
-        resolver: zodResolver(organizationSchema),
-        defaultValues: defaultValues || organizationDefaultValues
-    });
 
     function onSubmit(data: TOrganizationSchema) {
         if (isEditing) {
@@ -247,6 +249,45 @@ export default function OrganizationForm({ defaultValues }: Props) {
                                                 value={field.value || ""}
                                                 onChange={field.onChange}
                                             />
+                                        </FormControl>
+                                        <FormMessage />
+                                    </FormItem>
+                                )}
+                            />
+                            <FormField
+                                control={form.control}
+                                name="logo"
+                                render={({ field }) => (
+                                    <FormItem className="flex flex-col">
+                                        <FormLabel>Logo</FormLabel>
+                                        <FormControl>
+                                            <ImageUpload name="logo" value={field.value} onValueChange={field.onChange} />
+                                        </FormControl>
+                                        <FormMessage />
+                                    </FormItem>
+                                )}
+                            />
+                            <FormField
+                                control={form.control}
+                                name="panCertificate"
+                                render={({ field }) => (
+                                    <FormItem className="flex flex-col">
+                                        <FormLabel>PAN Certificate</FormLabel>
+                                        <FormControl>
+                                            <ImageUpload name="panCertificate" value={field.value} onValueChange={field.onChange} />
+                                        </FormControl>
+                                        <FormMessage />
+                                    </FormItem>
+                                )}
+                            />
+                            <FormField
+                                control={form.control}
+                                name="registrationDocument"
+                                render={({ field }) => (
+                                    <FormItem className="flex flex-col">
+                                        <FormLabel>Registration Document</FormLabel>
+                                        <FormControl>
+                                            <ImageUpload name="registrationDocument" value={field.value} onValueChange={field.onChange} />
                                         </FormControl>
                                         <FormMessage />
                                     </FormItem>

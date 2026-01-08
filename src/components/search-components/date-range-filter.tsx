@@ -49,8 +49,10 @@ export function DateRangeFilter({
         const dateFrom = date?.from;
         const dateTo = date?.to;
 
-        setSearchParams('dateFrom', dateFrom ? format(dateFrom, 'yyyy-MM-dd') : undefined)
-        setSearchParams('dateTo', dateTo ? format(dateTo, 'yyyy-MM-dd') : undefined)
+        setSearchParams({
+            dateFrom: dateFrom ? format(dateFrom, 'yyyy-MM-dd') : undefined,
+            dateTo: dateTo ? format(dateTo, 'yyyy-MM-dd') : undefined,
+        })
         setDate(date);
     }
 

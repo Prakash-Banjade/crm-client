@@ -9,7 +9,7 @@ import {
 } from '@/components/ui/dropdown-menu'
 import { cn } from '@/lib/utils'
 import { Button } from '../ui/button'
-import { ArrowDown, ArrowUp, ChevronsUpDown, EyeOff } from 'lucide-react'
+import { ArrowDown, ArrowUp, ChevronsUpDown } from 'lucide-react'
 import { useCustomSearchParams } from '@/hooks/useCustomSearchParams'
 
 interface DataTableColumnHeaderProps<TData, TValue>
@@ -34,8 +34,10 @@ export function DataTableColumnHeader<TData, TValue>({
     const { setSearchParams } = useCustomSearchParams();
 
     const handleSort = (order: Order) => {
-        setSearchParams("sortBy", sortBy ?? column.id);
-        setSearchParams("order", order);
+        setSearchParams({
+            sortBy: sortBy ?? column.id,
+            order,
+        })
     }
 
     if (!column.getCanSort()) {
@@ -69,11 +71,6 @@ export function DataTableColumnHeader<TData, TValue>({
                     <DropdownMenuItem onClick={() => handleSort(Order.DESC)}>
                         <ArrowDown className='mr-1 h-3.5 w-3.5 text-muted-foreground/70' />
                         Desc
-                    </DropdownMenuItem>
-                    <DropdownMenuSeparator />
-                    <DropdownMenuItem onClick={() => column.toggleVisibility(false)}>
-                        <EyeOff className='mr-1 h-3.5 w-3.5 text-muted-foreground/70' />
-                        Hide
                     </DropdownMenuItem>
                 </DropdownMenuContent>
             </DropdownMenu>

@@ -6,13 +6,14 @@ import AppBreadCrumb from "./app-bread-crumb";
 import { TCurrentUser } from "@/context/auth-provider";
 import { Role } from "@/lib/types";
 import { superAdminSidebarMenuItems } from "@/lib/config/super-admin-menu-items";
-import { Bell } from "lucide-react";
-import { Button } from "../ui/button";
+import { adminSidebarMenuItems } from "@/lib/config/admin-menu-items";
+import NotificationBellIcon from "./notification-view";
+import { counselorSidebarMenuItems } from "@/lib/config/counselor-menu-items";
 
 const roleToMenuItemsMap = {
     [Role.SUPER_ADMIN]: superAdminSidebarMenuItems,
-    [Role.ADMIN]: [],
-    [Role.COUNSELOR]: [],
+    [Role.ADMIN]: adminSidebarMenuItems,
+    [Role.COUNSELOR]: counselorSidebarMenuItems,
     [Role.BDE]: [],
     [Role.USER]: [],
 }
@@ -34,13 +35,7 @@ export default function SidebarLayout({
                     <SidebarTrigger className="-ml-1" />
                     <AppBreadCrumb user={user} menuItems={menuItems} />
 
-                    <Button
-                        variant="ghost"
-                        size="icon"
-                        className="ml-auto"
-                    >
-                        <Bell className="size-5" />
-                    </Button>
+                    <NotificationBellIcon />
                 </header>
                 <main className="h-full">
                     {children}

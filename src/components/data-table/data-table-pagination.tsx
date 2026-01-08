@@ -38,7 +38,7 @@ export function DataTablePagination<TData>({
     const { searchParams, setSearchParams } = useCustomSearchParams();
 
     return (
-        <div className="flex items-center sm:justify-between sm:flex-row flex-col gap-3 px-2 py-4">
+        <div className="flex items-center sm:justify-between sm:flex-row flex-col gap-3 py-4">
             <div className="flex-1 text-sm text-muted-foreground">
                 Total: {meta.itemCount} Records
             </div>
