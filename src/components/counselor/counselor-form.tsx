@@ -123,7 +123,7 @@ export default function CounselorForm({ setIsOpen, defaultValues, setIsFormDirty
                         render={({ field }) => (
                             <FormItem>
                                 <FormLabel>Type<span className="text-destructive">*</span></FormLabel>
-                                <Select onValueChange={val => field.onChange(val === "true")} defaultValue={field.value.toString()}>
+                                <Select onValueChange={field.onChange} defaultValue={field.value}>
                                     <FormControl>
                                         <SelectTrigger className="w-full">
                                             <SelectValue placeholder="Select type" />

@@ -2,13 +2,15 @@ import { useEffect } from 'react';
 import { useQueryClient } from '@tanstack/react-query';
 import { QueryKey } from '@/lib/react-query/queryKeys';
 import { useAuth } from '@/context/auth-provider';
+import { Role } from '@/lib/types';
 
 export const useNotificationStream = () => {
     const queryClient = useQueryClient();
-    const { accessToken } = useAuth();
+    const { accessToken, user } = useAuth();
 
     useEffect(() => {
-        if (!accessToken) return;
+        // currently notification is only for admins
+        if (!accessToken || !user || ![Role.SUPER_ADMIN, Role.ADMIN].includes(user.role)) return;
 
         // 1. Initialize EventSource
         // Note: Native EventSource doesn't support custom headers (Authorization).

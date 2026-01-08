@@ -12,17 +12,28 @@ import { formatDate } from 'date-fns';
 import { useNotificationStream } from '@/hooks/useNotificationStream';
 import { ScrollArea } from '../ui/scroll-area';
 import Link from 'next/link';
+import { useAuth } from '@/context/auth-provider';
+import { Role } from '@/lib/types';
 
 export default function NotificationBellIcon() {
+    const { user } = useAuth();
+
     const { data } = useFetch<{ totalCount: number, unreadCount: number }>({
         endpoint: `${QueryKey.NOTIFICATIONS}/counts`,
         queryKey: [`${QueryKey.NOTIFICATIONS}`, 'counts'],
+        options: {
+            enabled: !!user && [Role.SUPER_ADMIN, Role.ADMIN].includes(user.role) // currently notification is only for admins
+        }
     });
 
     // Activate the stream
     useNotificationStream();
 
     const unreadCount = data?.unreadCount ?? 0;
+
+    if (!user || ![Role.SUPER_ADMIN, Role.ADMIN].includes(user.role)) {
+        return null;
+    }
 
     return (
         <DropdownMenu>

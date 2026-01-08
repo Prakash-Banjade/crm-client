@@ -1,8 +1,8 @@
 import { TGroupMenuItem } from "@/components/sidebar-layout/sidebar";
-import { BookSearch, CalendarCheck, FileText, LayoutDashboard, Library, UserCheck, Users } from "lucide-react";
+import { BookSearch, CalendarCheck, FileText, LayoutDashboard, Library, Users } from "lucide-react";
 import { Role } from "../types";
 
-export const adminSidebarMenuItems: TGroupMenuItem[] = [
+export const counselorSidebarMenuItems: TGroupMenuItem[] = [
     {
         groupLabel: "Operations",
         menuItems: [
@@ -25,12 +25,6 @@ export const adminSidebarMenuItems: TGroupMenuItem[] = [
         menuItems: [
             { title: "Program Search", url: `/courses/search`, icon: BookSearch },
             { title: "Learning Resources", url: `/learning-resources`, icon: Library },
-        ]
-    },
-    {
-        groupLabel: "Partners & Team",
-        menuItems: [
-            { title: "Counselors", url: `/counselors`, icon: UserCheck },
         ]
     },
 ]

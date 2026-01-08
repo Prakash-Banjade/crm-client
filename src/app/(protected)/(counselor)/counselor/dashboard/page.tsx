@@ -8,7 +8,6 @@ import ApplicationPipeline from '@/components/dashboard/application-pipeline';
 import { useAuth } from '@/context/auth-provider';
 import { Role } from '@/lib/types';
 import DashboardAside from '@/components/dashboard/dashboard-aside';
-import QuickCounselorsView from '@/components/dashboard/quick-counselors-view';
 
 export default function Page() {
     const { user } = useAuth();
@@ -45,11 +44,8 @@ export default function Page() {
                 {/* Core CRM Metrics */}
                 <DashboardMetrics />
 
-                <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-                    {/* Student Application Pipeline */}
-                    <ApplicationPipeline />
-                    <QuickCounselorsView />
-                </div>
+                {/* Student Application Pipeline */}
+                <ApplicationPipeline />
             </main>
 
             {/* Side Profile & Regional In-Charge Highlight */}

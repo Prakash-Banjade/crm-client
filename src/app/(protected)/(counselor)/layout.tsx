@@ -16,7 +16,7 @@ export default async function RootLayout({
 }: Readonly<{
     children: React.ReactNode;
 }>) {
-    const user = await requireAuth({ roles: [Role.ADMIN] });
+    const user = await requireAuth({ roles: [Role.COUNSELOR] });
 
     const cookieStore = await cookies();
     const token = cookieStore.get(CookieKey.ACCESS_TOKEN)?.value || "";
