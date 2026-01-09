@@ -9,12 +9,13 @@ import { superAdminSidebarMenuItems } from "@/lib/config/super-admin-menu-items"
 import { adminSidebarMenuItems } from "@/lib/config/admin-menu-items";
 import NotificationBellIcon from "./notification-view";
 import { counselorSidebarMenuItems } from "@/lib/config/counselor-menu-items";
+import { bdeSidebarMenuItems } from "@/lib/config/bde-menu-items";
 
 const roleToMenuItemsMap = {
     [Role.SUPER_ADMIN]: superAdminSidebarMenuItems,
     [Role.ADMIN]: adminSidebarMenuItems,
     [Role.COUNSELOR]: counselorSidebarMenuItems,
-    [Role.BDE]: [],
+    [Role.BDE]: bdeSidebarMenuItems,
     [Role.USER]: [],
 }
 

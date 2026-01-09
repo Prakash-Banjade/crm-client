@@ -25,7 +25,7 @@ export const organizationsColumns: ColumnDef<TOrganization>[] = [
             return <DataTableColumnHeader column={column} title="Name" />
         },
         cell: ({ row }) => {
-            return <Link href={`organizations/${row.original.id}`} className="hover:text-blue-500 hover:underline flex gap-4 items-center w-fit">
+            return <Link href={`/organizations/${row.original.id}`} className="hover:text-blue-500 hover:underline flex gap-4 items-center w-fit">
                 {/* <ProfileAvatar
                     name={row.original.name}
                     src={getImageUrl(row.original.profileImageUrl, "w=40")}

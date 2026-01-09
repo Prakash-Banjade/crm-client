@@ -1,6 +1,6 @@
 "use client"
 
-import { useInfiniteQuery, UseInfiniteQueryOptions } from "@tanstack/react-query"
+import { useInfiniteQuery } from "@tanstack/react-query"
 import { useMemo } from "react"
 import { PaginatedResponse, SelectOption, TPaginatedOptions } from "@/lib/types"
 import { useAxios } from "@/lib/axios-client"

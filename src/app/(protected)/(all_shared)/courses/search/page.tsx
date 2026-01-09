@@ -31,6 +31,9 @@ import { useGetCourses } from '@/lib/data-access/courses-data-hooks';
 import RenderCoursesList from '@/components/courses/search/render-courses-list';
 import SearchInput from '@/components/search-components/search-input';
 import { Skeleton } from '@/components/ui/skeleton';
+import { createQueryString } from '@/lib/utils';
+import { StudentsWithQualificationSearch } from '@/components/courses/search/student-search';
+import EligibilityForm from '@/components/courses/search/eligibility-form';
 
 
 export default function CourseSearchPage() {
@@ -128,77 +131,7 @@ export default function CourseSearchPage() {
                         {/* Student Eligibility Profile */}
                         <div className="bg-sidebar rounded-xl p-4 border">
                             <h4 className="text-xs font-bold text-muted-foreground uppercase tracking-wider mb-3">Check Eligibility</h4>
-                            <div className="space-y-3">
-                                <div className="grid grid-cols-2 gap-3">
-                                    <div className='col-span-2'>
-                                        <Select>
-                                            <SelectTrigger className='w-full h-8!'>
-                                                <SelectValue placeholder="Select Student" />
-                                            </SelectTrigger>
-                                            <SelectContent>
-                                                <SelectItem value="uk">Khem Basnet</SelectItem>
-                                                <SelectItem value="usa">Twake Hari</SelectItem>
-                                                <SelectItem value="aus">Nishant Adhikari</SelectItem>
-                                            </SelectContent>
-                                        </Select>
-                                    </div>
-                                    <div className="space-y-1">
-                                        <Label className="text-[10px]">Grade 12 %</Label>
-                                        <Input
-                                            type="number"
-                                            min={0}
-                                            max={100}
-                                            step={1}
-                                            className="h-8"
-                                            placeholder="e.g. 75"
-                                            defaultValue={searchParams.get("grade12") || ""}
-                                            onChange={(e) => handleInputChange("grade12", e.target.value)}
-                                        />
-                                    </div>
-                                    <div className="space-y-1">
-                                        <Label className="text-[10px]">UG Score %</Label>
-                                        <Input
-                                            type="number"
-                                            min={0}
-                                            max={100}
-                                            step={1}
-                                            className="h-8"
-                                            placeholder="e.g. 60"
-                                            defaultValue={searchParams.get("ug") || ""}
-                                            onChange={(e) => handleInputChange("ug", e.target.value)}
-                                        />
-                                    </div>
-                                    <div className="space-y-1">
-                                        <Label className="text-[10px]">IELTS Overall</Label>
-                                        <Input
-                                            type="number"
-                                            min={0}
-                                            max={9}
-                                            step={0.5}
-                                            className="h-8"
-                                            placeholder="e.g. 7"
-                                            defaultValue={searchParams.get("ielts") || ""}
-                                            onChange={(e) => handleInputChange("ielts", e.target.value)}
-                                        />
-                                    </div>
-                                    <div className="space-y-1">
-                                        <Label className="text-[10px]">PTE Overall</Label>
-                                        <Input
-                                            type="number"
-                                            min={0}
-                                            max={100}
-                                            step={1}
-                                            className="h-8"
-                                            placeholder="e.g. 42"
-                                            defaultValue={searchParams.get("pte") || ""}
-                                            onChange={(e) => handleInputChange("pte", e.target.value)}
-                                        />
-                                    </div>
-                                </div>
-                                <Button size="sm" variant="secondary" className="w-full text-xs h-8">
-                                    Apply Eligibility
-                                </Button>
-                            </div>
+                            <EligibilityForm />
                         </div>
 
                         {/* Filter Accordion */}
@@ -222,6 +155,7 @@ export default function CourseSearchPage() {
                                         />
                                         <InfiniteMultiSelect
                                             endpoint={`${QueryKey.UNIVERSITIES}/${QueryKey.OPTIONS}`}
+                                            queryString={createQueryString({ withCourseCount: true })}
                                             selected={JSON.parse(decodeURIComponent(searchParams.get("university") || "[]"))}
                                             onSelectionChange={(values) => {
                                                 setSearchParams({ ["university"]: values.length > 0 ? encodeURIComponent(JSON.stringify(values)) : undefined })
@@ -380,19 +314,15 @@ export default function CourseSearchPage() {
                             }
                         </div>
 
-                        <div className="flex items-center gap-3">
-                            <span className="text-sm text-muted-foreground">Sort by:</span>
-                            <Select defaultValue="relevance">
-                                <SelectTrigger className="w-[130px] h-8 text-xs">
-                                    <SelectValue placeholder="Sort" />
-                                </SelectTrigger>
-                                <SelectContent>
-                                    <SelectItem value="relevance">Relevance</SelectItem>
-                                    <SelectItem value="fee-low">Fee: Low to High</SelectItem>
-                                    <SelectItem value="rank">Ranking</SelectItem>
-                                </SelectContent>
-                            </Select>
-                        </div>
+                        {
+                            isLoading ? (
+                                <Skeleton className="w-32 h-4" />
+                            ) : (
+                                <div className="text-sm text-muted-foreground">
+                                    Page: {data?.meta.page} of {data?.meta.pageCount}
+                                </div>
+                            )
+                        }
                     </div>
 
                     {/* Course List Area */}

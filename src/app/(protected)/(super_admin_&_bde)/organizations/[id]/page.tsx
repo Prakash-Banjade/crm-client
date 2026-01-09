@@ -5,7 +5,9 @@ import OrganizationUsersDataTable from "@/components/organization/users/organiza
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
+import { useAuth } from "@/context/auth-provider";
 import { useGetOrganizationById } from "@/lib/data-access/organization-data-hooks";
+import { Role } from "@/lib/types";
 import { getObjectUrl } from "@/lib/utils";
 import { formatDate } from "date-fns";
 import { AlertCircle, Building2, Calendar, CreditCard, File, Globe, Landmark, Mail, MapPin, Phone, User } from "lucide-react";
@@ -21,6 +23,7 @@ type Props = {
 
 export default function SingleOrganizationPage({ params }: Props) {
     const { id } = use(params);
+    const { user } = useAuth();
 
     const { data: organization, isLoading } = useGetOrganizationById({ id })
 
@@ -60,7 +63,11 @@ export default function SingleOrganizationPage({ params }: Props) {
                             {organization.address || "N/A"}
                         </p>
                     </div>
-                    <SingleOrganizationActionBtns organization={organization} />
+                    {
+                        user?.role === Role.SUPER_ADMIN && (
+                            <SingleOrganizationActionBtns organization={organization} />
+                        )
+                    }
                 </section>
             </div>
 
@@ -202,9 +209,15 @@ export default function SingleOrganizationPage({ params }: Props) {
                 </Card>
             </div>
 
-            <Separator className="my-6" />
 
-            <OrganizationUsersDataTable organizationId={id} />
+            {
+                user?.role === Role.SUPER_ADMIN && (
+                    <>
+                        <Separator className="my-6" />
+                        <OrganizationUsersDataTable organizationId={id} />
+                    </>
+                )
+            }
         </div>
     )
 }

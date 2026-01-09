@@ -57,7 +57,7 @@ export default function RegionalInchargeForm({ setIsOpen, defaultValues, setIsFo
         setIsFormDirty?.(form.formState.isDirty);
     }, [form.formState.isDirty]);
 
-    useConfirmExit(form.formState.isDirty);
+    useConfirmExit(form.formState.isDirty && !form.formState.isSubmitSuccessful);;
 
     return (
         <Form {...form}>

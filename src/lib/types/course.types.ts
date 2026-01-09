@@ -20,7 +20,6 @@ export type TCourse = {
     }
     fee: number;
     applicationFee: number;
-    priceUnit: string;
     commissions: string[];
     intakes: EMonth[];
     ieltsOverall: number;

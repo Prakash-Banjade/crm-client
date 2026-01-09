@@ -31,10 +31,11 @@ export const superAdminSidebarMenuItems: TGroupMenuItem[] = [
                 items: [
                     { title: "Manage Courses", url: `` },
                     { title: "Advance Search", url: `search` },
+                    { title: "Categories", url: `categories` },
                 ]
             },
             { title: "Countries", url: `/countries`, icon: Globe },
-            { title: "Learning Resources", url: `/learning-resources`, icon: Library },
+            { title: "Learning Resources", url: `/${Role.SUPER_ADMIN}/learning-resources`, icon: Library },
         ]
     },
     {

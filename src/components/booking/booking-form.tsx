@@ -81,7 +81,7 @@ export default function BookingForm({ defaultValues }: Props) {
         }
     }
 
-    useConfirmExit(form.formState.isDirty);
+    useConfirmExit(form.formState.isDirty && !form.formState.isSubmitSuccessful);;
 
     const name = useWatch({
         control: form.control,

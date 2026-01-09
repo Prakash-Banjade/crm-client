@@ -43,7 +43,7 @@ export default function OrganizationForm({ defaultValues }: Props) {
         action: createOrganization,
         invalidateTags: [QueryKey.ORGANIZATIONS],
         onSuccess: () => {
-            router.push(`/${Role.SUPER_ADMIN}/organizations`);
+            router.push(`/organizations`);
         },
     });
 
@@ -61,7 +61,7 @@ export default function OrganizationForm({ defaultValues }: Props) {
         }
     }
 
-    useConfirmExit(form.formState.isDirty);
+    useConfirmExit(form.formState.isDirty && !form.formState.isSubmitSuccessful);
 
     const name = useWatch({
         control: form.control,

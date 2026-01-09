@@ -62,7 +62,7 @@ export default function LearningResourcesForm({ setIsOpen, defaultValues, setIsF
         setIsFormDirty?.(form.formState.isDirty);
     }, [form.formState.isDirty, setIsFormDirty]);
 
-    useConfirmExit(form.formState.isDirty);
+    useConfirmExit(form.formState.isDirty && !form.formState.isSubmitSuccessful);;
 
     return (
         <Form {...form}>

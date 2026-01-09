@@ -57,7 +57,7 @@ export default function BdeForm({ setIsOpen, defaultValues, setIsFormDirty }: Pr
         setIsFormDirty?.(form.formState.isDirty);
     }, [form.formState.isDirty]);
 
-    useConfirmExit(form.formState.isDirty);
+    useConfirmExit(form.formState.isDirty && !form.formState.isSubmitSuccessful);;
 
     return (
         <Form {...form}>

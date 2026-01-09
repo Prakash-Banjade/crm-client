@@ -1,5 +1,6 @@
 import { clsx, type ClassValue } from "clsx"
 import { twMerge } from "tailwind-merge"
+import { EMonth } from "./types";
 
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs))
@@ -72,4 +73,10 @@ export function getAcronym(name: string) {
   const secondInitial = words[1] ? words[1][0].toUpperCase() : ""
 
   return firstInitial + secondInitial
+}
+
+export function sortMonths(givenMonths: EMonth[]) {
+  const monthsArr = Object.values(EMonth);
+
+  return givenMonths.sort((a, b) => monthsArr.indexOf(a) - monthsArr.indexOf(b));
 }

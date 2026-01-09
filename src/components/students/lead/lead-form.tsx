@@ -60,7 +60,7 @@ export default function LeadForm({ setIsOpen, defaultValues, setIsFormDirty }: P
         setIsFormDirty?.(form.formState.isDirty);
     }, [form.formState.isDirty]);
 
-    useConfirmExit(form.formState.isDirty);
+    useConfirmExit(form.formState.isDirty && !form.formState.isSubmitSuccessful);;
 
     return (
         <Form {...form}>

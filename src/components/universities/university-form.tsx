@@ -59,7 +59,7 @@ export default function UniversityForm({ setIsOpen, defaultValues, setIsFormDirt
         setIsFormDirty?.(form.formState.isDirty);
     }, [form.formState.isDirty]);
 
-    useConfirmExit(form.formState.isDirty);
+    useConfirmExit(form.formState.isDirty && !form.formState.isSubmitSuccessful);;
 
     return (
         <Form {...form}>

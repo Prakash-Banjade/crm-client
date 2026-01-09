@@ -39,7 +39,7 @@ export default function StudentWorkExperienceForm({ student }: { student: TSingl
         update({ id: student.id, formData: data });
     };
 
-    useConfirmExit(form.formState.isDirty);
+    useConfirmExit(form.formState.isDirty && !form.formState.isSubmitSuccessful);;
 
     const { fields, append, remove } = useFieldArray({
         control: form.control,

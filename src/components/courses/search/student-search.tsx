@@ -11,82 +11,83 @@ import { Alert, AlertDescription } from "@/components/ui/alert"
 import { useDebounce } from "@/hooks/useDebounce"
 import { SelectOption } from "@/lib/types"
 import { useInfiniteOptions } from "@/hooks/useInfiniteOptions"
+import { QueryKey } from "@/lib/react-query/queryKeys"
+import { EGradingSystem, ELevelOfEducation } from "@/lib/types/student.types"
 
-type SelectOptionWithCount = SelectOption & {
-    count?: number
+type TStudentWithQualification = {
+    id: string,
+    fullName: string,
+    levelOfStudies: {
+        [value in ELevelOfEducation]?: {
+            score: number,
+            gradingSystem: EGradingSystem
+        }
+    }
 }
 
-interface InfiniteMultiSelectProps {
-    endpoint: string
+interface StudentsWithQualificationSearchProps {
     placeholder?: string
-    selected?: SelectOption[]
-    onSelectionChange?: (values: SelectOption[]) => void
     className?: string
-    limit?: number,
     queryString?: string;
+    onSelect?: (option: TStudentWithQualification) => void
 }
 
-export function InfiniteMultiSelect({
-    endpoint,
+
+export function StudentsWithQualificationSearch({
     placeholder = "Select options...",
-    selected = [],
-    onSelectionChange,
     className,
-    limit = 10,
-    queryString
-}: InfiniteMultiSelectProps) {
-    const [open, setOpen] = React.useState(false)
-    const [search, setSearch] = React.useState("")
+    onSelect,
+}: StudentsWithQualificationSearchProps) {
+    const [open, setOpen] = React.useState(false);
+    const [search, setSearch] = React.useState("");
+    const [selected, setSelected] = React.useState<TStudentWithQualification | null>(null);
 
-    const debouncedSearch = useDebounce(search, 500)
+    const debouncedSearch = useDebounce(search, 500);
 
-    const { options, totalCount, error, fetchNextPage, hasNextPage, isLoading, isFetching, isFetchingNextPage, refetch } =
-        useInfiniteOptions<SelectOptionWithCount>(endpoint, createQueryString({
-            take: limit.toString(),
+    const {
+        options,
+        totalCount,
+        error,
+        fetchNextPage,
+        hasNextPage,
+        isLoading,
+        isFetching,
+        isFetchingNextPage,
+        refetch,
+    } = useInfiniteOptions<TStudentWithQualification>(
+        `${QueryKey.STUDENTS}/with-qualification`,
+        createQueryString({
             q: debouncedSearch,
-            ...(Object.fromEntries(new URLSearchParams(queryString)))
-        }))
+        }),
+    );
 
-    const observerRef = React.useRef<HTMLDivElement>(null)
-    const listRef = React.useRef<HTMLDivElement>(null)
+    const observerRef = React.useRef<HTMLDivElement>(null);
+    const listRef = React.useRef<HTMLDivElement>(null);
 
     // Handle selection changes
     const handleSelect = React.useCallback(
-        (option: SelectOption) => {
-            const newSelected = selected.some(item => item.value === option.value) ? selected.filter((item) => item.value !== option.value) : [...selected, option]
-            onSelectionChange?.(newSelected)
+        (option: TStudentWithQualification) => {
+            setSelected(option);
+            onSelect?.(option);
+            setOpen(false);
         },
-        [selected, onSelectionChange],
-    )
-
-    // Handle removing selected items
-    const handleRemove = React.useCallback(
-        (value: string) => {
-            const newSelected = selected.filter((item) => item.value !== value)
-            onSelectionChange?.(newSelected)
-        },
-        [selected, onSelectionChange],
-    )
+        [selected]
+    );
 
     const handleScroll = React.useCallback(
         (e: React.UIEvent<HTMLDivElement>) => {
-            const { scrollTop, scrollHeight, clientHeight } = e.currentTarget
+            const { scrollTop, scrollHeight, clientHeight } = e.currentTarget;
             // when we're within 20px of the bottom…
             if (
                 scrollHeight - scrollTop - clientHeight < 20 &&
                 hasNextPage &&
                 !isFetchingNextPage
             ) {
-                fetchNextPage()
+                fetchNextPage();
             }
         },
         [hasNextPage, isFetchingNextPage, fetchNextPage]
-    )
-
-    // Get selected option labels for display
-    const selectedOptions = React.useMemo(() => {
-        return options.filter((option) => selected.some((item) => item.value === option.value)).reverse();
-    }, [options, selected]);
+    );
 
     return (
         <div className={cn("w-full", className)}>
@@ -96,40 +97,15 @@ export function InfiniteMultiSelect({
                         variant="outline"
                         role="combobox"
                         aria-expanded={open}
-                        className="w-full justify-between min-h-10 h-auto bg-transparent"
+                        disabled={isLoading}
+                        aria-disabled={isLoading}
+                        className="w-full justify-between bg-transparent"
                     >
                         <div className="flex flex-wrap gap-1 flex-1">
-                            {selected.length === 0 ? (
+                            {(!selected || !selected.fullName) ? (
                                 <span className="text-muted-foreground">{placeholder}</span>
                             ) : (
-                                <>
-                                    {selectedOptions.slice(0, 2).map((option) => (
-                                        <Badge key={option.value} variant="secondary" className="text-xs">
-                                            <span className="max-w-[20ch] truncate">{option.label}</span>
-                                            <div
-                                                role="button"
-                                                className="ml-1 ring-offset-background rounded-full outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2"
-                                                onKeyDown={(e) => {
-                                                    if (e.key === "Enter") {
-                                                        handleRemove(option.value)
-                                                    }
-                                                }}
-                                                onMouseDown={(e) => {
-                                                    e.preventDefault()
-                                                    e.stopPropagation()
-                                                }}
-                                                onClick={() => handleRemove(option.value)}
-                                            >
-                                                <X className="h-3 w-3 text-muted-foreground hover:text-foreground" />
-                                            </div>
-                                        </Badge>
-                                    ))}
-                                    {selected.length > 2 && (
-                                        <Badge variant="secondary" className="text-xs">
-                                            +{selected.length - 2} more
-                                        </Badge>
-                                    )}
-                                </>
+                                <span>{selected.fullName}</span>
                             )}
                         </div>
                         <ChevronsUpDown className="h-4 w-4 shrink-0 opacity-50" />
@@ -137,8 +113,16 @@ export function InfiniteMultiSelect({
                 </PopoverTrigger>
                 <PopoverContent className="min-w-(--radix-popover-trigger-width) p-0" align="start">
                     <Command shouldFilter={false}>
-                        <CommandInput placeholder="Search options..." value={search} onValueChange={setSearch} />
-                        <CommandList ref={listRef} onScroll={handleScroll} className="max-h-64 overflow-auto">
+                        <CommandInput
+                            placeholder="Search options..."
+                            value={search}
+                            onValueChange={setSearch}
+                        />
+                        <CommandList
+                            ref={listRef}
+                            onScroll={handleScroll}
+                            className="max-h-64 overflow-auto"
+                        >
                             {error ? (
                                 <Alert className="m-2">
                                     <AlertCircle className="h-4 w-4" />
@@ -153,27 +137,28 @@ export function InfiniteMultiSelect({
                                 <>
                                     {options.length === 0 && !isLoading && !isFetching ? (
                                         <CommandEmpty>
-                                            {debouncedSearch ? `No options found for "${debouncedSearch}"` : "No options found."}
+                                            {debouncedSearch
+                                                ? `No options found for "${debouncedSearch}"`
+                                                : "No options found."}
                                         </CommandEmpty>
                                     ) : (
                                         <CommandGroup>
                                             {options.map((option) => (
                                                 <CommandItem
-                                                    key={option.value}
-                                                    value={option.value}
+                                                    key={option.id}
+                                                    value={option.id}
                                                     onSelect={() => handleSelect(option)}
                                                     className="cursor-pointer px-3 flex items-center justify-between"
                                                 >
-                                                    <span className="truncate">{option.label}</span>
+                                                    <span className="truncate">{option.fullName}</span>
                                                     <Check
                                                         className={cn(
                                                             "mr-2 h-4 w-4",
-                                                            selected.some((item) => item.value === option.value) ? "opacity-100" : "opacity-0",
+                                                            selected?.id === option.id
+                                                                ? "opacity-100"
+                                                                : "opacity-0"
                                                         )}
                                                     />
-                                                    {option.count && (
-                                                        <span className="ml-2 text-xs text-muted-foreground">({option.count})</span>
-                                                    )}
                                                 </CommandItem>
                                             ))}
 
@@ -205,5 +190,6 @@ export function InfiniteMultiSelect({
                 </PopoverContent>
             </Popover>
         </div>
-    )
+    );
 }
+

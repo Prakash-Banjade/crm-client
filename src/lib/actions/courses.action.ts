@@ -36,3 +36,27 @@ export async function deleteCourse(id: string): Promise<ActionResponse> {
         method: "DELETE",
     })
 }
+
+export async function createCategory({ name }: { name: string }): Promise<ActionResponse> {
+    return await serverMutate({
+        body: { name },
+        endpoint: `/${QueryKey.CATEGORIES}`,
+        method: "POST",
+    })
+}
+
+export async function updateCategory({ name, id }: { name: string, id: string }): Promise<ActionResponse> {
+    return await serverMutate({
+        body: { name },
+        endpoint: `/${QueryKey.CATEGORIES}/${id}`,
+        method: "PATCH",
+    })
+}
+
+export async function deleteCategory(id: string): Promise<ActionResponse> {
+    return await serverMutate({
+        body: {},
+        endpoint: `/${QueryKey.CATEGORIES}/${id}`,
+        method: "DELETE",
+    })
+}

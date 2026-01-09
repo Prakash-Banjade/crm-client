@@ -14,6 +14,7 @@ export default function CoursesDataTable() {
     const { data, isLoading } = useGetCourses({
         queryString: createQueryString({
             [SEARCH_KEY]: searchParams.get(SEARCH_KEY),
+            ...Object.fromEntries(searchParams.entries()),
         }),
     });
 

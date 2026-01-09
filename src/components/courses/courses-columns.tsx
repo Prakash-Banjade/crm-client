@@ -57,11 +57,11 @@ export const coursesColumns: ColumnDef<TCourse>[] = [
         header: "Fee",
         cell: ({ row }) => {
             const fee = row.original.fee?.toLocaleString();
-            const priceUnit = row.original.priceUnit;
+            const currency = row.original.currency;
 
             return (
                 <span>
-                    {priceUnit} {fee}
+                    {currency} {fee}
                 </span>
             );
         },
@@ -71,11 +71,11 @@ export const coursesColumns: ColumnDef<TCourse>[] = [
         header: "Application Fee",
         cell: ({ row }) => {
             const applicationFee = row.original.applicationFee?.toLocaleString();
-            const priceUnit = row.original.priceUnit;
+            const currency = row.original.currency;
 
             return (
                 <span>
-                    {priceUnit} {applicationFee}
+                    {currency} {applicationFee}
                 </span>
             );
         },
@@ -162,7 +162,7 @@ export const coursesColumns: ColumnDef<TCourse>[] = [
                         <DropdownMenuContent align="end">
                             <DropdownMenuLabel>Actions</DropdownMenuLabel>
                             <DropdownMenuItem asChild>
-                                <Link href={`courses/${row.original.id}/edit`}>
+                                <Link href={`courses/${row.original.id}`}>
                                     <Pencil />
                                     Edit
                                 </Link>
